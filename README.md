@@ -5,7 +5,8 @@ Project files for Team ພັດລົມ (Phalom), Innovative Business Challeng
 ## Pitch materials (start here)
 
 - [`exports/Sabaidee-Merchant-Pitch-Deck.pdf`](exports/Sabaidee-Merchant-Pitch-Deck.pdf): final 13-slide deck in Lao, for submission. Generated from [`exports/pitch_deck_slide.html`](exports/pitch_deck_slide.html) (open in a browser to present; the PDF button saves a new PDF after edits).
-- [`exports/merchant_app_prototype.html`](exports/merchant_app_prototype.html): clickable merchant-app prototype for the live demo (v2.0: selling with the traffic light, reports and forecast, points and rewards, bill payment, support, consumer protection, account security, Lao/English). Works offline.
+- [`exports/merchant_app_prototype.html`](exports/merchant_app_prototype.html): earlier clickable prototype, kept for history; its design is superseded pending research (v2.0: selling with the traffic light, reports and forecast, points and rewards, bill payment, support, consumer protection, account security, Lao/English). Works offline.
+- [`blueprint_phalom_prototype.md`](blueprint_phalom_prototype.md): research-based list of every feature the prototype needs (P0–P2), competitor check, research plan and open design decisions. **Design is not decided yet**; this replaces the earlier prototype as the reference.
 - [`04_PITCH_SCRIPT.md`](04_PITCH_SCRIPT.md): speaker script, demo steps, short version and judge Q&A for practice.
 - [`00_CONTEXT.md`](00_CONTEXT.md): deadlines and owner decisions. Read this first before changing anything.
 
@@ -35,3 +36,4 @@ Before using the Discord script, read its `output/discord/README.md`. It can cre
 | 2026-10-12 23:09:45 +07:00 (Asia/Bangkok) | 1.0 | Codex | Added a team entry point and project index for the initial public repository upload. Identifies the current overview, proposal status, and historical PDF. |
 | 2026-10-12 (Asia/Bangkok) | 1.1 | Claude Code | Added deadlines and the pitch materials section (final Lao deck + PDF, clickable prototype, speaker script, `00_CONTEXT.md`). Claude Code is now the sole author. |
 | 2026-10-12 (Asia/Bangkok) | 1.2 | Claude Code | Described prototype v2.0 features. |
+| 2026-10-12 (Asia/Bangkok) | 1.3 | Claude Code | Added the prototype blueprint; marked the earlier prototype as history. |
