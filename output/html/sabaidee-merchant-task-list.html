@@ -248,7 +248,7 @@ a{color:var(--accent)}
 
 <div class="toolbar" role="region" aria-label="Progress and filters">
   <div class="progress-row">
-    <p id="progress-text" class="progress-text">0 of 57 tasks done</p>
+    <p id="progress-text" class="progress-text">0 of 52 tasks done</p>
     <p id="blocker-text" class="blocker-text">19 tasks block the pitch</p>
   </div>
   <div class="bar" aria-hidden="true"><span id="bar-fill"></span></div>
@@ -275,7 +275,6 @@ a{color:var(--accent)}
     <li><span>Lao team brief v2.0 (HTML)</span></li>
     <li><span>Interactive system flowchart with six scenarios</span></li>
     <li><span>12-slide pitch deck draft</span></li>
-    <li><span>Discord blueprint and setup script (13 offline tests pass)</span></li>
     <li><span>README project index</span></li>
   </ul>
 </section>
@@ -620,53 +619,54 @@ a{color:var(--accent)}
   </ol>
 </section>
 
+
 <section class="phase" id="phase-f" aria-labelledby="pf-h">
   <div class="phase-head">
     <p class="phase-letter" aria-hidden="true">F</p>
-    <h2 id="pf-h">Team workspace</h2>
-    <p class="phase-when">Optional, any time</p>
-    <p class="phase-note">Discord setup. It is not part of the payment system.</p>
+    <h2 id="pf-h">Feasibility</h2>
+    <p class="phase-when">Months 1–3 after the competition</p>
+    <p class="gate"><strong>Gate 1:</strong> written partner scope and regulatory classification (D01–D03). No gate, no build.</p>
     <p class="phase-count">0 of 5 done</p>
   </div>
   <ol class="tasks">
-    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
       <input type="checkbox" id="t-f1">
       <div class="task-body">
-        <label for="t-f1" class="task-title"><span class="tid">F1</span>Run the Discord setup script</label>
-        <p class="task-detail">Copy the server ID, run <code>setup_discord.py</code> with <code>--dry-run --adopt-existing</code>, review the preview, then run it with <code>--apply</code>. Keep the bot token in the hidden prompt or an environment variable.</p>
-        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">output/discord/README.md</span></p>
+        <label for="t-f1" class="task-title"><span class="tid">F1</span>Hold the first BCEL conversation</label>
+        <p class="task-detail">Ask about product scope, fees, the payment and bank-credit data feed, a fee per active merchant, and per-payment events for static QR.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">Deck next step 2 · D05 · D06</span></p>
       </div>
     </li>
-    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
       <input type="checkbox" id="t-f2">
       <div class="task-body">
-        <label for="t-f2" class="task-title"><span class="tid">F2</span>Assign roles and check access</label>
-        <p class="task-detail">Give teammates Team Member and coordinators Team Lead by hand, then check what a Guest / Mentor can see before inviting reviewers.</p>
-        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §3</span></p>
+        <label for="t-f2" class="task-title"><span class="tid">F2</span>Get a written legal classification</label>
+        <p class="task-detail">The startup's permitted role and the approvals it needs, in writing. A bank's licence does not cover the startup.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">D01 · Deck next step 3</span></p>
       </div>
     </li>
-    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
       <input type="checkbox" id="t-f3">
       <div class="task-body">
-        <label for="t-f3" class="task-title"><span class="tid">F3</span>Post and pin the welcome and project overview</label>
-        <p class="task-detail">Copy both from the server blueprint and fill in the coordinator, role owners, next milestone and links.</p>
-        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §4–5</span></p>
+        <label for="t-f3" class="task-title"><span class="tid">F3</span>Resolve partner dependencies D02–D10</label>
+        <p class="task-detail">Partner licence scope, the app and QR capability matrix, onboarding and data reuse (including a micro-merchant tier), a full fee quote, credit visibility, payout timing and holidays, refunds and disputes, hosting and incident duties. Advance payout (D08) stays out of the pitch.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">01 §8 · G-UX-06</span></p>
       </div>
     </li>
-    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
       <input type="checkbox" id="t-f4">
       <div class="task-body">
-        <label for="t-f4" class="task-title"><span class="tid">F4</span>Remove the setup bot</label>
-        <p class="task-detail">The channels and roles it created stay after it leaves.</p>
-        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">output/discord/README.md</span></p>
+        <label for="t-f4" class="task-title"><span class="tid">F4</span>Choose the technology stack</label>
+        <p class="task-detail">Deferred until the partner's SDK/API requirements, team skills, hosting rules and device limits are known.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §3</span></p>
       </div>
     </li>
-    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
       <input type="checkbox" id="t-f5">
       <div class="task-body">
-        <label for="t-f5" class="task-title"><span class="tid">F5</span>Post these tasks in #tasks</label>
-        <p class="task-detail">One task per message, each with one owner, a due date and a clear result. "Copy open tasks" at the top of this page gives you the list as text.</p>
-        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §2</span></p>
+        <label for="t-f5" class="task-title"><span class="tid">F5</span>Usability-test the prototype with vendors</label>
+        <p class="task-detail">Test in Lao. Target: at least 90% of vendors make the right handover decision on the first try across the six scenarios.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-01 · Deck next step 4</span></p>
       </div>
     </li>
   </ol>
@@ -675,50 +675,74 @@ a{color:var(--accent)}
 <section class="phase" id="phase-g" aria-labelledby="pg-h">
   <div class="phase-head">
     <p class="phase-letter" aria-hidden="true">G</p>
-    <h2 id="pg-h">Feasibility</h2>
-    <p class="phase-when">Months 1–3 after the competition</p>
-    <p class="gate"><strong>Gate 1:</strong> written partner scope and regulatory classification (D01–D03). No gate, no build.</p>
-    <p class="phase-count">0 of 5 done</p>
+    <h2 id="pg-h">Sandbox build</h2>
+    <p class="phase-when">Months 3–6</p>
+    <p class="gate"><strong>Gate 2:</strong> the sandbox passes duplicate, timeout, offline and fee-mismatch tests, and the team has approval to pilot.</p>
+    <p class="phase-count">0 of 8 done</p>
   </div>
   <ol class="tasks">
-    <li class="task" data-pri="later" data-when="later" data-area="Business">
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
       <input type="checkbox" id="t-g1">
       <div class="task-body">
-        <label for="t-g1" class="task-title"><span class="tid">G1</span>Hold the first BCEL conversation</label>
-        <p class="task-detail">Ask about product scope, fees, the payment and bank-credit data feed, a fee per active merchant, and per-payment events for static QR.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">Deck next step 2 · D05 · D06</span></p>
+        <label for="t-g1" class="task-title"><span class="tid">G1</span>Build the payment core</label>
+        <p class="task-detail">Idempotent orders, versioned fee quotes, one partner intent saved before the QR shows, an authenticated event inbox, a state reducer with audit journal, a transactional outbox and a reconciliation worker. Money in integer LAK minor units.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §5.2, §7 · C04 · C09 · C10</span></p>
       </div>
     </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Business">
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
       <input type="checkbox" id="t-g2">
       <div class="task-body">
-        <label for="t-g2" class="task-title"><span class="tid">G2</span>Get a written legal classification</label>
-        <p class="task-detail">The startup's permitted role and the approvals it needs, in writing. A bank's licence does not cover the startup.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">D01 · Deck next step 3</span></p>
+        <label for="t-g2" class="task-title"><span class="tid">G2</span>Build the merchant app</label>
+        <p class="task-detail">Lao keypad with a 000 key and spoken read-back, the handover-light sale screen, the last three receipts, a daily summary, cashier and owner modes, owner-only digital refunds and honest offline states.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">F01–F09 · G-UX-03, 05, 07, 08</span></p>
       </div>
     </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Business">
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
       <input type="checkbox" id="t-g3">
       <div class="task-body">
-        <label for="t-g3" class="task-title"><span class="tid">G3</span>Resolve partner dependencies D02–D10</label>
-        <p class="task-detail">Partner licence scope, the app and QR capability matrix, onboarding and data reuse (including a micro-merchant tier), a full fee quote, credit visibility, payout timing and holidays, refunds and disputes, hosting and incident duties. Advance payout (D08) stays out of the pitch.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">01 §8 · G-UX-06</span></p>
+        <label for="t-g3" class="task-title"><span class="tid">G3</span>Record the Lao audio</label>
+        <p class="task-detail">Native-speaker number segments, about 8 merchant chimes to choose from, and a 2-digit code that matches the green screen. Never replay an old event as new.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-04 · C08</span></p>
       </div>
     </li>
     <li class="task" data-pri="later" data-when="later" data-area="Engineering">
       <input type="checkbox" id="t-g4">
       <div class="task-body">
-        <label for="t-g4" class="task-title"><span class="tid">G4</span>Choose the technology stack</label>
-        <p class="task-detail">Deferred until the partner's SDK/API requirements, team skills, hosting rules and device limits are known.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §3</span></p>
+        <label for="t-g4" class="task-title"><span class="tid">G4</span>Make it reliable on low-end Android</label>
+        <p class="task-detail">A battery-optimisation walkthrough per phone maker, a visible "listening" heartbeat, foreground polling on the sell screen and a volume check before each shift.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-UX-05 · G-EC-10, 11</span></p>
       </div>
     </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Product">
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
       <input type="checkbox" id="t-g5">
       <div class="task-body">
-        <label for="t-g5" class="task-title"><span class="tid">G5</span>Usability-test the prototype with vendors</label>
-        <p class="task-detail">Test in Lao. Target: at least 90% of vendors make the right handover decision on the first try across the six scenarios.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-01 · Deck next step 4</span></p>
+        <label for="t-g5" class="task-title"><span class="tid">G5</span>Add AML monitoring hooks</label>
+        <p class="task-detail">Flag unusual ticket sizes, velocity, night-time activity, category mismatch and repeat payers, and export them for the bank's reporting process.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-REG-03</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-g6">
+      <div class="task-body">
+        <label for="t-g6" class="task-title"><span class="tid">G6</span>Implement the security controls</label>
+        <p class="task-detail">Tenant isolation, role scopes, step-up checks for account changes, encryption, secret rotation, scoped and revocable receipts, backup and restore, incident and breach runbooks.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.1 · G-REG-07</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-g7">
+      <div class="task-body">
+        <label for="t-g7" class="task-title"><span class="tid">G7</span>Pass the integration checks</label>
+        <p class="task-detail">Eligible app to approved QR, confirmation kept separate from credit, duplicate and reordered callbacks, timeout with late success, offline reconnect, quote versus actual deductions, partial credit and refunds, access attempts, restore after interruption.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.2</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-g8">
+      <div class="task-body">
+        <label for="t-g8" class="task-title"><span class="tid">G8</span>Cover the market-floor edge cases</label>
+        <p class="task-detail">QR swaps, fake sounds, under- and overpayment, split payments, paying the wrong stall, limits hit mid-sale, holiday payout delays, wrong device clocks, and every other G-EC case accepted in B1.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-EC-01…22</span></p>
       </div>
     </li>
   </ol>
@@ -727,116 +751,40 @@ a{color:var(--accent)}
 <section class="phase" id="phase-h" aria-labelledby="ph-h">
   <div class="phase-head">
     <p class="phase-letter" aria-hidden="true">H</p>
-    <h2 id="ph-h">Sandbox build</h2>
-    <p class="phase-when">Months 3–6</p>
-    <p class="gate"><strong>Gate 2:</strong> the sandbox passes duplicate, timeout, offline and fee-mismatch tests, and the team has approval to pilot.</p>
-    <p class="phase-count">0 of 8 done</p>
-  </div>
-  <ol class="tasks">
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h1">
-      <div class="task-body">
-        <label for="t-h1" class="task-title"><span class="tid">H1</span>Build the payment core</label>
-        <p class="task-detail">Idempotent orders, versioned fee quotes, one partner intent saved before the QR shows, an authenticated event inbox, a state reducer with audit journal, a transactional outbox and a reconciliation worker. Money in integer LAK minor units.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §5.2, §7 · C04 · C09 · C10</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Product">
-      <input type="checkbox" id="t-h2">
-      <div class="task-body">
-        <label for="t-h2" class="task-title"><span class="tid">H2</span>Build the merchant app</label>
-        <p class="task-detail">Lao keypad with a 000 key and spoken read-back, the handover-light sale screen, the last three receipts, a daily summary, cashier and owner modes, owner-only digital refunds and honest offline states.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">F01–F09 · G-UX-03, 05, 07, 08</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Product">
-      <input type="checkbox" id="t-h3">
-      <div class="task-body">
-        <label for="t-h3" class="task-title"><span class="tid">H3</span>Record the Lao audio</label>
-        <p class="task-detail">Native-speaker number segments, about 8 merchant chimes to choose from, and a 2-digit code that matches the green screen. Never replay an old event as new.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-04 · C08</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h4">
-      <div class="task-body">
-        <label for="t-h4" class="task-title"><span class="tid">H4</span>Make it reliable on low-end Android</label>
-        <p class="task-detail">A battery-optimisation walkthrough per phone maker, a visible "listening" heartbeat, foreground polling on the sell screen and a volume check before each shift.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-UX-05 · G-EC-10, 11</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h5">
-      <div class="task-body">
-        <label for="t-h5" class="task-title"><span class="tid">H5</span>Add AML monitoring hooks</label>
-        <p class="task-detail">Flag unusual ticket sizes, velocity, night-time activity, category mismatch and repeat payers, and export them for the bank's reporting process.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-REG-03</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h6">
-      <div class="task-body">
-        <label for="t-h6" class="task-title"><span class="tid">H6</span>Implement the security controls</label>
-        <p class="task-detail">Tenant isolation, role scopes, step-up checks for account changes, encryption, secret rotation, scoped and revocable receipts, backup and restore, incident and breach runbooks.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.1 · G-REG-07</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h7">
-      <div class="task-body">
-        <label for="t-h7" class="task-title"><span class="tid">H7</span>Pass the integration checks</label>
-        <p class="task-detail">Eligible app to approved QR, confirmation kept separate from credit, duplicate and reordered callbacks, timeout with late success, offline reconnect, quote versus actual deductions, partial credit and refunds, access attempts, restore after interruption.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.2</span></p>
-      </div>
-    </li>
-    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
-      <input type="checkbox" id="t-h8">
-      <div class="task-body">
-        <label for="t-h8" class="task-title"><span class="tid">H8</span>Cover the market-floor edge cases</label>
-        <p class="task-detail">QR swaps, fake sounds, under- and overpayment, split payments, paying the wrong stall, limits hit mid-sale, holiday payout delays, wrong device clocks, and every other G-EC case accepted in B1.</p>
-        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-EC-01…22</span></p>
-      </div>
-    </li>
-  </ol>
-</section>
-
-<section class="phase" id="phase-i" aria-labelledby="pi-h">
-  <div class="phase-head">
-    <p class="phase-letter" aria-hidden="true">I</p>
-    <h2 id="pi-h">Controlled pilot</h2>
+    <h2 id="ph-h">Controlled pilot</h2>
     <p class="phase-when">Months 6–12</p>
     <p class="gate"><strong>Gate 3:</strong> 30-day retention, cost to serve and payout timing measured, then decide to expand or stop.</p>
     <p class="phase-count">0 of 4 done</p>
   </div>
   <ol class="tasks">
     <li class="task" data-pri="later" data-when="later" data-area="Business">
-      <input type="checkbox" id="t-i1">
+      <input type="checkbox" id="t-h1">
       <div class="task-body">
-        <label for="t-i1" class="task-title"><span class="tid">I1</span>Prepare the market</label>
+        <label for="t-h1" class="task-title"><span class="tid">H1</span>Prepare the market</label>
         <p class="task-detail">60 tamper-evident QR stands with "scan with your bank app" in English, Thai, Vietnamese and Chinese, listing only certified apps. Set up the help desk and retire personal and foreign QR codes.</p>
         <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">G-UX-09 · G-REG-04 · G-EC-01</span></p>
       </div>
     </li>
     <li class="task" data-pri="later" data-when="later" data-area="Business">
-      <input type="checkbox" id="t-i2">
+      <input type="checkbox" id="t-h2">
       <div class="task-body">
-        <label for="t-i2" class="task-title"><span class="tid">I2</span>Onboard 30–50 vendors</label>
+        <label for="t-h2" class="task-title"><span class="tid">H2</span>Onboard 30–50 vendors</label>
         <p class="task-detail">Agent-assisted at the market help desk. Merchants type any credentials on their own device, and acceptance switches on only after partner review.</p>
         <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">F03 · G-UX-06</span></p>
       </div>
     </li>
     <li class="task" data-pri="later" data-when="later" data-area="Product">
-      <input type="checkbox" id="t-i3">
+      <input type="checkbox" id="t-h3">
       <div class="task-body">
-        <label for="t-i3" class="task-title"><span class="tid">I3</span>Run the soundbox trial arm</label>
+        <label for="t-h3" class="task-title"><span class="tid">H3</span>Run the soundbox trial arm</label>
         <p class="task-detail">10 paired devices that can be revoked, compared against phone-only vendors.</p>
         <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">F10 · G-UX-04</span></p>
       </div>
     </li>
     <li class="task" data-pri="later" data-when="later" data-area="Lead">
-      <input type="checkbox" id="t-i4">
+      <input type="checkbox" id="t-h4">
       <div class="task-body">
-        <label for="t-i4" class="task-title"><span class="tid">I4</span>Measure and decide</label>
+        <label for="t-h4" class="task-title"><span class="tid">H4</span>Measure and decide</label>
         <p class="task-detail">Track the A6 metrics, the real cost to serve and the real payout timing, then decide whether to expand or stop.</p>
         <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Lead</span><span class="src">Deck Gate 3</span></p>
       </div>
@@ -863,7 +811,7 @@ a{color:var(--accent)}
 <footer class="foot">
   <p>Built from <code>01_CODEX_ARCH.md</code> v0.1, <code>02_GEMINI_AUDIT.md</code> v0.1, <code>03_FINAL_SPEC.md</code> v0.1, the team brief v2.0, the pitch deck draft, <code>IBC.pdf</code> and the MSME challenge list (challenge #10).</p>
   <p>Ticks are saved in this browser only. Pitch-stage proposal: no partner agreement, licence, fee quote, regulatory approval or pilot result is implied.</p>
-  <p>v1.0 · 13 October 2026</p>
+  <p>v1.1 · 13 October 2026</p>
 </footer>
 
 </div>
@@ -982,5 +930,6 @@ a{color:var(--accent)}
 </html>
 <!--
 # Version Log
-2026-10-13 03:32:02 +07:00 (Asia/Bangkok) | v1.0 | Claude | Created the project task list: 57 tasks in nine phases (decisions, spec loop, evidence, deck, rehearsal, workspace, feasibility, sandbox, pilot), 19 marked as pitch blockers, plus the agreed never-do list. Sources: 01/02/03 v0.1, brief v2.0, deck draft, IBC template, challenge list #10.
+2026-10-13 03:32:02 +07:00 (Asia/Bangkok) | v1.0 | Claude | Created the project task list: 57 tasks in nine phases, 19 marked as pitch blockers, plus the agreed never-do list. Sources: 01/02/03 v0.1, brief v2.0, deck draft, IBC template, challenge list #10.
+2026-10-13 (Asia/Bangkok) | v1.1 | Claude | Removed the Discord workspace phase and done item; 52 tasks in eight phases. Re-lettered the post-competition phases F–H.
 -->
