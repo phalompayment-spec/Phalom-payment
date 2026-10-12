@@ -1,28 +1,31 @@
 <title>Phalom Prototype</title>
 <style>
 /*__FONTS__*/
-/* Layout: phone frame beside a presenter demo panel; on phones the app fills the screen and the panel becomes a sheet */
+/* Layout: phone frame beside a presenter demo panel; on phones the app fills the screen and the panel becomes a bottom sheet */
 :root{
   --st-bg:#e6dece; --st-ink:#3b2a20; --st-muted:#6b5646; --st-panel:#f6f0e4; --st-line:#d6cab4;
-  --st-accent:#2f6a55; --st-on-accent:#f6f0e4; --st-clay:#b5653c; --st-bezel:#2a1e17; --st-chip:#ebe2d1;
+  --st-accent:#2f6a55; --st-on-accent:#f6f0e4; --st-clay:#b5653c; --st-bezel:#2a1e17; --st-chip:#ebe2d1; --st-scrim:rgba(20,14,10,.45);
   --f-head:'Noto Serif Lao','Noto Sans Lao','Phalom Sym',Georgia,serif;
   --f-body:'Noto Sans Lao','Phalom Sym',system-ui,-apple-system,'Segoe UI',sans-serif;
   --f-num:'Fraunces','Phalom Sym','Noto Sans Lao',Georgia,serif;
+  /* motion tokens: enter decelerates, exit accelerates and is shorter */
+  --ease-out:cubic-bezier(0,0,.2,1); --ease-in:cubic-bezier(.4,0,1,1); --spring:cubic-bezier(.34,1.4,.64,1);
+  --t-press:120ms; --t-enter:280ms; --t-exit:200ms;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --st-bg:#0f1512; --st-ink:#efe7d8; --st-muted:#a3ada1; --st-panel:#19231e; --st-line:#2e3b34;
-    --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; color-scheme:dark;
+    --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; --st-scrim:rgba(0,0,0,.55); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --st-bg:#0f1512; --st-ink:#efe7d8; --st-muted:#a3ada1; --st-panel:#19231e; --st-line:#2e3b34;
-  --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; color-scheme:dark;
+  --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; --st-scrim:rgba(0,0,0,.55); color-scheme:dark;
 }
 html,body{height:100%}
 body{margin:0;background:var(--st-bg);color:var(--st-ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
-button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
 
 /* ---------- stage ---------- */
@@ -31,23 +34,23 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-name{font-family:var(--f-num);font-weight:800;font-size:26px;letter-spacing:-.5px;line-height:1}
 .brand-sub{color:var(--st-muted);font-size:14px}
-.sim-chip{font-size:13px;padding:4px 12px;border-radius:999px;border:1px solid var(--st-clay);color:var(--st-clay)}
-.stage-main{display:flex;gap:36px;align-items:flex-start;justify-content:center;width:100%}
-.device{width:390px;height:820px;flex:none;border:10px solid var(--st-bezel);border-radius:52px;overflow:hidden;background:var(--st-bezel);box-shadow:0 30px 60px -32px rgba(40,25,10,.5)}
+.sim-chip{font-size:13px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--st-clay);color:var(--st-ink)}
+.stage-main{display:flex;gap:clamp(16px,3vw,36px);align-items:flex-start;justify-content:center;width:100%}
+.device{width:min(390px,100%);height:820px;flex:none;border:10px solid var(--st-bezel);border-radius:52px;overflow:hidden;background:var(--st-bezel);box-shadow:0 30px 60px -32px rgba(40,25,10,.5)}
 
 /* ---------- demo panel ---------- */
-.panel{width:340px;flex:none;box-sizing:border-box;background:var(--st-panel);border:1px solid var(--st-line);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:16px;max-height:840px;overflow:auto}
+.panel{width:min(340px,100%);flex:none;box-sizing:border-box;background:var(--st-panel);border:1px solid var(--st-line);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:16px;max-height:840px;overflow:auto}
 .panel h2{font-family:var(--f-head);font-size:19px;margin:0;line-height:1.3}
+.phead{display:flex;align-items:flex-start;gap:8px}
 .pnote{margin:2px 0 0;font-size:13px;color:var(--st-muted)}
 .pgroup{display:flex;flex-direction:column;gap:8px}
 .plabel{font-size:12px;font-weight:600;color:var(--st-muted);letter-spacing:.02em}
 .pbtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .pbtns.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-.pbtn{min-height:42px;border-radius:12px;border:1px solid var(--st-line);background:var(--st-chip);color:var(--st-ink);font-size:13px;line-height:1.3;cursor:pointer;padding:6px 8px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
-.pbtn:hover{border-color:var(--st-accent)}
+.pbtn{min-height:44px;border-radius:12px;border:1px solid var(--st-line);background:var(--st-chip);color:var(--st-ink);font-size:13px;line-height:1.3;cursor:pointer;padding:6px 8px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
 .pbtn[aria-pressed="true"]{background:var(--st-accent);color:var(--st-on-accent);border-color:transparent;font-weight:700}
 .pbtn.wide{width:100%}
-.pbtn .pd{width:9px;height:9px;border-radius:50%;flex:none}
+.pd{width:9px;height:9px;border-radius:50%;flex:none}
 .pd.ok{background:#3f8f6f}.pd.wait{background:#c08a1e}.pd.bad{background:#b8513a}
 .ptarget{font-size:12px;color:var(--st-muted)}
 .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;counter-reset:s}
@@ -56,34 +59,39 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .steps li.done{color:var(--st-ink)}
 .steps li.done::before{content:"✓";color:var(--st-accent)}
 .steps li.now{background:var(--st-chip);color:var(--st-ink);font-weight:600}
+.closepanel{display:none;margin-left:auto;min-height:44px;border:1px solid var(--st-line);background:var(--st-chip);border-radius:999px;padding:0 16px;cursor:pointer;font-size:13px}
 .scrim{display:none}
 
 /* ---------- app tokens: light is the default; dark comes only from the in-app setting ---------- */
 .app{
-  --a-bg:#f6f0e4; --a-surface:#ebe2d1; --a-card:#fbf7ee; --a-ink:#3b2a20; --a-muted:#6b5646; --a-faint:#8f7f6f; --a-line:#ddd2bf;
+  --a-bg:#f6f0e4; --a-surface:#ebe2d1; --a-card:#fbf7ee; --a-ink:#3b2a20; --a-muted:#6b5646; --a-faint:#76665a; --a-line:#ddd2bf; --a-track:#9a8670;
   --a-primary:#2f6a55; --a-on-primary:#f6f0e4; --a-clay:#b5653c;
   --a-ok:#2f6a55; --a-ok-bg:#dceadf; --a-wait:#835509; --a-wait-dot:#c08a1e; --a-wait-bg:#f3e4c3;
   --a-bad:#a3402a; --a-bad-bg:#f2dbd2; --a-off:#56606a; --a-off-bg:#e2e0da;
   --a-band-ok:#2f6a55; --a-band-wait:#8a5d12; --a-band-bad:#a3402a; --a-band-off:#56606a; --a-band-ink:#f8f3ea;
-  --a-sim-bg:#3b2a20; --a-sim-ink:#f6f0e4; --a-toast-bg:#3b2a20; --a-toast-ink:#f6f0e4;
+  --a-sim-bg:#3b2a20; --a-sim-ink:#f6f0e4; --a-toast-bg:#3b2a20; --a-toast-ink:#f6f0e4; --a-scrim:rgba(24,16,10,.55);
   --lg-ink:var(--a-primary); --lg-acc:var(--a-clay);
-  height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--a-bg);color:var(--a-ink);font-family:var(--f-body);color-scheme:light
+  height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--a-bg);color:var(--a-ink);font-family:var(--f-body);color-scheme:light;container-type:inline-size
 }
 .app[data-mode="dark"]{
-  --a-bg:#16201b; --a-surface:#212d27; --a-card:#1b2621; --a-ink:#f1e9da; --a-muted:#a9b2a6; --a-faint:#7f8a82; --a-line:#2e3b34;
+  --a-bg:#16201b; --a-surface:#212d27; --a-card:#1b2621; --a-ink:#f1e9da; --a-muted:#a9b2a6; --a-faint:#7f8a82; --a-line:#2e3b34; --a-track:#6b7a70;
   --a-primary:#7cc0a2; --a-on-primary:#10201a; --a-clay:#e09a6e;
   --a-ok:#7cc0a2; --a-ok-bg:#1e3a2f; --a-wait:#e8bd66; --a-wait-dot:#e3b45a; --a-wait-bg:#3a321d;
   --a-bad:#ef9580; --a-bad-bg:#3d2620; --a-off:#c0c7cd; --a-off-bg:#2a312e;
   --a-band-ok:#2a5544; --a-band-wait:#6b5420; --a-band-bad:#7a3324; --a-band-off:#3c4550; --a-band-ink:#f1e9da;
-  --a-sim-bg:#000000; --a-sim-ink:#e8bd66; --a-toast-bg:#f1e9da; --a-toast-ink:#16201b;
+  --a-sim-bg:#000000; --a-sim-ink:#e8bd66; --a-toast-bg:#f1e9da; --a-toast-ink:#16201b; --a-scrim:rgba(0,0,0,.62);
   color-scheme:dark
 }
-.app button:focus-visible{outline-color:var(--a-clay)}
+.app button:focus-visible,.app summary:focus-visible{outline-color:var(--a-clay)}
+.view{flex:1;min-height:0;display:flex;flex-direction:column}
 .simbar{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;background:var(--a-sim-bg);color:var(--a-sim-ink);flex:none}
 .simbar .sp{flex:1}
 .simbar .netoff{padding:1px 8px;border-radius:999px;background:var(--a-band-off);color:var(--a-band-ink)}
-.demo-btn{display:none;border:1px solid currentColor;background:transparent;border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
-.scr{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:14px 18px 18px;gap:12px}
+.demo-btn{display:none;min-height:44px;margin-block:-8px;border:0;background:transparent;padding:0 2px;cursor:pointer}
+.demo-btn span{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 10px;font-size:12px}
+.scr{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:14px clamp(14px,4.6cqi,20px) 18px;gap:12px;
+  transition:opacity var(--t-enter) var(--ease-out),transform var(--t-enter) var(--ease-out)}
+.scr.enter{opacity:0;transform:translateY(10px)}
 .scr.flush{padding:0;gap:0}
 .scr h1{font-family:var(--f-head);font-size:22px;font-weight:700;margin:0;line-height:1.3}
 .grow{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
@@ -94,16 +102,37 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .fine svg{flex:none}
 .tag{font-size:11px;padding:0 7px;border-radius:999px;border:1px solid var(--a-line);color:var(--a-muted);white-space:nowrap}
 
+/* ---------- shared press feedback: transform + opacity only, 120ms ---------- */
+.key,.btn,.row,.routechip,.tab,.iconbtn,.fbtn,.seg button,button.srow,.pbtn,.mini,.link,.demo-btn,.closepanel,.switch,.faq summary,.totchip{
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform var(--t-press) cubic-bezier(.2,.8,.2,1),opacity var(--t-press) var(--ease-out)}
+.key:active,.btn:active:not(:disabled),.row:active,.routechip:active,.tab:active,.iconbtn:active,.fbtn:active,.seg button:active,button.srow:active,.pbtn:active,.mini:active,.link:active,.demo-btn:active,.closepanel:active,.switch:active,.faq summary:active,.totchip:active{
+  transform:scale(var(--press,.95));opacity:.82}
+.row,.routechip,button.srow,.btn,.totchip,.faq summary{--press:.98}
+.key{--press:.92}
+@media (hover:hover){
+  .pbtn:hover{border-color:var(--st-accent)}
+  .iconbtn:hover,.key:hover{background:var(--a-line)}
+  .row:hover:not(.sel),.routechip:hover,.totchip:hover{border-color:var(--a-line)}
+  button.srow:hover .grow{color:var(--a-primary)}
+  .fbtn:hover:not([aria-pressed="true"]){background:var(--a-line)}
+  .btn.ghost:hover{background:var(--a-surface)}
+  .mini:hover span{background:var(--a-surface)}
+}
+
 /* header */
 .hdr{display:flex;align-items:center;gap:10px}
 .shop{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .shop b{font-family:var(--f-head);font-size:17px;font-weight:700}
-.shop small{font-size:12px;color:var(--a-muted)}
-.topbar{display:flex;align-items:center;gap:6px;min-height:36px}
+.shop small{font-size:12px;color:var(--a-muted);display:flex;align-items:center;gap:5px}
+.shop .dot{width:8px;height:8px}
+.totchip{min-height:44px;border:1.5px solid transparent;border-radius:14px;background:var(--a-surface);padding:4px 12px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;cursor:pointer;line-height:1.2;color:var(--a-ink)}
+.totchip small{font-size:11.5px;color:var(--a-muted)}
+.totchip b{font-weight:800;font-size:16px}
+.topbar{display:flex;align-items:center;gap:6px;min-height:44px}
 .topbar h1{flex:1;font-size:18px;text-align:center}
-.topbar .spacer{width:40px}
-.iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--a-ink)}
-.iconbtn:hover{background:var(--a-surface)}
+.topbar .spacer{width:44px;flex:none}
+.iconbtn{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--a-ink)}
 
 /* pills */
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 11px;border-radius:999px;white-space:nowrap}
@@ -111,58 +140,53 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .pill.wait{background:var(--a-wait-bg);color:var(--a-wait)}
 .pill.bad{background:var(--a-bad-bg);color:var(--a-bad)}
 .pill.off{background:var(--a-off-bg);color:var(--a-off)}
-.pill.line{background:transparent;border:1px solid var(--a-primary);color:var(--a-primary);font-weight:500}
-.pill.inv{background:var(--a-band-ink);color:var(--a-ink)}
-.app[data-mode="dark"] .pill.inv{color:var(--a-bg)}
+.pill.inv{background:var(--a-band-ink);color:#3b2a20}
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
 .dot.ok{background:var(--a-ok)}.dot.wait{background:var(--a-wait-dot)}.dot.bad{background:var(--a-bad)}.dot.off{background:var(--a-off)}
 
 /* sell */
-.routechip{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:18px;background:var(--a-surface);border:0;text-align:left;cursor:pointer;width:100%;color:var(--a-ink)}
-.routechip .chev{color:var(--a-faint)}
+.routechip{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:18px;background:var(--a-surface);border:1.5px solid transparent;text-align:left;cursor:pointer;width:100%;color:var(--a-ink)}
+.routechip .chev,.srow .chev{color:var(--a-faint);display:flex}
 .rbadge{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-weight:800;font-size:12px;letter-spacing:.04em;background:var(--a-bg);color:var(--a-primary);border:1.5px solid currentColor}
 .rbadge.wait{color:var(--a-wait)}.rbadge.off{color:var(--a-off)}
-.amtbox{display:flex;flex-direction:column;gap:2px;padding:4px 2px 0}
-.lbl-row{display:flex;justify-content:space-between;align-items:center}
+.amtbox{display:flex;flex-direction:column;gap:2px;padding:2px 2px 0}
+.lbl-row{display:flex;justify-content:space-between;align-items:center;min-height:22px}
 .lbl{font-size:13px;color:var(--a-muted)}
-.link{border:0;background:none;color:var(--a-primary);font-size:13px;font-weight:600;cursor:pointer;padding:2px 4px}
-.amt{font-family:var(--f-num);font-weight:800;font-size:52px;line-height:1.08;letter-spacing:-1px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.amt .cur{font-size:24px;color:var(--a-clay);letter-spacing:0}
-.amt.mid{font-size:38px}
-.amt.mid .cur{font-size:19px}
+.link{min-height:44px;min-width:44px;margin:-11px -8px -11px 0;border:0;background:none;color:var(--a-primary);font-size:13px;font-weight:700;cursor:pointer;padding:0 8px}
+.amt{font-family:var(--f-num);font-weight:800;font-size:clamp(40px,13.5cqi,54px);line-height:1.08;letter-spacing:-1px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.amt .cur{font-size:.46em;color:var(--a-clay);letter-spacing:0}
+.amt.mid{font-size:clamp(32px,10cqi,40px)}
 .words{font-size:14px;color:var(--a-ink);min-height:21px}
-.words.empty{color:var(--a-faint)}
+.words.empty{color:var(--a-muted)}
 .warn{font-size:13px;font-weight:600;color:var(--a-bad)}
 .netline{font-size:13px;color:var(--a-primary);display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
 .wave{display:block;width:100%;height:14px;color:var(--a-primary);flex:none}
 .keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:auto}
 .key{height:52px;border:0;border-radius:26px;background:var(--a-surface);color:var(--a-ink);font-family:var(--f-num);font-size:23px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.key:active{background:var(--a-line);transform:scale(.97)}
 .btn{min-height:54px;border:0;border-radius:27px;background:var(--a-primary);color:var(--a-on-primary);font-family:var(--f-head);font-size:17px;font-weight:700;cursor:pointer;width:100%;flex:none;padding:0 16px}
 .btn:disabled{opacity:.38;cursor:not-allowed}
 .btn.ghost{background:transparent;color:var(--a-primary);border:1.5px solid var(--a-primary)}
-.btnrow{display:flex;flex-direction:column;gap:8px}
 
 /* check */
 .sub{margin:-4px 0 0;font-size:14px;color:var(--a-muted)}
 .rows{display:flex;flex-direction:column;gap:8px}
-.row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:20px;background:var(--a-surface);border:2px solid transparent;width:100%;text-align:left;cursor:pointer;color:var(--a-ink)}
+.row{display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 14px;border-radius:20px;background:var(--a-surface);border:2px solid transparent;width:100%;text-align:left;cursor:pointer;color:var(--a-ink)}
 .row.sel{border-color:var(--a-primary)}
 .row .time{font-size:13px;color:var(--a-muted);width:40px;flex:none}
 .row .amtcell{font-weight:600;font-size:15px}
-.row .strike{text-decoration:line-through;color:var(--a-faint)}
+.row .strike{text-decoration:line-through;color:var(--a-muted)}
 .verdict{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:20px}
 .verdict.ok{background:var(--a-ok-bg);color:var(--a-ok)}
 .verdict.wait{background:var(--a-wait-bg);color:var(--a-wait)}
 .verdict.off{background:var(--a-off-bg);color:var(--a-off)}
+.verdict svg{flex:none}
 .verdict b{font-family:var(--f-head);font-size:18px;display:block;line-height:1.3}
 .verdict p{margin:2px 0 0;font-size:14px;color:var(--a-ink)}
-.verdict .phrase{font-size:15px;font-weight:600;color:var(--a-ink);margin-top:6px}
+.verdict .phrase{font-size:15px;font-weight:600;margin-top:6px}
 
 /* sign */
-.sign{align-items:stretch;justify-content:flex-start}
 .signcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:22px 18px;border-radius:28px;background:var(--a-card);border:1.5px solid var(--a-line)}
-.signcard h2{font-family:var(--f-num);font-weight:800;font-size:34px;line-height:1.1;margin:4px 0 0;letter-spacing:-.5px}
+.signcard h2{font-family:var(--f-num);font-weight:800;font-size:clamp(26px,9cqi,34px);line-height:1.1;margin:4px 0 0;letter-spacing:-.5px}
 .signcard .lo{font-family:var(--f-head);font-size:19px;margin:0}
 .signlist{list-style:none;margin:6px 0;padding:0;width:100%;display:flex;flex-direction:column;gap:8px;text-align:left}
 .signlist li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:16px;background:var(--a-surface);font-size:15px}
@@ -177,7 +201,7 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .qr-amt{display:flex;flex-direction:column;align-items:center}
 .qr-amt small{color:var(--a-muted);font-size:13px}
 .qrcard{align-self:center;padding:14px 14px 10px;border-radius:26px;background:#ffffff;border:1px solid var(--a-line);display:flex;flex-direction:column;align-items:center;gap:6px}
-.qrsvg{width:224px;height:224px;display:block}
+.qrsvg{width:clamp(180px,60cqi,224px);height:auto;aspect-ratio:1;display:block}
 .qr-name{font-family:system-ui,sans-serif;font-size:11.5px;letter-spacing:.06em;color:#2a1e17}
 .accepts{display:flex;flex-direction:column;align-items:center;gap:6px}
 .accepts small{color:var(--a-muted);font-size:12.5px}
@@ -188,15 +212,16 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .pulse{width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
 
-/* result */
-.band{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:30px 20px 8px;color:var(--a-band-ink)}
+/* result (pending, failed, unknown) */
+.band{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:30px 20px 8px;color:var(--a-band-ink);background:var(--bc)}
 .band.ok,.bandwave.ok{--bc:var(--a-band-ok)}
 .band.wait,.bandwave.wait{--bc:var(--a-band-wait)}
 .band.bad,.bandwave.bad{--bc:var(--a-band-bad)}
 .band.off,.bandwave.off{--bc:var(--a-band-off)}
-.band{background:var(--bc)}
 .bandwave{display:block;width:100%;height:20px;color:var(--bc);flex:none}
-.bicon{width:78px;height:78px;border-radius:50%;background:var(--a-band-ink);color:var(--bc);display:flex;align-items:center;justify-content:center}
+.bicon{width:78px;height:78px;border-radius:50%;background:var(--a-band-ink);color:var(--bc);display:flex;align-items:center;justify-content:center;
+  transition:transform 420ms var(--spring) 60ms,opacity 200ms var(--ease-out) 60ms}
+.enter .bicon{transform:scale(.5);opacity:0}
 .band h2{font-family:var(--f-head);font-size:27px;margin:2px 0 0;line-height:1.3}
 .band .amt{color:var(--a-band-ink)}
 .band .amt .cur{color:var(--a-band-ink);opacity:.8}
@@ -205,10 +230,6 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .advice.wait{background:var(--a-wait-bg);color:var(--a-wait)}
 .advice.bad{background:var(--a-bad-bg);color:var(--a-bad)}
 .advice.off{background:var(--a-off-bg);color:var(--a-off)}
-.code{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:16px;background:var(--a-ok-bg)}
-.code .cnum{font-family:var(--f-num);font-weight:800;font-size:36px;line-height:1;color:var(--a-ok);letter-spacing:2px}
-.code span{font-size:12.5px;color:var(--a-ink);line-height:1.45}
-.code small{display:block;font-weight:700;color:var(--a-ok);font-size:12.5px}
 .kvs{display:flex;flex-direction:column}
 .kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--a-line);font-size:14px}
 .kv span:first-child{color:var(--a-muted)}
@@ -222,8 +243,14 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .sum small{font-size:13px;color:var(--a-muted)}
 .sumrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--a-muted)}
 .sumrow b{color:var(--a-ink);font-weight:600}
+.settle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.settle div{padding:10px 12px;border-radius:16px;display:flex;flex-direction:column;line-height:1.3}
+.settle small{font-size:12px}
+.settle b{font-size:17px;font-weight:700}
+.settle .ok{background:var(--a-ok-bg);color:var(--a-ok)}
+.settle .wait{background:var(--a-wait-bg);color:var(--a-wait)}
 .filters{display:flex;gap:6px;flex-wrap:wrap}
-.fbtn{border:0;border-radius:999px;padding:6px 13px;font-size:13px;background:var(--a-surface);color:var(--a-ink);cursor:pointer}
+.fbtn{min-height:44px;border:0;border-radius:999px;padding:0 14px;font-size:13px;background:var(--a-surface);color:var(--a-ink);cursor:pointer}
 .fbtn[aria-pressed="true"]{background:var(--a-primary);color:var(--a-on-primary);font-weight:700}
 
 /* settings */
@@ -232,19 +259,23 @@ button:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
 .group{display:flex;flex-direction:column;gap:8px}
 .glabel{font-size:12.5px;font-weight:600;color:var(--a-muted)}
 .hint{font-size:12px;color:var(--a-muted)}
-.seg{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--a-surface)}
-.seg button{flex:1;min-height:38px;border:0;border-radius:999px;background:transparent;color:var(--a-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 6px}
-.seg button[aria-pressed="true"]{background:var(--a-primary);color:var(--a-on-primary);font-weight:700}
+.seg{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:4px;padding:4px;border-radius:999px;background:var(--a-surface);isolation:isolate}
+.seg-thumb{position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc((100% - 8px - (var(--n) - 1) * 4px) / var(--n));border-radius:999px;background:var(--a-primary);
+  transform:translateX(calc(var(--i) * (100% + 4px)));transition:transform 220ms var(--spring)}
+.seg button{position:relative;z-index:1;min-height:44px;border:0;border-radius:999px;background:transparent;color:var(--a-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 6px}
+.seg button::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--a-primary);opacity:0;transition:opacity 150ms var(--ease-out);display:none}
+.seg button[aria-pressed="true"]{color:var(--a-on-primary);font-weight:700}
 .list{display:flex;flex-direction:column}
-.srow{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid var(--a-line);font-size:15px;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;color:var(--a-ink)}
+.srow{display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 2px;border-bottom:1px solid var(--a-line);font-size:15px;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;color:var(--a-ink);box-sizing:border-box}
 button.srow{cursor:pointer}
 .srow .lead{color:var(--a-primary);display:flex}
 .srow .grow{font-size:15px}
-.srow .chev{color:var(--a-faint)}
-.switch{width:48px;height:28px;border-radius:999px;border:0;background:var(--a-line);position:relative;cursor:pointer;flex:none}
-.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--a-bg);transition:left .15s}
-.switch[aria-checked="true"]{background:var(--a-primary)}
-.switch[aria-checked="true"]::after{left:23px}
+.switch{position:relative;width:52px;height:44px;flex:none;border:0;background:transparent;padding:0;cursor:pointer}
+.switch::before{content:"";position:absolute;left:2px;right:2px;top:8px;height:28px;border-radius:999px;background:var(--a-track)}
+.switch[aria-checked="true"]::before{background:var(--a-primary)}
+.switch::after{content:"";position:absolute;top:11px;left:5px;width:22px;height:22px;border-radius:50%;background:var(--a-bg);box-shadow:0 1px 2px rgba(0,0,0,.25);
+  transform:translateX(0);transition:transform 150ms var(--spring)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
 .card{padding:14px;border-radius:18px;background:var(--a-surface);display:flex;flex-direction:column;gap:6px}
 .card b{font-family:var(--f-head);font-size:16px}
 .card p{margin:0;font-size:14px;line-height:1.55}
@@ -254,9 +285,12 @@ button.srow{cursor:pointer}
 .checklist li{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--a-line);font-size:14px}
 .checklist li svg{color:var(--a-ok);flex:none;margin-top:2px}
 .faq{display:flex;flex-direction:column;gap:8px}
-.faq details{padding:10px 14px;border-radius:16px;background:var(--a-surface)}
-.faq summary{cursor:pointer;font-weight:600;font-size:14px}
-.faq p{margin:6px 0 0;font-size:14px;color:var(--a-ink)}
+.faq details{border-radius:16px;background:var(--a-surface)}
+.faq summary{min-height:44px;display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px;list-style:none;border-radius:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary svg{flex:none;margin-left:auto;color:var(--a-muted);transition:transform 200ms var(--ease-out)}
+.faq details[open] summary svg{transform:rotate(90deg)}
+.faq p{margin:0;padding:0 14px 12px;font-size:14px}
 
 /* market */
 .mk-top{display:flex;align-items:center;gap:6px}
@@ -272,38 +306,97 @@ button.srow{cursor:pointer}
 .share div{display:grid;grid-template-columns:76px minmax(0,1fr) 40px;gap:8px;align-items:center;font-size:13px}
 .share .bar{height:8px}
 .share .pct{text-align:right;font-weight:600}
-.helprow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--a-surface)}
-.mini{border:1px solid var(--a-primary);background:transparent;color:var(--a-primary);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.helprow{display:flex;align-items:center;gap:10px;padding:8px 6px 8px 12px;border-radius:16px;background:var(--a-surface)}
+.mini{min-height:44px;margin-block:-4px;border:0;background:transparent;padding:0;cursor:pointer;color:var(--a-primary);flex:none}
+.mini span{display:inline-block;border:1.5px solid currentColor;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;white-space:nowrap}
 
-/* tab bar, toast, overlay */
+/* tab bar */
 .tabbar{display:flex;border-top:1px solid var(--a-line);background:var(--a-bg);flex:none}
-.tab{flex:1;height:60px;border:0;background:none;color:var(--a-faint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;cursor:pointer}
+.tab{flex:1;min-height:60px;border:0;background:none;color:var(--a-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;cursor:pointer}
 .tab[aria-current="page"]{color:var(--a-primary);font-weight:700}
-.toast{position:absolute;left:14px;right:14px;bottom:74px;z-index:20;padding:12px 14px;border-radius:16px;background:var(--a-toast-bg);color:var(--a-toast-ink);font-size:14px;line-height:1.45;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px -12px rgba(0,0,0,.45)}
-.ovl{position:absolute;inset:0;z-index:30;background:rgba(22,16,11,.62);display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:16px}
-.fakeshot{align-self:center;width:210px;border-radius:20px;padding:16px;background:#ffffff;color:#1f2a37;text-align:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;transform:rotate(-3deg);box-shadow:0 18px 40px -16px rgba(0,0,0,.6)}
+
+/* toast: persistent node, enter 280ms decelerate, exit 200ms accelerate */
+.toast{position:absolute;left:14px;right:14px;bottom:74px;z-index:20;padding:12px 14px;border-radius:16px;background:var(--a-toast-bg);color:var(--a-toast-ink);font-size:14px;line-height:1.45;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px -12px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity var(--t-exit) var(--ease-in),transform var(--t-exit) var(--ease-in)}
+.toast.show{opacity:1;transform:none;transition:opacity var(--t-enter) var(--ease-out),transform 300ms var(--spring)}
+.toast svg{flex:none}
+
+/* modal layer: scrim fades, sheet rises; enter slower than exit */
+.modal{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:12px;background:var(--a-scrim);
+  opacity:0;pointer-events:none;transition:opacity var(--t-exit) var(--ease-in)}
+.modal.show{opacity:1;pointer-events:auto;transition:opacity var(--t-enter) var(--ease-out)}
+.sheet{transform:translateY(36px);transition:transform var(--t-exit) var(--ease-in),opacity var(--t-exit) var(--ease-in)}
+.modal.show .sheet{transform:none;transition:transform 300ms var(--spring),opacity var(--t-enter) var(--ease-out)}
+.modal.show .sheet.enter{opacity:0}
+.modal .card{background:var(--a-bg)}
+.modal .card .pill{align-self:flex-start}
+.fakeshot{align-self:center;width:210px;border-radius:20px;padding:16px;background:#ffffff;color:#1f2a37;text-align:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 18px 40px -16px rgba(0,0,0,.6);
+  transform:translateY(24px) rotate(-3deg);transition:transform var(--t-exit) var(--ease-in)}
+.modal.show .fakeshot{transform:rotate(-3deg);transition:transform 320ms var(--spring)}
 .fakeshot .fk-ic{width:46px;height:46px;border-radius:50%;margin:0 auto 6px;background:#16a34a;color:#ffffff;display:flex;align-items:center;justify-content:center}
 .fakeshot b{display:block;font-size:15px}
 .fakeshot .fk-amt{font-size:22px;font-weight:800;margin-top:2px}
-.fakeshot small{color:#6b7280;font-size:11px}
-.fk-label{align-self:center;font-size:12px;color:#f6f0e4;margin-top:6px}
-.ovl .card{background:var(--a-bg)}
-.ovl .card .pill{align-self:flex-start}
+.fakeshot small{color:#4b5563;font-size:11px}
+.fk-label{align-self:center;font-size:12px;color:#f6f0e4;margin-top:4px;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.55)}
 
-/* phones: app fills the screen; demo panel becomes a sheet */
+/* payment slip: a bank-style receipt the vendor can trust and show */
+.slip{max-height:100%;overflow-y:auto;box-sizing:border-box;border-radius:26px;background:var(--a-card);color:var(--a-ink);display:flex;flex-direction:column;box-shadow:0 24px 50px -20px rgba(0,0,0,.55)}
+.slip-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:16px 18px 6px}
+.okmark{width:56px;height:56px;border-radius:50%;background:var(--a-ok);color:var(--a-on-primary);display:flex;align-items:center;justify-content:center;
+  transform:scale(.4);opacity:0;transition:transform 150ms var(--ease-in),opacity 150ms var(--ease-in)}
+.modal.show .okmark{transform:none;opacity:1;transition:transform 520ms var(--spring) 90ms,opacity 200ms var(--ease-out) 90ms}
+.slip-head h2{font-family:var(--f-head);font-size:20px;margin:4px 0 2px;line-height:1.3}
+.slip-head .amt{font-size:clamp(32px,10.5cqi,42px)}
+.slip-words{font-size:13px;color:var(--a-muted)}
+.codebox{margin:6px 16px 0;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:16px;background:var(--a-ok-bg)}
+.codebox .cnum{font-family:var(--f-num);font-weight:800;font-size:28px;line-height:1;color:var(--a-ok);letter-spacing:2px}
+.codebox span{font-size:12px;line-height:1.45}
+.codebox small{display:block;font-weight:700;color:var(--a-ok);font-size:12.5px}
+.tear{position:relative;height:0;margin:10px 0 2px;border-top:2px dashed var(--a-line)}
+.slip-kv{margin:0;padding:0 18px;display:flex;flex-direction:column}
+.slip-kv div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--a-line);font-size:13px}
+.slip-kv div:last-child{border-bottom:0}
+.slip-kv dt{color:var(--a-muted);flex:none}
+.slip-kv dd{margin:0;text-align:right;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.slip-kv dd small{display:block;font-weight:400;color:var(--a-muted);font-size:12px}
+.slip-kv .net dd{color:var(--a-ok);font-size:15px}
+.slip-foot{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 18px 2px;font-size:12px;color:var(--a-muted);text-align:center}
+.slip-actions{display:flex;flex-direction:column;gap:8px;padding:8px 14px 14px}
+.slip .btn{min-height:50px}
+
+/* phones: app fills the screen; demo panel becomes a bottom sheet */
 @media (max-width: 899px){
   .stage{padding-block:0;padding-inline:0;gap:0;height:100%}
   .stage-head{display:none}
   .stage-main{flex:1;min-height:0;height:100%}
   .device{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
   .demo-btn{display:inline-block}
-  .panel{display:none}
-  .panel.open{display:flex;position:fixed;left:0;right:0;bottom:0;width:auto;max-height:82%;z-index:60;border-radius:22px 22px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
-  .scrim.open{display:block;position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.45)}
-  .panel .closepanel{display:inline-flex}
+  .simbar{min-height:44px;box-sizing:border-box;padding-block:0}
+  .closepanel{display:inline-flex;align-items:center}
+  .panel{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:82%;z-index:60;border-radius:22px 22px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    transform:translateY(100%);opacity:0;pointer-events:none;
+    transition:transform var(--t-exit) var(--ease-in),opacity var(--t-exit) var(--ease-in)}
+  .panel.open{transform:none;opacity:1;pointer-events:auto;transition:transform 300ms cubic-bezier(.2,.9,.3,1),opacity var(--t-enter) var(--ease-out)}
+  .scrim{display:block;position:fixed;inset:0;z-index:55;background:var(--st-scrim);opacity:0;pointer-events:none;transition:opacity var(--t-exit) var(--ease-in)}
+  .scrim.open{opacity:1;pointer-events:auto;transition:opacity var(--t-enter) var(--ease-out)}
 }
-.closepanel{display:none;margin-left:auto;border:1px solid var(--st-line);background:var(--st-chip);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:13px}
-@media (prefers-reduced-motion: reduce){.pulse{animation:none}.switch::after{transition:none}}
+
+/* motion preference: keep the sliding thumb only when motion is welcome */
+@media (prefers-reduced-motion: no-preference){
+  .seg button::before{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  /* no spatial movement: everything crossfades with opacity */
+  .seg-thumb{display:none}
+  .seg button::before{display:block}
+  .seg button[aria-pressed="true"]::before{opacity:1}
+  .scr.enter,.sheet,.modal.show .sheet,.toast,.toast.show,.fakeshot,.modal.show .fakeshot,.okmark,.modal.show .okmark,.enter .bicon,.panel,.panel.open{transform:none}
+  .fakeshot,.modal.show .fakeshot{transform:rotate(-3deg)}
+  .key:active,.btn:active:not(:disabled),.row:active,.routechip:active,.tab:active,.iconbtn:active,.fbtn:active,.seg button:active,button.srow:active,.pbtn:active,.mini:active,.link:active,.demo-btn:active,.closepanel:active,.switch:active,.faq summary:active,.totchip:active{transform:none}
+  .switch::after,.faq summary svg{transition:none}
+  .pulse{animation:none}
+}
 </style>
 
 <div class="stage">
@@ -318,7 +411,13 @@ button.srow{cursor:pointer}
     <span class="sim-chip">ຈຳລອງ · ບໍ່ເຊື່ອມທະນາຄານ · ບໍ່ມີເງິນຈິງ</span>
   </header>
   <main class="stage-main">
-    <div class="device"><div class="app" id="app" data-mode="light"></div></div>
+    <div class="device">
+      <div class="app" id="app" data-mode="light">
+        <div class="view" id="view"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="modal" id="modal" inert></div>
+      </div>
+    </div>
     <aside class="panel" id="panel" aria-label="ແຜງສາທິດ"></aside>
   </main>
 </div>
@@ -329,17 +428,17 @@ button.srow{cursor:pointer}
 'use strict';
 
 /* ---------- data ---------- */
-const SHOP = { name: 'ຮ້ານ ແມ່ຄຳ', stall: 'B-12', market: 'ຕະຫຼາດມືດ ຫຼວງພະບາງ', qrName: 'PHALOM * MAE KHAM · B-12' };
+const SHOP = { name: 'ຮ້ານ ແມ່ຄຳ', en: 'Mae Kham shop', stall: 'B-12', market: 'ຕະຫຼາດມືດ ຫຼວງພະບາງ', marketEn: 'Luang Prabang Night Market', qrName: 'PHALOM * MAE KHAM · B-12', acct: '•••• 4821' };
 const FEE_RATE = 0.005;          // example rate only
 const WARN_AT = 5000000;         // unusually high price for a street stall
 const MAX_DIGITS = 9;
 const ROUTES = [
-  { id: 'la', code: 'LA', name: 'ລາວ', app: 'ແອັບທະນາຄານລາວ', en: 'Lao bank apps (LAO QR)', st: 'on', lang: 'lo', phrase: 'ສະແກນຈ່າຍດ້ວຍແອັບທະນາຄານລາວໄດ້' },
-  { id: 'th', code: 'TH', name: 'ໄທ', app: 'ແອັບທະນາຄານໄທ', en: 'Thai bank apps', native: 'แอปธนาคารไทย', st: 'on', lang: 'th', phrase: 'สแกนจ่ายด้วยแอปธนาคารไทยได้' },
-  { id: 'vn', code: 'VN', name: 'ຫວຽດນາມ', app: 'ແອັບທະນາຄານຫວຽດນາມ', en: 'Vietnamese bank apps', native: 'Ngân hàng Việt Nam', st: 'on', lang: 'vi', phrase: 'Quét mã để thanh toán bằng ứng dụng ngân hàng Việt Nam' },
-  { id: 'kh', code: 'KH', name: 'ກຳປູເຈຍ', app: 'ແອັບທະນາຄານກຳປູເຈຍ', en: 'Cambodian bank apps', st: 'on', lang: 'en', phrase: 'Scan to pay with your Cambodian banking app' },
-  { id: 'cn', code: 'CN', name: 'ຈີນ (UnionPay)', app: 'ແອັບ UnionPay', en: 'UnionPay (China)', native: '银联', st: 'pending', lang: 'zh', phrase: '银联扫码支付 · 即将开通' },
-  { id: 'xx', code: '··', name: 'ປະເທດອື່ນ / ບັດ', app: 'ແອັບ ຫຼື ບັດອື່ນ', en: 'Cards and other apps', st: 'off', lang: 'en', phrase: 'Not available yet. Please pay in cash (Lao Kip).' },
+  { id: 'la', code: 'LA', name: 'ລາວ', app: 'ແອັບທະນາຄານລາວ', en: 'Lao bank apps (LAO QR)', appEn: 'Lao bank app', st: 'on', lang: 'lo', phrase: 'ສະແກນຈ່າຍດ້ວຍແອັບທະນາຄານລາວໄດ້' },
+  { id: 'th', code: 'TH', name: 'ໄທ', app: 'ແອັບທະນາຄານໄທ', en: 'Thai bank apps', appEn: 'Thai bank app', native: 'แอปธนาคารไทย', st: 'on', lang: 'th', phrase: 'สแกนจ่ายด้วยแอปธนาคารไทยได้' },
+  { id: 'vn', code: 'VN', name: 'ຫວຽດນາມ', app: 'ແອັບທະນາຄານຫວຽດນາມ', en: 'Vietnamese bank apps', appEn: 'Vietnamese bank app', native: 'Ngân hàng Việt Nam', st: 'on', lang: 'vi', phrase: 'Quét mã để thanh toán bằng ứng dụng ngân hàng Việt Nam' },
+  { id: 'kh', code: 'KH', name: 'ກຳປູເຈຍ', app: 'ແອັບທະນາຄານກຳປູເຈຍ', en: 'Cambodian bank apps', appEn: 'Cambodian bank app', st: 'on', lang: 'en', phrase: 'Scan to pay with your Cambodian banking app' },
+  { id: 'cn', code: 'CN', name: 'ຈີນ (UnionPay)', app: 'ແອັບ UnionPay', en: 'UnionPay (China)', appEn: 'UnionPay app', native: '银联', st: 'pending', lang: 'zh', phrase: '银联扫码支付 · 即将开通' },
+  { id: 'xx', code: '··', name: 'ປະເທດອື່ນ / ບັດ', app: 'ແອັບ ຫຼື ບັດອື່ນ', en: 'Cards and other apps', appEn: 'Other app', st: 'off', lang: 'en', phrase: 'Not available yet. Please pay in cash (Lao Kip).' },
 ];
 const ST = {
   ok:   { cls: 'ok',   title: 'ສຳເລັດ',       label: 'ສຳເລັດ',      act: 'ມອບເຄື່ອງໄດ້',       icon: 'check' },
@@ -352,15 +451,16 @@ const ST = {
 };
 const KEYS = ['1','2','3','4','5','6','7','8','9','000','0','del'];
 const MONTHS = ['ມ.ກ.','ກ.ພ.','ມ.ນ.','ມ.ສ.','ພ.ພ.','ມິ.ຖ.','ກ.ລ.','ສ.ຫ.','ກ.ຍ.','ຕ.ລ.','ພ.ຈ.','ທ.ວ.'];
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const TABS = ['sell', 'history', 'settings'];
 
 function sampleTxns() {
   return [
-    { ref: 'PH-1045', t: '19:35', amt: 25000,  route: 'kh', st: 'ok',   code: '19', sample: true },
-    { ref: 'PH-1044', t: '19:21', amt: 120000, route: 'th', st: 'ok',   code: '72', sample: true },
+    { ref: 'PH-1045', t: '19:35', amt: 25000,  route: 'kh', st: 'ok',   code: '19', bankRef: 'BK2610121935018', settled: false, sample: true },
+    { ref: 'PH-1044', t: '19:21', amt: 120000, route: 'th', st: 'ok',   code: '72', bankRef: 'BK2610121921407', settled: true,  sample: true },
     { ref: 'PH-1043', t: '19:08', amt: 60000,  route: 'vn', st: 'fail', sample: true },
-    { ref: 'PH-1042', t: '18:55', amt: 35000,  route: 'la', st: 'ok',   code: '58', sample: true },
-    { ref: 'PH-1041', t: '18:40', amt: 80000,  route: 'th', st: 'ok',   code: '31', sample: true },
+    { ref: 'PH-1042', t: '18:55', amt: 35000,  route: 'la', st: 'ok',   code: '58', bankRef: 'BK2610121855932', settled: true,  sample: true },
+    { ref: 'PH-1041', t: '18:40', amt: 80000,  route: 'th', st: 'ok',   code: '31', bankRef: 'BK2610121840265', settled: true,  sample: true },
   ];
 }
 
@@ -378,7 +478,7 @@ let S;
 function freshState() {
   return { screen: 'sell', amount: 0, route: null, checkSel: null, txns: sampleTxns(), seq: 1046,
            current: null, fromHistory: false, net: 'on', filter: 'all', sub: null, signFrom: 'check',
-           overlay: null, toast: null, demoOpen: false, done: new Set() };
+           modal: null, slipRef: null, slipEn: false, demoOpen: false, done: new Set() };
 }
 S = freshState();
 
@@ -387,15 +487,20 @@ const $ = (s) => document.querySelector(s);
 const fmt = (n) => Number(n).toLocaleString('en-US');
 const feeOf = (a) => Math.round(a * FEE_RATE);
 const routeOf = (id) => ROUTES.find((r) => r.id === id);
+const txnOf = (ref) => S.txns.find((t) => t.ref === ref);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 const todayLao = () => { const d = new Date(); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); };
+const todayEn = () => { const d = new Date(); return d.getDate() + ' ' + MONTHS_EN[d.getMonth()] + ' ' + d.getFullYear(); };
 const routeCls = (r) => (r.st === 'on' ? 'ok' : r.st === 'pending' ? 'wait' : 'off');
 const routeText = (r) => (r.st === 'on' ? 'ຈ່າຍໄດ້' : r.st === 'pending' ? 'ລໍທະນາຄານເປີດ' : 'ຍັງບໍ່ໄດ້');
+const okTxns = () => S.txns.filter((t) => t.st === 'ok');
+const todayGross = () => okTxns().reduce((s, t) => s + t.amt, 0);
 function modeNow() {
   if (P.mode === 'auto') { const h = new Date().getHours(); return (h >= 18 || h < 6) ? 'dark' : 'light'; }
   return P.mode === 'dark' ? 'dark' : 'light';
 }
+const narrow = () => window.matchMedia('(max-width: 899px)').matches;
 
 /* Lao number words, so the vendor can hear or read back the price (guards against an extra zero) */
 const LD = ['', 'ໜຶ່ງ', 'ສອງ', 'ສາມ', 'ສີ່', 'ຫ້າ', 'ຫົກ', 'ເຈັດ', 'ແປດ', 'ເກົ້າ'];
@@ -439,8 +544,6 @@ const IC = {
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   plus: '<path d="M12 4v16M4 12h16"/>',
   sound: '<path d="M4 9.5v5h4l5 4v-13l-5 4zM16.5 9a4 4 0 0 1 0 6"/>',
-  market: '<path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-6h5v6"/>',
-  sign: '<rect x="4" y="3" width="16" height="12" rx="2"/><path d="M12 15v6M8 21h8"/>',
   phone: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
 };
 const icon = (n, s = 20, w = 2) =>
@@ -513,23 +616,28 @@ function fakeBeep() { if (!P.sound) return; tone(620, 0, 0.22, 'square', 0.06); 
 
 /* ---------- views ---------- */
 function vSimbar() {
-  return `<div class="simbar">${icon('phone', 14)}<span>ຈຳລອງ · ບໍ່ມີເງິນຈິງ</span><span class="sp"></span>${S.net === 'off' ? '<span class="netoff">ຂາດເນັດ</span>' : ''}<button class="demo-btn" data-act="demo-open">ແຜງສາທິດ</button></div>`;
+  return `<div class="simbar">${icon('phone', 14)}<span>ຈຳລອງ · ບໍ່ມີເງິນຈິງ</span><span class="sp"></span>${S.net === 'off' ? '<span class="netoff">ຂາດເນັດ</span>' : ''}<button class="demo-btn" data-act="demo-open" aria-expanded="${S.demoOpen}"><span>ແຜງສາທິດ</span></button></div>`;
 }
 function vTabbar() {
   const t = (id, ic, label) => `<button class="tab" data-act="tab" data-to="${id}" ${S.screen === id ? 'aria-current="page"' : ''}>${icon(ic, 22, 1.9)}${label}</button>`;
-  return `<nav class="tabbar">${t('sell', 'sell', 'ຂາຍ')}${t('history', 'clock', 'ປະຫວັດ')}${t('settings', 'sliders', 'ຕັ້ງຄ່າ')}</nav>`;
+  return `<nav class="tabbar" aria-label="ເມນູຫຼັກ">${t('sell', 'sell', 'ຂາຍ')}${t('history', 'clock', 'ປະຫວັດ')}${t('settings', 'sliders', 'ຕັ້ງຄ່າ')}</nav>`;
 }
 function topbar(title, act) {
   return `<div class="topbar"><button class="iconbtn" data-act="${act}" aria-label="ກັບຄືນ">${icon('back', 22)}</button><h1>${title}</h1><span class="spacer"></span></div>`;
 }
+const scr = (key, cls, body) => `<div class="scr ${cls || ''}" data-key="${key}">${body}</div>`;
 
 function vSell() {
   const a = S.amount, f = feeOf(a), r = S.route && routeOf(S.route);
   const chip = r
-    ? `<span class="rbadge ${routeCls(r)}">${r.code}</span><span class="grow"><b>${r.app}</b><small>${r.st === 'on' ? 'ກວດແລ້ວ · ຈ່າຍໄດ້' : routeText(r) + ' · ແນະນຳເງິນສົດ'}</small></span>`
+    ? `<span class="rbadge ${routeCls(r)}">${r.code}</span><span class="grow"><b>${r.app}</b><small>ກວດແລ້ວ · ຈ່າຍໄດ້</small></span>`
     : `<span class="rbadge">${icon('help', 18)}</span><span class="grow"><b>ລູກຄ້າໃຊ້ແອັບໃດ?</b><small>ກວດກ່ອນຂາຍ ວ່າຈ່າຍໄດ້ບໍ່</small></span>`;
-  return `<div class="scr">
-    <div class="hdr">${logo(28)}<div class="shop"><b>${SHOP.name}</b><small>${SHOP.stall} · ${SHOP.market}</small></div>${S.net === 'off' ? pill('off', 'ຂາດເນັດ') : '<span class="pill line">ພ້ອມຮັບ</span>'}</div>
+  const gross = todayGross();
+  return scr('sell', '', `
+    <div class="hdr">${logo(28)}
+      <div class="shop"><b>${SHOP.name}</b><small>${S.net === 'off' ? '<span class="dot off"></span>ຂາດເນັດ' : '<span class="dot ok"></span>ພ້ອມຮັບ'} · ${SHOP.stall}</small></div>
+      <button class="totchip" data-act="tab" data-to="history" aria-label="ຮັບແລ້ວມື້ນີ້ ${fmt(gross)} ກີບ. ເບິ່ງປະຫວັດ"><small>ຮັບມື້ນີ້</small><b class="num">${fmt(gross)} ₭</b></button>
+    </div>
     <button class="routechip" data-act="go-check">${chip}<span class="chev">${icon('chev', 18)}</span></button>
     <div class="amtbox">
       <div class="lbl-row"><span class="lbl">ໃສ່ລາຄາ (ກີບ)</span>${a ? '<button class="link" data-act="clear">ລ້າງ</button>' : ''}</div>
@@ -541,8 +649,7 @@ function vSell() {
     ${waveLine()}
     <div class="keys">${KEYS.map((k) => `<button class="key" data-act="key" data-k="${k}" aria-label="${k === 'del' ? 'ລຶບ' : k}">${k === 'del' ? icon('del', 22, 1.8) : k}</button>`).join('')}</div>
     <button class="btn" data-act="show-qr" ${a ? '' : 'disabled'}>ສະແດງ QR</button>
-    <p class="fine center">${icon('bank', 15)}ເງິນເຂົ້າບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ · Phalom ບໍ່ຖືເງິນ</p>
-  </div>`;
+    <p class="fine center">${icon('bank', 15)}ເງິນເຂົ້າບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ · Phalom ບໍ່ຖືເງິນ</p>`);
 }
 
 function vCheck() {
@@ -555,21 +662,20 @@ function vCheck() {
     verdict = `<div class="verdict ${cls}">${icon(sel.st === 'on' ? 'check' : sel.st === 'pending' ? 'hourglass' : 'x', 26, 2.4)}<div><b>${head}</b><p>${body}</p><p class="phrase" lang="${sel.lang}">${esc(sel.phrase)}</p></div></div>
       ${sel.st === 'on' ? '<button class="btn" data-act="use-route">ໃຊ້ເສັ້ນທາງນີ້ · ໃສ່ລາຄາ</button>' : ''}`;
   }
-  return `<div class="scr">
+  return scr('check', '', `
     ${topbar('ລູກຄ້າໃຊ້ແອັບໃດ?', 'back-sell')}
     <p class="sub">ເລືອກປະເທດຂອງແອັບທະນາຄານທີ່ລູກຄ້າໃຊ້</p>
     <div class="rows">${ROUTES.map((r) => `<button class="row ${S.checkSel === r.id ? 'sel' : ''}" data-act="pick-route" data-id="${r.id}" aria-pressed="${S.checkSel === r.id}"><span class="rbadge ${routeCls(r)}">${r.code}</span><span class="grow"><b>${r.name}</b><small>${r.app}</small></span>${pill(routeCls(r), routeText(r))}</button>`).join('')}</div>
     ${verdict}
     <button class="btn ghost" data-act="go-sign">ສະແດງປ້າຍໃຫ້ລູກຄ້າເບິ່ງ</button>
-    <p class="fine">${icon('info', 15)}ລາຍການເສັ້ນທາງເປັນຕົວຢ່າງ · ທະນາຄານ partner ເປັນຜູ້ເປີດແຕ່ລະເສັ້ນທາງ</p>
-  </div>`;
+    <p class="fine">${icon('info', 15)}ລາຍການເສັ້ນທາງເປັນຕົວຢ່າງ · ທະນາຄານ partner ເປັນຜູ້ເປີດແຕ່ລະເສັ້ນທາງ</p>`);
 }
 
 function vSign() {
   const market = S.signFrom === 'market';
   const mark = (r) => r.st === 'on' ? `<span class="mk ok">${icon('check', 20, 2.6)}</span>` : r.st === 'pending' ? `<span class="mk wait">${icon('hourglass', 20)}</span>` : `<span class="mk off">${icon('x', 20, 2.4)}</span>`;
   const note = (r) => r.st === 'on' ? '' : r.st === 'pending' ? '<small lang="en">soon</small>' : '<small lang="en">not yet</small>';
-  return `<div class="scr sign">
+  return scr('sign-' + S.signFrom, '', `
     ${topbar(market ? 'ປ້າຍທາງເຂົ້າຕະຫຼາດ' : 'ປ້າຍສຳລັບລູກຄ້າ', market ? 'view-market' : 'go-check')}
     <div class="signcard">
       ${logo(52)}
@@ -578,35 +684,29 @@ function vSign() {
       <ul class="signlist">${ROUTES.map((r) => `<li>${mark(r)}<span class="tx" lang="en">${r.en}${r.native ? ` <small lang="${r.lang}">${r.native}</small>` : ''}</span>${note(r)}</li>`).join('')}</ul>
       <p class="signfoot" lang="en">Prices in Lao Kip (LAK). No extra fee for you.</p>
       <div class="signshop">${market ? `<b>${SHOP.market}</b><br>ໂຕະຊ່ວຍເຫຼືອຢູ່ທາງເຂົ້າ · 17:00–22:00` : `<b>${SHOP.name}</b> · ${SHOP.stall}<br>${SHOP.market}`}</div>
-    </div>
-  </div>`;
+    </div>`);
 }
 
 function vQR() {
   const t = S.current;
   const off = S.net === 'off';
-  return `<div class="scr">
+  return scr('qr-' + t.ref, '', `
     ${topbar('ສະແກນເພື່ອຈ່າຍ', 'cancel-qr')}
     <div class="qr-amt"><small>${SHOP.name} · ${t.ref}</small><div class="amt mid">${fmt(t.amt)}<span class="cur"> ₭</span></div></div>
     <div class="qrcard">${qrSvg(t)}<div class="qr-name">${SHOP.qrName}</div></div>
     <div class="accepts"><small>ຈ່າຍໄດ້ດ້ວຍ</small><div class="chips">${ROUTES.filter((r) => r.st === 'on').map((r) => `<span class="chip">${r.app}</span>`).join('')}</div></div>
     <div class="waitline ${off ? 'off' : ''}"><span class="pulse"></span>${off ? 'ຂາດເນັດ · ຈະຮູ້ຜົນເມື່ອເນັດກັບມາ' : 'ລໍຖ້າລູກຄ້າຈ່າຍ…'}</div>
     <p class="fine center">ຖ້າຍັງບໍ່ເຫັນຜົນ ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ</p>
-    <button class="btn ghost" data-act="cancel-qr">ຍົກເລີກ</button>
-  </div>`;
+    <button class="btn ghost" data-act="cancel-qr">ຍົກເລີກ</button>`);
 }
 
 function vResult() {
   const t = S.current, m = ST[t.st], r = routeOf(t.route), f = feeOf(t.amt);
-  const code = t.st === 'ok'
-    ? `<div class="code"><b class="cnum">${t.code}</b><span><small>ລະຫັດຢືນຢັນ</small>ລະຫັດນີ້ຂຶ້ນສະເພາະໃນເຄື່ອງຂອງຮ້ານ. screenshot ຫຼື ສຽງຈາກໂທລະສັບລູກຄ້າບໍ່ມີລະຫັດນີ້.</span></div>`
-    : `<p class="advice ${m.cls}">${m.advice}</p>`;
   let actions;
   if (S.fromHistory) actions = `<button class="btn ghost" data-act="tab" data-to="history">ກັບໄປປະຫວັດ</button>`;
-  else if (t.st === 'ok') actions = `<button class="btn" data-act="new-sale">ຂາຍຕໍ່</button>`;
   else if (t.st === 'fail') actions = `<button class="btn" data-act="retry">ສ້າງ QR ໃໝ່ · ${fmt(t.amt)} ₭</button><button class="btn ghost" data-act="new-sale">ກັບໜ້າຂາຍ</button>`;
   else actions = `<button class="btn ghost" data-act="new-sale">ໄປໜ້າຂາຍ · ລາຍການນີ້ຈະຢູ່ໃນປະຫວັດ</button>`;
-  return `<div class="scr flush">
+  return scr('result-' + t.ref + '-' + t.st, 'flush', `
     <div class="band ${m.cls}">
       <div class="bicon">${icon(m.icon, 40, 2.6)}</div>
       <h2>${m.title}</h2>
@@ -615,7 +715,7 @@ function vResult() {
     </div>
     ${waveBand(m.cls)}
     <div class="rbody">
-      ${code}
+      <p class="advice ${m.cls}">${m.advice || ''}</p>
       <div class="kvs">
         <div class="kv"><span>ຈ່າຍຈາກ</span><span>${r ? r.app : '—'}</span></div>
         <div class="kv"><span>ເວລາ</span><span class="num">${t.t}</span></div>
@@ -624,52 +724,58 @@ function vResult() {
         <div class="kv"><span>ຮັບສຸດທິ</span><span class="num">${t.st === 'fail' ? '0' : fmt(t.amt - f)} ₭</span></div>
         <div class="kv"><span>ເລກອ້າງອີງ</span><span class="num">${t.ref}${t.sample ? ' · ຕົວຢ່າງ' : ''}</span></div>
       </div>
-      <p class="fine">${icon('bank', 15)}${t.st === 'ok' ? 'ທະນາຄານຢືນຢັນແລ້ວ · ເງິນເຂົ້າບັນຊີຕາມເວລາຂອງທະນາຄານ' : 'ສະຖານະປ່ຽນເມື່ອທະນາຄານຢືນຢັນເທົ່ານັ້ນ'}</p>
+      <p class="fine">${icon('bank', 15)}ສະຖານະປ່ຽນເມື່ອທະນາຄານຢືນຢັນເທົ່ານັ້ນ</p>
       <div class="actions">${actions}</div>
-    </div>
-  </div>`;
+    </div>`);
 }
 
 function vHistory() {
-  const ok = S.txns.filter((t) => t.st === 'ok');
-  const gross = ok.reduce((s, t) => s + t.amt, 0), fees = ok.reduce((s, t) => s + feeOf(t.amt), 0);
+  const ok = okTxns();
+  const gross = todayGross(), fees = ok.reduce((s, t) => s + feeOf(t.amt), 0);
+  const net = (t) => t.amt - feeOf(t.amt);
+  const settled = ok.filter((t) => t.settled).reduce((s, t) => s + net(t), 0);
+  const moving = ok.filter((t) => !t.settled).reduce((s, t) => s + net(t), 0);
   const waiting = S.txns.filter((t) => t.st === 'pend' || t.st === 'unk').length;
   const keep = (t) => S.filter === 'all' || (S.filter === 'pend' ? (t.st === 'pend' || t.st === 'unk') : t.st === S.filter);
   const list = S.txns.filter(keep);
   const F = [['all', 'ທັງໝົດ'], ['ok', 'ສຳເລັດ'], ['pend', 'ລໍຖ້າ'], ['fail', 'ບໍ່ສຳເລັດ']];
-  return `<div class="scr">
+  return scr('history', '', `
     <div class="htop"><h1>ມື້ນີ້</h1><span>${todayLao()}</span></div>
     <div class="sum">
-      <small>ຮັບແລ້ວ (ສຳເລັດ)</small>
+      <small>ຮັບແລ້ວມື້ນີ້ (ສຳເລັດ)</small>
       <div class="amt mid">${fmt(gross)}<span class="cur"> ₭</span></div>
       <div class="sumrow"><span><b class="num">${ok.length}</b> ລາຍການ</span><span>ຄ່າທຳນຽມ <b class="num">${fmt(fees)} ₭</b></span><span>ສຸດທິ <b class="num">${fmt(gross - fees)} ₭</b></span></div>
     </div>
+    <div class="settle"><div class="ok"><small>ເຂົ້າບັນຊີທະນາຄານແລ້ວ</small><b class="num">${fmt(settled)} ₭</b></div><div class="wait"><small>ກຳລັງເຂົ້າບັນຊີ</small><b class="num">${fmt(moving)} ₭</b></div></div>
+    <p class="fine">${icon('bank', 15)}Phalom ບໍ່ແມ່ນກະເປົາເງິນ. ເງິນຢູ່ໃນບັນຊີ ${SHOP.acct} ຂອງຮ້ານ; ຍອດເງິນໃນບັນຊີເບິ່ງໄດ້ໃນແອັບທະນາຄານ.</p>
     ${waiting ? pill('wait', `ລໍຖ້າຜົນ ${waiting} ລາຍການ · ຢ່າເພີ່ງມອບເຄື່ອງ`) : ''}
-    <div class="filters">${F.map(([k, l]) => `<button class="fbtn" data-act="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join('')}</div>
+    <div class="filters" role="group" aria-label="ກັ່ນຕອງ">${F.map(([k, l]) => `<button class="fbtn" data-act="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join('')}</div>
     <div class="rows">${list.length ? list.map((t) => {
       const m = ST[t.st], r = routeOf(t.route);
       return `<button class="row" data-act="open-txn" data-ref="${t.ref}"><span class="time num">${t.t}</span><span class="dot ${m.cls}"></span><span class="grow"><b>${m.label}</b><small>${r ? r.app : ''}${t.sample ? ' · ຕົວຢ່າງ' : ''}</small></span><span class="num amtcell ${t.st === 'fail' ? 'strike' : ''}">${fmt(t.amt)}</span></button>`;
     }).join('') : '<p class="fine center">ບໍ່ມີລາຍການໃນກຸ່ມນີ້</p>'}</div>
-    <p class="fine">${icon('info', 15)}ລາຍການທີ່ມີຄຳວ່າ "ຕົວຢ່າງ" ແມ່ນຂໍ້ມູນສາທິດ</p>
-  </div>`;
+    <p class="fine">${icon('info', 15)}ລາຍການທີ່ມີຄຳວ່າ "ຕົວຢ່າງ" ແມ່ນຂໍ້ມູນສາທິດ</p>`);
 }
 
+function seg(label, items, current, act, attr) {
+  const i = Math.max(0, items.findIndex((x) => x.v === current));
+  return `<div class="seg" role="group" aria-label="${label}" style="--n:${items.length};--i:${i}"><span class="seg-thumb" aria-hidden="true"></span>${items.map((x) => `<button data-act="${act}" ${attr}="${x.v}" aria-pressed="${x.v === current}">${x.icon ? icon(x.icon, 16) : ''}${x.label}</button>`).join('')}</div>`;
+}
 function vSettings() {
-  const seg = [['light', 'sun', 'ແຈ້ງ'], ['dark', 'moon', 'ມືດ'], ['auto', null, 'ອັດຕະໂນມັດ']];
   const link = (id, ic, label, right = '') => `<button class="srow" data-act="sub" data-id="${id}"><span class="lead">${icon(ic, 20)}</span><span class="grow">${label}</span>${right}<span class="chev">${icon('chev', 18)}</span></button>`;
-  return `<div class="scr">
+  return scr('settings', '', `
     <h1>ຕັ້ງຄ່າ</h1>
-    <div class="shopcard">${logo(36)}<div class="grow"><b>${SHOP.name}</b><small>${SHOP.stall} · ${SHOP.market}</small><small>ບັນຊີຮັບເງິນ •••• 4821 · ທະນາຄານຢືນຢັນແລ້ວ</small></div></div>
+    <div class="shopcard">${logo(36)}<div class="grow"><b>${SHOP.name}</b><small>${SHOP.stall} · ${SHOP.market}</small><small>ບັນຊີຮັບເງິນ ${SHOP.acct} · ທະນາຄານຢືນຢັນແລ້ວ</small></div></div>
     <div class="group">
       <span class="glabel">ຮູບແບບສີ</span>
-      <div class="seg" role="group" aria-label="ຮູບແບບສີ">${seg.map(([k, ic, l]) => `<button data-act="mode" data-m="${k}" aria-pressed="${P.mode === k}">${ic ? icon(ic, 16) : ''}${l}</button>`).join('')}</div>
+      ${seg('ຮູບແບບສີ', [{ v: 'light', icon: 'sun', label: 'ແຈ້ງ' }, { v: 'dark', icon: 'moon', label: 'ມືດ' }, { v: 'auto', label: 'ອັດຕະໂນມັດ' }], P.mode, 'mode', 'data-m')}
       <span class="hint">ອັດຕະໂນມັດ: ປ່ຽນເປັນມືດ ຫຼັງ 18:00 ສຳລັບຕະຫຼາດກາງຄືນ</span>
     </div>
     <div class="group">
       <span class="glabel">ການແຈ້ງເມື່ອໄດ້ຮັບເງິນ</span>
       <div class="srow"><span class="lead">${icon('sound', 20)}</span><span class="grow">ສຽງແຈ້ງ</span><button class="switch" role="switch" aria-checked="${P.sound}" aria-label="ສຽງແຈ້ງ" data-act="toggle-sound"></button></div>
       <span class="hint">ສຽງກະດິ່ງຂອງຮ້ານ (ກົດເພື່ອຟັງ)</span>
-      <div class="seg" role="group" aria-label="ສຽງກະດິ່ງຂອງຮ້ານ">${CHIMES.map((c, i) => `<button data-act="chime" data-i="${i}" aria-pressed="${P.chime === i}">${c.name}</button>`).join('')}</div>
+      ${seg('ສຽງກະດິ່ງຂອງຮ້ານ', CHIMES.map((c, i) => ({ v: String(i), label: c.name })), String(P.chime), 'chime', 'data-i')}
     </div>
     <div class="list">
       ${link('language', 'globe', 'ພາສາ', '<span class="muted">ລາວ</span>')}
@@ -677,9 +783,8 @@ function vSettings() {
       ${link('protection', 'info', 'ຄ່າທຳນຽມ ແລະ ສິດຂອງຮ້ານ')}
       ${link('support', 'chat', 'ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ')}
       ${link('more', 'plus', 'ບໍລິການເສີມ', '<span class="tag">ໄລຍະຕໍ່ໄປ</span>')}
-      <div class="srow"><span class="grow">ເວີຊັນ</span><span class="muted num">0.1 · ຈຳລອງ</span></div>
-    </div>
-  </div>`;
+      <div class="srow"><span class="grow">ເວີຊັນ</span><span class="muted num">0.2 · ຈຳລອງ</span></div>
+    </div>`);
 }
 
 function vSub() {
@@ -689,10 +794,10 @@ function vSub() {
     title = 'ພາສາ';
     const langs = [['ລາວ', true], ['English', false], ['ไทย', false], ['Tiếng Việt', false], ['中文', false]];
     body = `<div class="list">${langs.map(([l, on]) => `<div class="srow"><span class="grow">${l}</span>${on ? `<span class="lead">${icon('check', 20, 2.4)}</span>` : '<span class="tag">ໄລຍະຕໍ່ໄປ</span>'}</div>`).join('')}</div>
-      <p class="fine">${icon('info', 15)}Prototype ນີ້ສະແດງພາສາລາວເທົ່ານັ້ນ</p>`;
+      <p class="fine">${icon('info', 15)}Prototype ນີ້ສະແດງພາສາລາວ; ໃບຮັບເງິນສຳລັບລູກຄ້າເປັນພາສາອັງກິດ</p>`;
   } else if (id === 'security') {
     title = 'ຄວາມປອດໄພບັນຊີ';
-    const items = ['ລັອກແອັບດ້ວຍ PIN · ເປີດແລ້ວ', 'ຢືນຢັນ OTP ກ່ອນຄືນເງິນ ຫຼື ປ່ຽນບັນຊີຮັບເງິນ · ເປີດແລ້ວ', 'ເຄື່ອງທີ່ເຂົ້າລະບົບ: 1 ເຄື່ອງ (ເຄື່ອງນີ້)', 'ແອັບເປັນເວີຊັນລ່າສຸດ · 0.1'];
+    const items = ['ລັອກແອັບດ້ວຍ PIN · ເປີດແລ້ວ', 'ຢືນຢັນ OTP ກ່ອນຄືນເງິນ ຫຼື ປ່ຽນບັນຊີຮັບເງິນ · ເປີດແລ້ວ', 'ເຄື່ອງທີ່ເຂົ້າລະບົບ: 1 ເຄື່ອງ (ເຄື່ອງນີ້)', 'ແອັບເປັນເວີຊັນລ່າສຸດ · 0.2'];
     body = `<ul class="checklist">${items.map((x) => `<li>${icon('check', 18, 2.4)}<span>${x}</span></li>`).join('')}</ul>
       <div class="card"><b>ຂໍ້ຄວນຮູ້</b><p>ລາຍການກວດນີ້ຊ່ວຍຫຼຸດຄວາມສ່ຽງ ແຕ່ບໍ່ແມ່ນການຮັບປະກັນ 100%.</p></div>`;
   } else if (id === 'protection') {
@@ -713,9 +818,9 @@ function vSub() {
         <div class="srow"><span class="lead">${icon('phone', 20)}</span><span class="grow">ໂທ</span><span class="num muted">020 0000 0000 · ຕົວຢ່າງ</span></div>
       </div>
       <div class="faq">
-        <details><summary>ລູກຄ້າບອກວ່າຈ່າຍແລ້ວ ແຕ່ແອັບຍັງລໍຖ້າ?</summary><p>ຢ່າເພີ່ງມອບເຄື່ອງ ແລະ ຢ່າໃຫ້ຈ່າຍໃໝ່. ລໍໃຫ້ແອັບຂຶ້ນ "ສຳເລັດ" ພ້ອມລະຫັດ 2 ຕົວ, ຫຼື ມາໂຕະຊ່ວຍເຫຼືອພ້ອມເລກອ້າງອີງ.</p></details>
-        <details><summary>ເງິນເຂົ້າບັນຊີເມື່ອໃດ?</summary><p>ຕາມເວລາຂອງເສັ້ນທາງທີ່ທະນາຄານ partner ຮອງຮັບ. ໜ້າປະຫວັດບອກສະຖານະຂອງແຕ່ລະລາຍການ.</p></details>
-        <details><summary>ລູກຄ້າໃຊ້ແອັບທີ່ຍັງບໍ່ຮອງຮັບ?</summary><p>ກົດ "ລູກຄ້າໃຊ້ແອັບໃດ?" ໃນໜ້າຂາຍເພື່ອກວດ. ຖ້າຍັງບໍ່ໄດ້ ໃຫ້ຮັບເງິນສົດ.</p></details>
+        <details><summary>ລູກຄ້າບອກວ່າຈ່າຍແລ້ວ ແຕ່ແອັບຍັງລໍຖ້າ?${icon('chev', 18)}</summary><p>ຢ່າເພີ່ງມອບເຄື່ອງ ແລະ ຢ່າໃຫ້ຈ່າຍໃໝ່. ລໍໃຫ້ແອັບຂຶ້ນໃບຮັບເງິນ "ໄດ້ຮັບເງິນແລ້ວ" ພ້ອມລະຫັດ 2 ຕົວ, ຫຼື ມາໂຕະຊ່ວຍເຫຼືອພ້ອມເລກອ້າງອີງ.</p></details>
+        <details><summary>ເງິນເຂົ້າບັນຊີເມື່ອໃດ?${icon('chev', 18)}</summary><p>ຕາມເວລາຂອງເສັ້ນທາງທີ່ທະນາຄານ partner ຮອງຮັບ. ໜ້າປະຫວັດບອກວ່າເງິນໃດເຂົ້າບັນຊີແລ້ວ ແລະ ເງິນໃດກຳລັງເຂົ້າ.</p></details>
+        <details><summary>ເປັນຫຍັງບໍ່ມີຍອດເງິນໃນແອັບ?${icon('chev', 18)}</summary><p>Phalom ບໍ່ແມ່ນກະເປົາເງິນ ແລະ ບໍ່ຖືເງິນ. ເງິນເຂົ້າບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ, ສະນັ້ນແອັບສະແດງຍອດຮັບມື້ນີ້ ແລະ ສະຖານະເງິນເຂົ້າບັນຊີ.</p></details>
       </div>`;
   } else {
     title = 'ບໍລິການເສີມ';
@@ -726,7 +831,7 @@ function vSub() {
     ];
     body = items.map(([h, p]) => `<div class="card"><b>${h} <span class="tag">ໄລຍະຕໍ່ໄປ</span></b><p>${p}</p></div>`).join('');
   }
-  return `<div class="scr">${topbar(title, 'back-settings')}${body}</div>`;
+  return scr('sub-' + id, '', `${topbar(title, 'back-settings')}${body}`);
 }
 
 function vMarket() {
@@ -736,7 +841,7 @@ function vMarket() {
     ['C-21', 'ຮ້ານ ທ້າວບຸນ', 'ມີ 2 ລາຍການລໍຖ້າ', 'wait'],
     ['A-03', 'ຮ້ານ ແມ່ສີ', 'ລໍທະນາຄານກວດເອກະສານ', 'wait'],
   ];
-  return `<div class="scr">
+  return scr('market', '', `
     <div class="mk-top"><button class="iconbtn" data-act="view-shop" aria-label="ກັບໄປແອັບຮ້ານ">${icon('back', 22)}</button><div class="grow"><small>ມຸມມອງຜູ້ດູແລຕະຫຼາດ</small><h1>${SHOP.market}</h1></div></div>
     <div class="group">
       <span class="glabel">ຮ້ານທີ່ເປີດຮັບ QR ແລ້ວ</span>
@@ -750,32 +855,63 @@ function vMarket() {
     </div>
     <div class="group">
       <span class="glabel">ຮ້ານທີ່ຕ້ອງການຊ່ວຍ (${help.length})</span>
-      ${help.map(([st, n, why, cls]) => `<div class="helprow"><span class="dot ${cls}"></span><span class="grow"><b>${st} · ${n}</b><small>${why}</small></span><button class="mini" data-act="toast" data-msg="ສາທິດ: ແຈ້ງພະນັກງານໂຕະຊ່ວຍເຫຼືອໄປ ${st} ແລ້ວ">ສົ່ງພະນັກງານ</button></div>`).join('')}
+      ${help.map(([st, n, why, cls]) => `<div class="helprow"><span class="dot ${cls}"></span><span class="grow"><b>${st} · ${n}</b><small>${why}</small></span><button class="mini" data-act="toast" data-msg="ສາທິດ: ແຈ້ງພະນັກງານໂຕະຊ່ວຍເຫຼືອໄປ ${st} ແລ້ວ"><span>ສົ່ງພະນັກງານ</span></button></div>`).join('')}
     </div>
     <button class="btn ghost" data-act="go-sign-market">ປ້າຍທາງເຂົ້າຕະຫຼາດ</button>
-    <p class="fine">${icon('info', 15)}ຂໍ້ມູນຕົວຢ່າງທັງໝົດ</p>
-  </div>`;
+    <p class="fine">${icon('info', 15)}ຂໍ້ມູນຕົວຢ່າງທັງໝົດ</p>`);
 }
 
-function vOverlay() {
-  if (S.overlay !== 'fake') return '';
-  const t = S.current && (S.current.st === 'wait' || S.current.st === 'pend' || S.current.st === 'unk') ? S.current : null;
+/* ---------- modal contents ---------- */
+function vFake() {
+  const t = S.current && ['wait', 'pend', 'unk'].includes(S.current.st) ? S.current : null;
   const amt = t ? t.amt : (S.amount || 40000);
   const stText = t ? ST[t.st === 'wait' ? 'pend' : t.st].label : 'ບໍ່ມີລາຍການ';
-  return `<div class="ovl" role="dialog" aria-label="ທົດສອບ screenshot ປອມ">
-    <div class="fakeshot"><div class="fk-ic">${icon('check', 26, 3)}</div><b>Payment successful</b><div class="fk-amt">${fmt(amt)} LAK</div><small>${todayLao()} · ${nowHM()}</small></div>
+  return `<div class="fakeshot" aria-hidden="true"><div class="fk-ic">${icon('check', 26, 3)}</div><b>Payment successful</b><div class="fk-amt">${fmt(amt)} LAK</div><small>${todayEn()} · ${nowHM()}</small></div>
     <span class="fk-label">ໂທລະສັບລູກຄ້າ (screenshot)</span>
-    <div class="card">
+    <div class="sheet card" data-key="fake" role="dialog" aria-modal="true" aria-labelledby="fake-title">
       ${pill('wait', 'ໃນ Phalom: ' + stText + ' · ບໍ່ມີລະຫັດ')}
-      <b>ກວດສະຖານະໃນ Phalom ເທົ່ານັ້ນ</b>
-      <p>screenshot ແລະ ສຽງຈາກໂທລະສັບລູກຄ້າ ບໍ່ປ່ຽນສະຖານະໃນ Phalom. ມອບເຄື່ອງເມື່ອໜ້າຈໍນີ້ຂຶ້ນ "ສຳເລັດ" ພ້ອມລະຫັດ 2 ຕົວ ທີ່ທະນາຄານຢືນຢັນແລ້ວເທົ່ານັ້ນ.</p>
-      <button class="btn" data-act="close-ovl">ເຂົ້າໃຈແລ້ວ</button>
+      <b id="fake-title">ກວດສະຖານະໃນ Phalom ເທົ່ານັ້ນ</b>
+      <p>screenshot ແລະ ສຽງຈາກໂທລະສັບລູກຄ້າ ບໍ່ປ່ຽນສະຖານະໃນ Phalom. ມອບເຄື່ອງເມື່ອ Phalom ຂຶ້ນໃບຮັບເງິນ "ໄດ້ຮັບເງິນແລ້ວ" ພ້ອມລະຫັດ 2 ຕົວເທົ່ານັ້ນ.</p>
+      <button class="btn" data-act="close-modal">ເຂົ້າໃຈແລ້ວ</button>
+    </div>`;
+}
+function vSlip() {
+  const t = txnOf(S.slipRef);
+  if (!t) return '';
+  const r = routeOf(t.route), f = feeOf(t.amt), en = S.slipEn;
+  const row = (k, v, cls = '') => `<div class="${cls}"><dt>${k}</dt><dd>${v}</dd></div>`;
+  const rows = en
+    ? row('Paid with', r ? r.appEn : '—') +
+      row('Merchant', `${SHOP.en} · ${SHOP.stall}<small>${SHOP.marketEn}</small>`) +
+      row('Date', `<span class="num">${todayEn()} · ${t.t}</span>`) +
+      row('Reference', `<span class="num">${t.ref}</span>`) +
+      row('Bank reference', `<span class="num">${t.bankRef}</span>`)
+    : row('ຈ່າຍຈາກ', r ? r.app : '—') +
+      row('ເຂົ້າບັນຊີ', `${SHOP.name} · ${SHOP.stall}<small>ບັນຊີ ${SHOP.acct}</small>`) +
+      row('ວັນທີ ແລະ ເວລາ', `<span class="num">${todayLao()} · ${t.t}</span>`) +
+      row('ເລກອ້າງອີງ', `<span class="num">${t.ref}</span>`) +
+      row('ເລກອ້າງອີງທະນາຄານ', `<span class="num">${t.bankRef}</span>`) +
+      row('ຍອດຂາຍ', `<span class="num">${fmt(t.amt)} ₭</span>`) +
+      row('ຄ່າທຳນຽມ (ຕົວຢ່າງ)', `<span class="num">− ${fmt(f)} ₭</span>`) +
+      row('ຮັບສຸດທິ', `<span class="num">${fmt(t.amt - f)} ₭</span>`, 'net');
+  const primary = S.fromHistory ? `<button class="btn" data-act="close-modal">ປິດ</button>` : `<button class="btn" data-act="new-sale">ຂາຍຕໍ່</button>`;
+  return `<div class="sheet slip" data-key="slip-${t.ref}-${en ? 'en' : 'lo'}" role="dialog" aria-modal="true" aria-labelledby="slip-title" ${en ? 'lang="en"' : ''}>
+    <div class="slip-head">
+      <div class="okmark">${icon('check', 32, 3)}</div>
+      <h2 id="slip-title">${en ? 'Payment received' : 'ໄດ້ຮັບເງິນແລ້ວ'}</h2>
+      ${pill('ok', en ? 'Paid · thank you' : 'ມອບເຄື່ອງໄດ້')}
+      <div class="amt">${fmt(t.amt)}<span class="cur"> ₭</span></div>
+      <div class="slip-words">${en ? 'Lao Kip (LAK)' : laoWords(t.amt) + 'ກີບ'}</div>
+    </div>
+    ${en ? '' : `<div class="codebox"><b class="cnum">${t.code}</b><span><small>ລະຫັດຢືນຢັນ</small>ລະຫັດນີ້ຂຶ້ນສະເພາະໃນເຄື່ອງຂອງຮ້ານ. screenshot ຫຼື ສຽງຈາກໂທລະສັບລູກຄ້າບໍ່ມີລະຫັດນີ້.</span></div>`}
+    <div class="tear" aria-hidden="true"></div>
+    <dl class="slip-kv">${rows}</dl>
+    <div class="slip-foot">${icon('bank', 14)}${en ? 'Confirmed by the partner bank · Simulation' : 'ທະນາຄານຢືນຢັນແລ້ວ · ເງິນເຂົ້າບັນຊີຕາມເວລາຂອງທະນາຄານ'}</div>
+    <div class="slip-actions">
+      ${primary}
+      <button class="btn ghost" data-act="slip-lang">${en ? 'ກັບເປັນພາສາລາວ' : 'ສະແດງໃບຮັບເງິນໃຫ້ລູກຄ້າ · English'}</button>
     </div>
   </div>`;
-}
-
-function vToast() {
-  return S.toast ? `<div class="toast" role="status">${icon(S.toast.icon || 'info', 20)}<span>${S.toast.msg}</span></div>` : '';
 }
 
 /* ---------- demo panel ---------- */
@@ -788,11 +924,12 @@ const STEPS = [
   ['price', 'ໃສ່ລາຄາ ແລະ ເບິ່ງເງິນສຸດທິ'],
   ['qr', 'ສະແດງ QR'],
   ['fake', 'ລູກຄ້າສະແດງ screenshot ປອມ'],
-  ['result', 'ທະນາຄານ: ລໍຖ້າ → ສຳເລັດ'],
-  ['history', 'ລາຍການຂຶ້ນໃນປະຫວັດ'],
+  ['result', 'ທະນາຄານ: ລໍຖ້າ → ສຳເລັດ (ໃບຮັບເງິນ)'],
+  ['history', 'ຍອດຮັບມື້ນີ້ ແລະ ປະຫວັດ'],
 ];
 function currentStep() {
-  if (S.overlay === 'fake') return 'fake';
+  if (S.modal === 'fake') return 'fake';
+  if (S.modal === 'slip' && !S.fromHistory) return 'result';
   if (S.screen === 'check' || S.screen === 'sign') return 'check';
   if (S.screen === 'sell' && S.amount) return 'price';
   if (S.screen === 'qr') return 'qr';
@@ -800,12 +937,12 @@ function currentStep() {
   if (S.screen === 'history') return 'history';
   return null;
 }
-function renderPanel() {
+function vPanel() {
   const t = demoTarget();
   const now = currentStep();
   if (now) S.done.add(now);
-  $('#panel').innerHTML = `
-    <div style="display:flex;align-items:flex-start;gap:8px"><div><h2>ແຜງສາທິດ</h2><p class="pnote">ສຳລັບຜູ້ນຳສະເໜີ · ຈຳລອງຜົນຈາກທະນາຄານ</p></div><button class="closepanel" data-act="demo-close">ປິດ</button></div>
+  return `
+    <div class="phead"><div><h2>ແຜງສາທິດ</h2><p class="pnote">ສຳລັບຜູ້ນຳສະເໜີ · ຈຳລອງຜົນຈາກທະນາຄານ</p></div><button class="closepanel" data-act="demo-close">ປິດ</button></div>
     <div class="pgroup">
       <span class="plabel">ຜົນຈາກທະນາຄານ</span>
       <div class="pbtns">
@@ -839,38 +976,103 @@ function renderPanel() {
       <ol class="steps">${STEPS.map(([k, l]) => `<li class="${k === now ? 'now' : S.done.has(k) ? 'done' : ''}">${l}</li>`).join('')}</ol>
     </div>
     <button class="pbtn wide" data-act="reset">ເລີ່ມໃໝ່ (ລ້າງຂໍ້ມູນສາທິດ)</button>`;
-  $('#panel').classList.toggle('open', S.demoOpen);
-  $('#scrim').classList.toggle('open', S.demoOpen);
 }
 
-/* ---------- render ---------- */
+/* ---------- render: patch the DOM in place so nodes, focus, scroll and transitions survive ---------- */
+let booted = false;
+const entering = [];
+function markEnter(el) {
+  if (!booted || el.nodeType !== 1 || !el.hasAttribute('data-key')) return;
+  el.classList.add('enter');
+  entering.push(el);
+}
+function syncAttrs(from, to) {
+  for (const a of Array.from(from.attributes)) {
+    if (to.hasAttribute(a.name)) continue;
+    if (from.tagName === 'DETAILS' && a.name === 'open') continue;
+    from.removeAttribute(a.name);
+  }
+  for (const a of Array.from(to.attributes)) if (from.getAttribute(a.name) !== a.value) from.setAttribute(a.name, a.value);
+}
+function morph(from, to) {
+  const fk = Array.from(from.childNodes), tk = Array.from(to.childNodes);
+  for (let i = 0; i < tk.length; i++) {
+    const x = fk[i], y = tk[i];
+    if (!x) { from.appendChild(y); markEnter(y); continue; }
+    const sameEl = x.nodeType === 1 && y.nodeType === 1 && x.nodeName === y.nodeName && x.getAttribute('data-key') === y.getAttribute('data-key');
+    if (x.nodeType !== y.nodeType || (x.nodeType === 1 && !sameEl) || (x.nodeType !== 1 && x.nodeName !== y.nodeName)) { from.replaceChild(y, x); markEnter(y); continue; }
+    if (x.nodeType !== 1) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; continue; }
+    syncAttrs(x, y);
+    morph(x, y);
+  }
+  for (let i = fk.length - 1; i >= tk.length; i--) fk[i].remove();
+}
+function patch(target, html) {
+  const t = document.createElement('div');
+  t.innerHTML = html;
+  morph(target, t);
+}
+function flushEnter() {
+  if (!entering.length) return;
+  const list = entering.splice(0);
+  void document.body.offsetWidth; // commit the start state, then let CSS transitions run
+  requestAnimationFrame(() => list.forEach((el) => el.classList.remove('enter')));
+}
+
+const views = { sell: vSell, check: vCheck, sign: vSign, qr: vQR, result: vResult, history: vHistory, settings: vSettings, sub: vSub, market: vMarket };
 function render() {
   const app = $('#app');
   app.dataset.mode = modeNow();
-  const views = { sell: vSell, check: vCheck, sign: vSign, qr: vQR, result: vResult, history: vHistory, settings: vSettings, sub: vSub, market: vMarket };
-  app.innerHTML = vSimbar() + (views[S.screen] || vSell)() + (TABS.includes(S.screen) ? vTabbar() : '') + vToast() + vOverlay();
-  renderPanel();
+  patch($('#view'), vSimbar() + (views[S.screen] || vSell)() + (TABS.includes(S.screen) ? vTabbar() : ''));
+
+  const modal = $('#modal');
+  const open = !!S.modal;
+  if (open) patch(modal, S.modal === 'fake' ? vFake() : vSlip());
+  if (open !== modal.classList.contains('show')) {
+    modal.classList.toggle('show', open);
+    modal.inert = !open;
+    $('#view').inert = open;
+    if (open) setTimeout(() => { const b = modal.querySelector('.btn'); if (b) b.focus({ preventScroll: true }); }, 60);
+  }
+
+  patch($('#panel'), vPanel());
+  const sheetMode = narrow();
+  $('#panel').classList.toggle('open', sheetMode && S.demoOpen);
+  $('#scrim').classList.toggle('open', sheetMode && S.demoOpen);
+  $('#panel').inert = sheetMode && !S.demoOpen;
+  booted = true;
+  flushEnter();
 }
+
+/* toast: persistent node; content stays while it fades out */
 let toastTimer = 0;
 function toast(msg, ic) {
-  S.toast = { msg, icon: ic };
+  const el = $('#toast');
+  el.innerHTML = `${icon(ic || 'info', 20)}<span>${msg}</span>`;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { S.toast = null; render(); }, 3200);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 /* ---------- actions ---------- */
 function newTxn(amt) {
-  const t = { ref: 'PH-' + S.seq++, t: nowHM(), amt, route: S.route || 'th', st: 'wait', sample: false };
-  return t;
+  return { ref: 'PH-' + S.seq++, t: nowHM(), amt, route: S.route || 'th', st: 'wait', settled: false, sample: false };
 }
 function settle(t, st) {
   if (S.net === 'off' && t.st !== 'unk') { t.hidden = st; t.st = 'unk'; }
   else if (S.net === 'off') { t.hidden = st; toast('ໂທລະສັບຍັງຂາດເນັດ · ຍັງບໍ່ຮູ້ຜົນ', 'wifioff'); return false; }
   else { t.st = st; }
-  if (t.st === 'ok') { t.code = String(10 + Math.floor(Math.random() * 90)); announce(t); }
+  if (t.st === 'ok') {
+    t.code = String(10 + Math.floor(Math.random() * 90));
+    t.bankRef = 'BK' + String(Date.now()).slice(-13);
+    announce(t);
+  }
   if (!S.txns.includes(t)) S.txns.unshift(t);
   return true;
 }
+function showSlip(t, fromHistory) { S.slipRef = t.ref; S.slipEn = false; S.fromHistory = !!fromHistory; S.modal = 'slip'; }
 const A = {
   'tab': (el) => { S.screen = el.dataset.to; S.sub = null; S.fromHistory = false; if (S.screen === 'sell' && S.current && S.current.st !== 'wait') S.current = null; },
   'key': (el) => {
@@ -887,10 +1089,16 @@ const A = {
   'go-sign-market': () => { S.signFrom = 'market'; S.screen = 'sign'; },
   'show-qr': () => { if (!S.amount) return; S.current = newTxn(S.amount); S.fromHistory = false; S.screen = 'qr'; },
   'cancel-qr': () => { S.current = null; S.screen = 'sell'; toast('ຍົກເລີກ QR ແລ້ວ · ບໍ່ມີການຮັບເງິນ', 'x'); },
-  'new-sale': () => { S.current = null; S.amount = 0; S.route = null; S.screen = 'sell'; },
+  'new-sale': () => { S.modal = null; S.current = null; S.amount = 0; S.route = null; S.screen = 'sell'; },
   'retry': () => { const amt = S.current.amt; S.current = newTxn(amt); S.screen = 'qr'; },
   'filter': (el) => { S.filter = el.dataset.f; },
-  'open-txn': (el) => { S.current = S.txns.find((t) => t.ref === el.dataset.ref); S.fromHistory = true; S.screen = 'result'; },
+  'open-txn': (el) => {
+    const t = txnOf(el.dataset.ref);
+    if (t.st === 'ok') { showSlip(t, true); return; }
+    S.current = t; S.fromHistory = true; S.screen = 'result';
+  },
+  'slip-lang': () => { S.slipEn = !S.slipEn; },
+  'close-modal': () => { S.modal = null; },
   'mode': (el) => { P.mode = el.dataset.m; savePrefs(); },
   'toggle-sound': () => { P.sound = !P.sound; savePrefs(); },
   'chime': (el) => { P.chime = +el.dataset.i; savePrefs(); CHIMES[P.chime].play(); },
@@ -900,57 +1108,68 @@ const A = {
   'view-shop': () => { S.screen = S.current && S.current.st === 'wait' ? 'qr' : 'sell'; },
   'view-market': () => { S.screen = 'market'; },
   'view-sign': () => { S.signFrom = 'check'; S.screen = 'sign'; },
-  'close-ovl': () => { S.overlay = null; },
   'demo-open': () => { S.demoOpen = true; },
   'demo-close': () => { S.demoOpen = false; },
-  'fake': () => { S.overlay = 'fake'; S.demoOpen = false; fakeBeep(); },
+  'fake': () => { S.modal = 'fake'; S.demoOpen = false; fakeBeep(); },
   'net': (el) => {
     S.net = el.dataset.v;
-    if (S.net === 'on') {
-      const back = S.txns.filter((t) => t.st === 'unk');
-      if (S.current && S.current.st === 'unk' && !back.includes(S.current)) back.push(S.current);
-      back.forEach((t) => { settle(t, t.hidden || 'ok'); delete t.hidden; });
-      if (back.length) toast(`ເນັດກັບມາ · ${back.map((t) => t.ref + ' ' + ST[t.st].label).join(', ')}`, 'check');
-    }
+    if (S.net !== 'on') return;
+    const back = S.txns.filter((t) => t.st === 'unk');
+    back.forEach((t) => { settle(t, t.hidden || 'ok'); delete t.hidden; });
+    if (!back.length) return;
+    const cur = back.find((t) => t === S.current);
+    if (cur && cur.st === 'ok' && S.screen === 'result') showSlip(cur, false);
+    else toast(`ເນັດກັບມາ · ${back.map((t) => t.ref + ' ' + ST[t.st].label).join(', ')}`, 'check');
   },
   'bank': (el) => {
     const t = demoTarget();
     if (!t) { toast('ບໍ່ມີລາຍການທີ່ລໍຜົນ · ກົດ "ສະແດງ QR" ກ່ອນ', 'info'); return; }
     if (!settle(t, el.dataset.st)) return;
     S.demoOpen = false;
-    if (S.current === t && ['qr', 'result'].includes(S.screen)) { S.screen = 'result'; S.fromHistory = false; }
+    const onIt = S.current === t && ['qr', 'result'].includes(S.screen);
+    if (onIt && t.st === 'ok') showSlip(t, false);
+    else if (onIt) { S.screen = 'result'; S.fromHistory = false; }
     else toast(`${t.ref} · ${ST[t.st].label} · ${ST[t.st].act}`, ST[t.st].icon);
   },
   'reset': () => { S = freshState(); toast('ເລີ່ມໃໝ່ແລ້ວ · ຂໍ້ມູນສາທິດຖືກຕັ້ງຄືນ', 'check'); },
 };
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]');
-  if (!el) return;
+  if (!el || el.disabled) return;
   const fn = A[el.dataset.act];
   if (!fn) return;
   ac();
+  if (el.closest('#panel')) S.demoOpen = false; // on phones, close the sheet so the presenter sees the result
   fn(el);
   render();
 });
 document.addEventListener('keydown', (e) => {
-  if (S.screen !== 'sell' || S.overlay || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'Escape') {
+    if (S.modal === 'slip' && !S.fromHistory) A['new-sale']();
+    else if (S.modal) S.modal = null;
+    else if (S.demoOpen) S.demoOpen = false;
+    else return;
+    render(); return;
+  }
+  if (S.screen !== 'sell' || S.modal || e.metaKey || e.ctrlKey || e.altKey) return;
   let k = null;
   if (/^[0-9]$/.test(e.key)) k = e.key;
   else if (e.key === 'Backspace') k = 'del';
-  else if (e.key === 'Enter' && S.amount) { e.preventDefault(); A['show-qr'](); render(); return; }
+  else if (e.key === 'Enter' && S.amount && !(e.target.closest && e.target.closest('button'))) { e.preventDefault(); A['show-qr'](); render(); return; }
   if (k) { e.preventDefault(); A.key({ dataset: { k } }); render(); }
 });
+document.addEventListener('touchstart', () => {}, { passive: true }); // enables :active press states on iOS
 setInterval(() => { if (P.mode === 'auto') render(); }, 60000);
+
 /* fit the phone and panel to short laptop or projector screens */
 function fit() {
   const main = $('.stage-main');
-  const wide = window.matchMedia('(min-width: 900px)').matches;
   const head = $('.stage-head');
   const avail = window.innerHeight - (head ? head.offsetHeight : 0) - 64;
-  main.style.zoom = wide ? String(Math.max(0.62, Math.min(1, avail / 840))) : '';
+  main.style.zoom = narrow() ? '' : String(Math.max(0.62, Math.min(1, avail / 840)));
+  render();
 }
 window.addEventListener('resize', fit);
 fit();
-render();
 })();
 </script>

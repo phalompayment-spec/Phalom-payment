@@ -9,6 +9,17 @@
 python3 build.py ../exports/phalom_prototype.html
 ```
 
+## UI and motion rules
+
+Every change to the prototype must keep these:
+
+- Touch targets are at least 44×44 px. Small visual pills sit inside a 44px button.
+- Hover styles live only inside `@media (hover:hover)`.
+- Only `transform` and `opacity` are animated. No `transition: all`, and never width, height, top or left.
+- Press feedback takes 120ms (scale and opacity). Modals, the toast and the demo sheet enter in 280–300ms and exit in 200ms.
+- User-driven motion uses CSS transitions on persistent nodes, so it can be interrupted. `render()` patches the DOM in place instead of replacing it.
+- Under `prefers-reduced-motion: reduce`, nothing moves; elements crossfade with opacity only.
+
 It also writes `phalom_artifact.html`, the same page without the `<html>` wrapper, for publishing as a claude.ai artifact. That file is not committed.
 
 # Version Log
@@ -16,3 +27,4 @@ It also writes `phalom_artifact.html`, the same page without the `<html>` wrappe
 | Timestamp | Version | Author | Change |
 |---|---|---|---|
 | 2026-10-12 (Asia/Bangkok) | 0.1 | Claude Code | First version: Mekong design, light theme by default, P0 features and the presenter demo panel. |
+| 2026-10-12 (Asia/Bangkok) | 0.2 | Claude Code | Bank-style payment slip, today's total and settlement status, in-place DOM patching, motion and touch-target rules. |
