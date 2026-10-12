@@ -9,6 +9,7 @@ Project files for the Phalom team’s Innovative Business Challenge proposal. St
 - [`03_FINAL_SPEC.md`](03_FINAL_SPEC.md): agreement ledger. Items under discussion remain proposals until the team decides.
 - [`exports/system_flowchart.html`](exports/system_flowchart.html): interactive payment architecture and six scenarios.
 - [`exports/pitch_deck_slide.html`](exports/pitch_deck_slide.html): draft slide visual.
+- [`output/html/sabaidee-merchant-task-list.html`](output/html/sabaidee-merchant-task-list.html): every remaining task, from team decisions and pitch-deck gaps to the post-competition feasibility, sandbox and pilot gates, with pitch blockers marked.
 - [`output/discord-server-blueprint.md`](output/discord-server-blueprint.md) and [`output/discord/`](output/discord/): team workspace plan and optional one-time setup script.
 - Root PDFs: the IBC pitch-deck template and challenge list for reference.
 
@@ -25,3 +26,4 @@ Before using the Discord script, read its `output/discord/README.md`. It can cre
 | Timestamp | Version | Author | Change |
 |---|---|---|---|
 | 2026-10-12 23:09:45 +07:00 (Asia/Bangkok) | 1.0 | Codex | Added a team entry point and project index for the initial public repository upload. Identifies the current overview, proposal status, and historical PDF. |
+| 2026-10-13 03:32:02 +07:00 (Asia/Bangkok) | 1.1 | Claude | Linked the new project task list (`output/html/sabaidee-merchant-task-list.html`). |

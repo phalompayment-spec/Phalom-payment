@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sabaidee Merchant Task List</title>
+<style>
+/* Layout: one reading column; each phase is a row of (phase label | task list) that stacks below 760px. */
+/* System faces only: like the other project HTML files, this page opens offline with no external requests. */
+:root{
+  --bg:#f3f6f5;
+  --surface:#ffffff;
+  --ink:#13201e;
+  --muted:#55655f;
+  --line:#d4dedb;
+  --accent:#0d6e66;
+  --accent-ink:#ffffff;
+  --accent-soft:#dbeeea;
+  --block:#b42318;
+  --block-soft:#fbe6e3;
+  --soon:#8f5506;
+  --soon-soft:#fbeed6;
+  --later:#355789;
+  --later-soft:#e2e9f4;
+  --opt:#55655f;
+  --opt-soft:#e8edeb;
+  --font-display:"Segoe UI Variable Display","SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Lao","Leelawadee UI","Lao UI",sans-serif;
+  --font-lao:"Noto Sans Lao","Leelawadee UI","Lao UI","Phetsarath OT",system-ui,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1513;
+    --surface:#141f1c;
+    --ink:#e2ebe8;
+    --muted:#97a8a3;
+    --line:#26352f;
+    --accent:#4cc2b2;
+    --accent-ink:#06211d;
+    --accent-soft:#12312c;
+    --block:#f2a197;
+    --block-soft:#3a1915;
+    --soon:#e8b664;
+    --soon-soft:#33260f;
+    --later:#a3bde8;
+    --later-soft:#1a2536;
+    --opt:#a6b4b0;
+    --opt-soft:#1d2925;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1513;
+  --surface:#141f1c;
+  --ink:#e2ebe8;
+  --muted:#97a8a3;
+  --line:#26352f;
+  --accent:#4cc2b2;
+  --accent-ink:#06211d;
+  --accent-soft:#12312c;
+  --block:#f2a197;
+  --block-soft:#3a1915;
+  --soon:#e8b664;
+  --soon-soft:#33260f;
+  --later:#a3bde8;
+  --later-soft:#1a2536;
+  --opt:#a6b4b0;
+  --opt-soft:#1d2925;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1rem;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.page{
+  max-width:62rem;
+  margin:0 auto;
+  padding-inline:clamp(16px,4vw,40px);
+  padding-block:clamp(28px,5vw,56px) 64px;
+  display:grid;
+  gap:clamp(28px,4vw,44px);
+}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;color:var(--ink)}
+p{margin:0}
+code,.mono{font-family:var(--font-mono);font-size:.875em}
+[lang="lo"]{font-family:var(--font-lao)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* Masthead */
+.masthead{display:grid;gap:14px}
+.eyebrow{
+  font-size:.75rem;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);
+}
+.masthead h1{
+  font-size:clamp(2rem,5.2vw,3rem);font-weight:760;letter-spacing:-.025em;line-height:1.06;
+}
+.lead{max-width:62ch;font-size:1.0625rem;color:var(--muted)}
+.facts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+  gap:0;margin:6px 0 0;border-top:1px solid var(--line);
+}
+.facts div{padding:12px 16px 12px 0;border-bottom:1px solid var(--line);min-width:0}
+.facts dt{font-size:.75rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-size:.9375rem}
+
+/* Toolbar */
+.toolbar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
+  background:var(--bg);
+  padding-block:12px;
+  border-bottom:1px solid var(--line);
+  display:grid;gap:10px;
+}
+.progress-row{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+.progress-text{font-family:var(--font-display);font-weight:700;font-size:1.125rem;font-variant-numeric:tabular-nums}
+.blocker-text{font-size:.875rem;color:var(--block);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filter,.copy{
+  font:inherit;font-size:.875rem;line-height:1.2;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:7px 12px;border-radius:999px;cursor:pointer;
+}
+.filter:hover,.copy:hover{border-color:var(--accent)}
+.filter[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:.875rem;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.copy{margin-left:auto;border-radius:6px;font-weight:600}
+.copy-status{font-size:.8125rem;color:var(--muted);min-height:1.2em}
+.copy-status:empty{display:none}
+.copy-fallback{
+  width:100%;min-height:9rem;font:inherit;font-family:var(--font-mono);font-size:.8125rem;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;
+}
+
+/* Already done */
+.done-box{display:grid;gap:12px}
+.section-label{
+  font-size:.75rem;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+}
+.done-list{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:6px 28px;
+}
+.done-list li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:.9375rem;min-width:0}
+.done-list li::before{content:"✓";color:var(--accent);font-weight:700}
+
+/* Phases */
+.phase{
+  display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:24px;
+  padding-top:22px;border-top:2px solid var(--ink);
+}
+.phase-head{display:grid;gap:6px;align-content:start;position:relative}
+.phase-letter{
+  font-family:var(--font-display);font-weight:800;font-size:2.5rem;line-height:1;color:var(--accent);
+  letter-spacing:-.03em;
+}
+.phase-head h2{font-size:1.375rem;font-weight:720;letter-spacing:-.01em;line-height:1.2}
+.phase-when{font-size:.8125rem;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.phase-note{font-size:.875rem;color:var(--muted)}
+.phase-count{font-size:.8125rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.gate{
+  margin-top:4px;font-size:.8125rem;padding:8px 10px;border-radius:6px;
+  background:var(--later-soft);color:var(--ink);
+}
+.gate strong{color:var(--later)}
+
+.tasks{list-style:none;margin:0;padding:0;display:grid}
+.task{
+  display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.task:first-child{padding-top:2px}
+.task input{width:18px;height:18px;margin:3px 0 0;accent-color:var(--accent);cursor:pointer}
+.task-body{display:grid;gap:5px;min-width:0}
+.task-title{font-weight:640;font-size:1.0625rem;line-height:1.35;cursor:pointer}
+.tid{
+  font-family:var(--font-mono);font-size:.8125rem;font-weight:600;color:var(--accent);
+  margin-right:6px;font-variant-numeric:tabular-nums;
+}
+.task-detail{font-size:.9375rem;color:var(--muted);max-width:68ch}
+.task-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:2px}
+.pill{
+  font-size:.75rem;font-weight:650;letter-spacing:.02em;padding:2px 8px;border-radius:999px;white-space:nowrap;
+}
+.pill-block{background:var(--block-soft);color:var(--block)}
+.pill-soon{background:var(--soon-soft);color:var(--soon)}
+.pill-opt{background:var(--opt-soft);color:var(--opt)}
+.pill-later{background:var(--later-soft);color:var(--later)}
+.area{font-size:.8125rem;font-weight:600;color:var(--ink)}
+.src{font-family:var(--font-mono);font-size:.75rem;color:var(--muted)}
+.task.is-done .task-title{text-decoration:line-through;text-decoration-thickness:1px;color:var(--muted)}
+.task.is-done .task-detail{opacity:.7}
+
+/* Guardrails */
+.never{
+  display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:24px;
+  padding-top:22px;border-top:2px solid var(--block);
+}
+.never h2{font-size:1.375rem;font-weight:720;color:var(--block)}
+.never .phase-note{margin-top:6px}
+.never ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.never li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;font-size:.9375rem}
+.never li::before{content:"✕";color:var(--block);font-weight:700;text-align:center}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding-top:18px;display:grid;gap:8px;font-size:.8125rem;color:var(--muted)}
+.foot p{max-width:80ch}
+
+@media (max-width:760px){
+  .toolbar{position:static}
+  .phase,.never{grid-template-columns:minmax(0,1fr);gap:14px}
+  .phase-head{grid-template-columns:auto minmax(0,1fr);column-gap:14px;align-items:baseline}
+  .phase-head > :not(.phase-letter){grid-column:2}
+  .phase-letter{grid-row:1 / span 2;font-size:2.25rem}
+  .copy{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){
+  .bar span{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="masthead">
+  <p class="eyebrow">Phalom · Innovative Business Challenge · MSME</p>
+  <h1>Sabaidee Merchant task list</h1>
+  <p class="lead">Everything still to do, from the current pitch-stage documents to a delivered pitch, then the gated feasibility, sandbox and pilot work after the competition. Compiled from this repository on 13 October 2026.</p>
+  <dl class="facts">
+    <div><dt>Challenge</dt><dd>#10 <span lang="lo">ຮັບເງິນຕ່າງປະເທດຍຸ້ງຍາກ</span> · Cross-border payment for merchants</dd></div>
+    <div><dt>The ask</dt><dd>An easy, safe and practical way for small shops to take payment from foreign tourists without high fees</dd></div>
+    <div><dt>Stage now</dt><dd>Pitch concept. No partner agreement, licence, fee quote or pilot result yet</dd></div>
+  </dl>
+</header>
+
+<div class="toolbar" role="region" aria-label="Progress and filters">
+  <div class="progress-row">
+    <p id="progress-text" class="progress-text">0 of 57 tasks done</p>
+    <p id="blocker-text" class="blocker-text">19 tasks block the pitch</p>
+  </div>
+  <div class="bar" aria-hidden="true"><span id="bar-fill"></span></div>
+  <div class="controls">
+    <div class="filters" role="group" aria-label="Show tasks">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="filter" data-filter="pitch" aria-pressed="false">Before the pitch</button>
+      <button type="button" class="filter" data-filter="block" aria-pressed="false">Blocks the pitch</button>
+      <button type="button" class="filter" data-filter="later" aria-pressed="false">After the competition</button>
+    </div>
+    <label class="toggle" for="hide-done"><input type="checkbox" id="hide-done"> Hide done</label>
+    <button type="button" id="copy-open" class="copy">Copy open tasks</button>
+  </div>
+  <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+  <textarea id="copy-fallback" class="copy-fallback" readonly hidden aria-label="Open tasks as text"></textarea>
+</div>
+
+<section class="done-box" aria-labelledby="done-h">
+  <h2 id="done-h" class="section-label">Already in the repository</h2>
+  <ul class="done-list">
+    <li><span><code>01_CODEX_ARCH.md</code> v0.1: architecture, features F01–F12, dependencies D01–D10</span></li>
+    <li><span><code>02_GEMINI_AUDIT.md</code> v0.1: 46 findings, fee stress test, pilot budget</span></li>
+    <li><span><code>03_FINAL_SPEC.md</code> v0.1: 15 agreed items, C01–C15</span></li>
+    <li><span>Lao team brief v2.0 (HTML)</span></li>
+    <li><span>Interactive system flowchart with six scenarios</span></li>
+    <li><span>12-slide pitch deck draft</span></li>
+    <li><span>Discord blueprint and setup script (13 offline tests pass)</span></li>
+    <li><span>README project index</span></li>
+  </ul>
+</section>
+
+<section class="phase" id="phase-a" aria-labelledby="pa-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">A</p>
+    <h2 id="pa-h">Team decisions</h2>
+    <p class="phase-when">Before the pitch</p>
+    <p class="phase-note">These unblock the deck. Record each answer in <code>00_CONTEXT.md</code>.</p>
+    <p class="phase-count">0 of 9 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a1">
+      <div class="task-body">
+        <label for="t-a1" class="task-title"><span class="tid">A1</span>Confirm the competition logistics</label>
+        <p class="task-detail">Pitch date and time, submission deadline, file format, time limit, language and judging criteria. None of these are in the repository, and the brief's 7-day prep plan has to be re-dated to the real pitch day.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Lead</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a2">
+      <div class="task-body">
+        <label for="t-a2" class="task-title"><span class="tid">A2</span>Decide the regulatory position</label>
+        <p class="task-detail">Pitch as an outsourced technology provider to one licensed bank (Path A), or as a standalone payment company? The deck already assumes Path A.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Lead</span><span class="src">Audit Q3 · G-REG-01</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a3">
+      <div class="task-body">
+        <label for="t-a3" class="task-title"><span class="tid">A3</span>Pick the pilot market and lead segment</label>
+        <p class="task-detail">Luang Prabang night market (souvenir tickets, Order mode first) or Vientiane riverside (street food, Quick mode first). This sets the default mode, the fee mix and the demo story.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Lead</span><span class="src">Audit Q4</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Product">
+      <input type="checkbox" id="t-a4">
+      <div class="task-body">
+        <label for="t-a4" class="task-title"><span class="tid">A4</span>Choose the first QR mode</label>
+        <p class="task-detail">Make the printed static-QR stand ("Quick mode") a first-class mode next to the per-sale dynamic QR, or keep the dynamic QR primary with the stand as a fallback.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Product</span><span class="src">G-UX-02 · 01 §5.3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Business">
+      <input type="checkbox" id="t-a5">
+      <div class="task-body">
+        <label for="t-a5" class="task-title"><span class="tid">A5</span>Settle who pays for the service</label>
+        <p class="task-detail">Adopt the recommended hybrid (bank fee per active merchant, market-operator package, Pro tier, thin margin) or keep merchant fees as the main line. On the audit's numbers, fee-only leaves a street-food stall about 92,000 LAK a month short of its cost to serve.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Business</span><span class="src">G-FIN-01 · G-FIN-02</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a6">
+      <div class="task-body">
+        <label for="t-a6" class="task-title"><span class="tid">A6</span>Set success metrics and target numbers</label>
+        <p class="task-detail">Repeat use, time to check a payment, fee understanding, pending items, problems per payment and support cost per shop. The brief says targets must be agreed before any pilot.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Lead</span><span class="src">Brief §09</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a7">
+      <div class="task-body">
+        <label for="t-a7" class="task-title"><span class="tid">A7</span>Confirm the team name and member profiles</label>
+        <p class="task-detail">Team name; each member's full name, major, faculty and university; a one-line tagline. The IBC title slide requires them and the deck still shows [Member 1–3].</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Lead</span><span class="src">IBC template · Audit Q5</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-a8">
+      <div class="task-body">
+        <label for="t-a8" class="task-title"><span class="tid">A8</span>Assign owners to the four roles</label>
+        <p class="task-detail">Problem/Research, Product/Design, Business/Partner and Pitch/Q&amp;A. The brief defines the roles but names nobody; one person can hold more than one.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Lead</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-a9">
+      <div class="task-body">
+        <label for="t-a9" class="task-title"><span class="tid">A9</span>Write <code>00_CONTEXT.md</code></label>
+        <p class="task-detail">Record the goals and the answers to A1–A8. The architecture, the audit and the brief all note this file is missing, so their baseline is still provisional.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Docs</span><span class="src">01 §1</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-b" aria-labelledby="pb-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">B</p>
+    <h2 id="pb-h">Close the spec loop</h2>
+    <p class="phase-when">Before the pitch</p>
+    <p class="phase-note">Turn the audit's proposals into agreed spec, so the deck says only what the team has agreed.</p>
+    <p class="phase-count">0 of 8 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-b1">
+      <div class="task-body">
+        <label for="t-b1" class="task-title"><span class="tid">B1</span>Respond to every pending audit finding</label>
+        <p class="task-detail">Accept, amend or reject each one with a reason: G-UX-01…10, G-REG-01…08, G-EC-01…22, G-FIN-01…04 and the proposed pitch wording.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Docs</span><span class="src">03 §3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-b2">
+      <div class="task-body">
+        <label for="t-b2" class="task-title"><span class="tid">B2</span>Answer the two open design questions</label>
+        <p class="task-detail">Q1: is the green/amber/red handover light a derived view with no new state? Q2: is "received but unmatched" its own bookkeeping state or a flag on <code>ProviderEvent</code>?</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Docs</span><span class="src">Audit §8</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-b3">
+      <div class="task-body">
+        <label for="t-b3" class="task-title"><span class="tid">B3</span>Update the consensus ledger</label>
+        <p class="task-detail">Move accepted items into <code>03_FINAL_SPEC.md</code> and agree the final wording for fees, payout speed and audio, which §2 still lists as pending.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Docs</span><span class="src">03 §2</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-b4">
+      <div class="task-body">
+        <label for="t-b4" class="task-title"><span class="tid">B4</span>Revise the architecture to v0.2</label>
+        <p class="task-detail">Add the audit dispositions to §12, the accepted edge cases to the failure matrix in §10, and the new dependency lines (D06 per-payment events for static QR, D05 bank fee appetite). Remove the "02 not present" notes.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Docs</span><span class="src">01 §12</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Product">
+      <input type="checkbox" id="t-b5">
+      <div class="task-body">
+        <label for="t-b5" class="task-title"><span class="tid">B5</span>Update the system flowchart</label>
+        <p class="task-detail">The architecture says to revise the HTML in the same revision as any behaviour change: the handover light, Quick mode and the underpayment shortfall.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Product</span><span class="src">01 §12 · exports/system_flowchart.html</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Docs">
+      <input type="checkbox" id="t-b6">
+      <div class="task-body">
+        <label for="t-b6" class="task-title"><span class="tid">B6</span>Refresh the team brief</label>
+        <p class="task-detail">Replace the open-decision list in §09 with the Phase A answers, name the role owners in §10 and update the revenue-model status. Bump the version and log it.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Docs</span><span class="src">Brief §09–10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Product">
+      <input type="checkbox" id="t-b7">
+      <div class="task-body">
+        <label for="t-b7" class="task-title"><span class="tid">B7</span>Build the Lao merchant glossary</label>
+        <p class="task-detail">Lao-first terms for the merchant screens, matched to the partner bank's own Lao wording. Drop English jargon such as payout, pending and credit from anything a vendor sees.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Product</span><span class="src">G-UX-10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-b8">
+      <div class="task-body">
+        <label for="t-b8" class="task-title"><span class="tid">B8</span>Get a native speaker to proofread all Lao copy</label>
+        <p class="task-detail">The handover-light labels, audio phrases and Lao text on the slides are all marked as drafts awaiting native-speaker review.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">Deck slide 6 · G-UX-01</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-c" aria-labelledby="pc-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">C</p>
+    <h2 id="pc-h">Evidence and fact checks</h2>
+    <p class="phase-when">Before the pitch</p>
+    <p class="phase-note">Separate what is known from what is assumed.</p>
+    <p class="phase-count">0 of 7 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Research">
+      <input type="checkbox" id="t-c1">
+      <div class="task-body">
+        <label for="t-c1" class="task-title"><span class="tid">C1</span>Interview 8–12 vendors and watch 5 rush hours</label>
+        <p class="task-detail">Test the problem and the persona: do tourists ask to pay by app, are sales lost, which QR stickers vendors already use, how they check a payment, and how they react to fees.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Research</span><span class="src">Audit §2.1 · Deck next step 1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Research">
+      <input type="checkbox" id="t-c2">
+      <div class="task-body">
+        <label for="t-c2" class="task-title"><span class="tid">C2</span>Collect real examples for the problem slide</label>
+        <p class="task-detail">The IBC template asks for supporting data or cases from business owners. Use quotes, counts or photos (with consent) from C1, or clearly labelled desk research.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Research</span><span class="src">IBC template</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Research">
+      <input type="checkbox" id="t-c3">
+      <div class="task-body">
+        <label for="t-c3" class="task-title"><span class="tid">C3</span>Re-check competitor pricing</label>
+        <p class="task-detail">LOCA PAY's 3% + 5,000 LAK (who pays it and what it covers), NewPay fees and settlement, BCEL OnePay merchant QR fees. The brief rebuild did not re-check rates, and the deck's 15.5% headline depends on them.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Research</span><span class="src">Brief §13 · G-FIN-04</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Business">
+      <input type="checkbox" id="t-c4">
+      <div class="task-body">
+        <label for="t-c4" class="task-title"><span class="tid">C4</span>Read the original regulatory sources</label>
+        <p class="task-detail">BOL Decision 511/BOL (capital tiers, outsourcing duties), Decision 11/BOL (LAK-only pricing), the "use only the Kip" notices and the data-protection law came from secondary summaries. The audit also did not re-read Notice No. 05.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Business</span><span class="src">Audit §3.1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Research">
+      <input type="checkbox" id="t-c5">
+      <div class="task-body">
+        <label for="t-c5" class="task-title"><span class="tid">C5</span>Confirm which tourist apps work today</label>
+        <p class="task-detail">Thai bank apps through the Thai–Lao QR link are confirmed (April 2024). Links with Vietnam, Cambodia and UnionPay are only reported. The challenge names WeChat Pay and Alipay, so prepare a clear answer for Chinese tourists.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Research</span><span class="src">D03 · Challenge #10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Business">
+      <input type="checkbox" id="t-c6">
+      <div class="task-body">
+        <label for="t-c6" class="task-title"><span class="tid">C6</span>Check the LAK rate on pitch day</label>
+        <p class="task-detail">The audit converts at an assumed 21,500 LAK per USD. Update the USD figures on the budget and business-model slides.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Business</span><span class="src">Audit §5</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Business">
+      <input type="checkbox" id="t-c7">
+      <div class="task-body">
+        <label for="t-c7" class="task-title"><span class="tid">C7</span>Sanity-check the pilot budget locally</label>
+        <p class="task-detail">Developer salaries, field-agent pay and legal fees in the 224,365,000 LAK six-month budget are assumptions, not quotes.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Business</span><span class="src">Audit §5.6</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-d" aria-labelledby="pd-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">D</p>
+    <h2 id="pd-h">Pitch deck</h2>
+    <p class="phase-when">Before the pitch</p>
+    <p class="phase-note">Bring <code>exports/pitch_deck_slide.html</code> in line with the IBC template and the ledger.</p>
+    <p class="phase-count">0 of 8 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d1">
+      <div class="task-body">
+        <label for="t-d1" class="task-title"><span class="tid">D1</span>Complete the title slide</label>
+        <p class="task-detail">Add the challenge number and title (#10, cross-border payment for merchants), the team name, the member profiles from A7 and the tagline.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">IBC template · Deck slide 1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d2">
+      <div class="task-body">
+        <label for="t-d2" class="task-title"><span class="tid">D2</span>Add the Expected Impact &amp; Sustainability slide</label>
+        <p class="task-detail">The template requires it and the 12-slide draft has none. Cover the vendor's financial gain (tourist sales kept, lower effective fee), social and ESG impact, and how it scales (more corridors, domestic micro-merchants).</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">IBC template</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Product">
+      <input type="checkbox" id="t-d3">
+      <div class="task-body">
+        <label for="t-d3" class="task-title"><span class="tid">D3</span>Show the vendor's day before and after</label>
+        <p class="task-detail">The template asks for a before/after comparison of the business owner's life. The user-journey slide explains the flow but does not compare.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Product</span><span class="src">IBC template · Deck slide 7</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d4">
+      <div class="task-body">
+        <label for="t-d4" class="task-title"><span class="tid">D4</span>Fill in the contact details</label>
+        <p class="task-detail">Replace [email], [phone] and [Facebook / LinkedIn] on the closing slide.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">Deck slide 12</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d5">
+      <div class="task-body">
+        <label for="t-d5" class="task-title"><span class="tid">D5</span>Check every claim against the ledger</label>
+        <p class="task-detail">The deck presents pending proposals as the plan: the handover light, Quick mode, the hybrid revenue model and "LAK to your own bank account". After B3, keep what was agreed and label the rest as proposals. Never say "instant", "cheapest in Laos" or "0% fees".</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">README · Audit §5.7</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Research">
+      <input type="checkbox" id="t-d6">
+      <div class="task-body">
+        <label for="t-d6" class="task-title"><span class="tid">D6</span>Put the interview evidence on the slides</label>
+        <p class="task-detail">Add the strongest findings from C1–C2 to the problem and root-cause slides, which are still marked as hypotheses.</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Research</span><span class="src">Deck slides 2–3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Product">
+      <input type="checkbox" id="t-d7">
+      <div class="task-body">
+        <label for="t-d7" class="task-title"><span class="tid">D7</span>Build a clickable Lao mock-up for the demo</label>
+        <p class="task-detail">Tap through Order mode, the green screen and the daily summary using the slide 6 wireframes. The brief's day 3–4 goal is a mock-up a newcomer can explain back. Keep any QR on it non-payable and labelled as a sample.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Product</span><span class="src">Brief §10 · Deck slide 6</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d8">
+      <div class="task-body">
+        <label for="t-d8" class="task-title"><span class="tid">D8</span>Export and test the final files</label>
+        <p class="task-detail">Export the deck to PDF or the required format, test it on the venue setup, and keep offline copies of the deck, the flowchart and the brief.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-e" aria-labelledby="pe-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">E</p>
+    <h2 id="pe-h">Rehearsal</h2>
+    <p class="phase-when">Last two days before the pitch</p>
+    <p class="phase-note">Short answers, clear speakers, nothing claimed beyond the evidence.</p>
+    <p class="phase-count">0 of 3 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-e1">
+      <div class="task-body">
+        <label for="t-e1" class="task-title"><span class="tid">E1</span>Script and time the talk</label>
+        <p class="task-detail">Start from the 1–2 minute story in brief §11 and fit the full deck to the time limit confirmed in A1.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">Brief §11</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-e2">
+      <div class="task-body">
+        <label for="t-e2" class="task-title"><span class="tid">E2</span>Run a mock judging session</label>
+        <p class="task-detail">One teammate asks judge-style questions on partners, fees, regulation, WeChat Pay and Alipay, and what is proven versus assumed.</p>
+        <p class="task-meta"><span class="pill pill-block">Blocks pitch</span><span class="area">Pitch</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="Lead">
+      <input type="checkbox" id="t-e3">
+      <div class="task-body">
+        <label for="t-e3" class="task-title"><span class="tid">E3</span>Make sure everyone can answer the five questions</label>
+        <p class="task-detail">Who do we solve for? Which app does the tourist use? Whose account does the money reach, and through whom? Who pays our business? What is agreed and what still needs proof?</p>
+        <p class="task-meta"><span class="pill pill-soon">Before pitch</span><span class="area">Lead</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-f" aria-labelledby="pf-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">F</p>
+    <h2 id="pf-h">Team workspace</h2>
+    <p class="phase-when">Optional, any time</p>
+    <p class="phase-note">Discord setup. It is not part of the payment system.</p>
+    <p class="phase-count">0 of 5 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+      <input type="checkbox" id="t-f1">
+      <div class="task-body">
+        <label for="t-f1" class="task-title"><span class="tid">F1</span>Run the Discord setup script</label>
+        <p class="task-detail">Copy the server ID, run <code>setup_discord.py</code> with <code>--dry-run --adopt-existing</code>, review the preview, then run it with <code>--apply</code>. Keep the bot token in the hidden prompt or an environment variable.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">output/discord/README.md</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+      <input type="checkbox" id="t-f2">
+      <div class="task-body">
+        <label for="t-f2" class="task-title"><span class="tid">F2</span>Assign roles and check access</label>
+        <p class="task-detail">Give teammates Team Member and coordinators Team Lead by hand, then check what a Guest / Mentor can see before inviting reviewers.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+      <input type="checkbox" id="t-f3">
+      <div class="task-body">
+        <label for="t-f3" class="task-title"><span class="tid">F3</span>Post and pin the welcome and project overview</label>
+        <p class="task-detail">Copy both from the server blueprint and fill in the coordinator, role owners, next milestone and links.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §4–5</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+      <input type="checkbox" id="t-f4">
+      <div class="task-body">
+        <label for="t-f4" class="task-title"><span class="tid">F4</span>Remove the setup bot</label>
+        <p class="task-detail">The channels and roles it created stay after it leaves.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">output/discord/README.md</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="Workspace">
+      <input type="checkbox" id="t-f5">
+      <div class="task-body">
+        <label for="t-f5" class="task-title"><span class="tid">F5</span>Post these tasks in #tasks</label>
+        <p class="task-detail">One task per message, each with one owner, a due date and a clear result. "Copy open tasks" at the top of this page gives you the list as text.</p>
+        <p class="task-meta"><span class="pill pill-opt">Optional</span><span class="area">Workspace</span><span class="src">Blueprint §2</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-g" aria-labelledby="pg-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">G</p>
+    <h2 id="pg-h">Feasibility</h2>
+    <p class="phase-when">Months 1–3 after the competition</p>
+    <p class="gate"><strong>Gate 1:</strong> written partner scope and regulatory classification (D01–D03). No gate, no build.</p>
+    <p class="phase-count">0 of 5 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
+      <input type="checkbox" id="t-g1">
+      <div class="task-body">
+        <label for="t-g1" class="task-title"><span class="tid">G1</span>Hold the first BCEL conversation</label>
+        <p class="task-detail">Ask about product scope, fees, the payment and bank-credit data feed, a fee per active merchant, and per-payment events for static QR.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">Deck next step 2 · D05 · D06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
+      <input type="checkbox" id="t-g2">
+      <div class="task-body">
+        <label for="t-g2" class="task-title"><span class="tid">G2</span>Get a written legal classification</label>
+        <p class="task-detail">The startup's permitted role and the approvals it needs, in writing. A bank's licence does not cover the startup.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">D01 · Deck next step 3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
+      <input type="checkbox" id="t-g3">
+      <div class="task-body">
+        <label for="t-g3" class="task-title"><span class="tid">G3</span>Resolve partner dependencies D02–D10</label>
+        <p class="task-detail">Partner licence scope, the app and QR capability matrix, onboarding and data reuse (including a micro-merchant tier), a full fee quote, credit visibility, payout timing and holidays, refunds and disputes, hosting and incident duties. Advance payout (D08) stays out of the pitch.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">01 §8 · G-UX-06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-g4">
+      <div class="task-body">
+        <label for="t-g4" class="task-title"><span class="tid">G4</span>Choose the technology stack</label>
+        <p class="task-detail">Deferred until the partner's SDK/API requirements, team skills, hosting rules and device limits are known.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
+      <input type="checkbox" id="t-g5">
+      <div class="task-body">
+        <label for="t-g5" class="task-title"><span class="tid">G5</span>Usability-test the prototype with vendors</label>
+        <p class="task-detail">Test in Lao. Target: at least 90% of vendors make the right handover decision on the first try across the six scenarios.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-01 · Deck next step 4</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-h" aria-labelledby="ph-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">H</p>
+    <h2 id="ph-h">Sandbox build</h2>
+    <p class="phase-when">Months 3–6</p>
+    <p class="gate"><strong>Gate 2:</strong> the sandbox passes duplicate, timeout, offline and fee-mismatch tests, and the team has approval to pilot.</p>
+    <p class="phase-count">0 of 8 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h1">
+      <div class="task-body">
+        <label for="t-h1" class="task-title"><span class="tid">H1</span>Build the payment core</label>
+        <p class="task-detail">Idempotent orders, versioned fee quotes, one partner intent saved before the QR shows, an authenticated event inbox, a state reducer with audit journal, a transactional outbox and a reconciliation worker. Money in integer LAK minor units.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §5.2, §7 · C04 · C09 · C10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
+      <input type="checkbox" id="t-h2">
+      <div class="task-body">
+        <label for="t-h2" class="task-title"><span class="tid">H2</span>Build the merchant app</label>
+        <p class="task-detail">Lao keypad with a 000 key and spoken read-back, the handover-light sale screen, the last three receipts, a daily summary, cashier and owner modes, owner-only digital refunds and honest offline states.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">F01–F09 · G-UX-03, 05, 07, 08</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
+      <input type="checkbox" id="t-h3">
+      <div class="task-body">
+        <label for="t-h3" class="task-title"><span class="tid">H3</span>Record the Lao audio</label>
+        <p class="task-detail">Native-speaker number segments, about 8 merchant chimes to choose from, and a 2-digit code that matches the green screen. Never replay an old event as new.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">G-UX-04 · C08</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h4">
+      <div class="task-body">
+        <label for="t-h4" class="task-title"><span class="tid">H4</span>Make it reliable on low-end Android</label>
+        <p class="task-detail">A battery-optimisation walkthrough per phone maker, a visible "listening" heartbeat, foreground polling on the sell screen and a volume check before each shift.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-UX-05 · G-EC-10, 11</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h5">
+      <div class="task-body">
+        <label for="t-h5" class="task-title"><span class="tid">H5</span>Add AML monitoring hooks</label>
+        <p class="task-detail">Flag unusual ticket sizes, velocity, night-time activity, category mismatch and repeat payers, and export them for the bank's reporting process.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-REG-03</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h6">
+      <div class="task-body">
+        <label for="t-h6" class="task-title"><span class="tid">H6</span>Implement the security controls</label>
+        <p class="task-detail">Tenant isolation, role scopes, step-up checks for account changes, encryption, secret rotation, scoped and revocable receipts, backup and restore, incident and breach runbooks.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.1 · G-REG-07</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h7">
+      <div class="task-body">
+        <label for="t-h7" class="task-title"><span class="tid">H7</span>Pass the integration checks</label>
+        <p class="task-detail">Eligible app to approved QR, confirmation kept separate from credit, duplicate and reordered callbacks, timeout with late success, offline reconnect, quote versus actual deductions, partial credit and refunds, access attempts, restore after interruption.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">01 §11.2</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Engineering">
+      <input type="checkbox" id="t-h8">
+      <div class="task-body">
+        <label for="t-h8" class="task-title"><span class="tid">H8</span>Cover the market-floor edge cases</label>
+        <p class="task-detail">QR swaps, fake sounds, under- and overpayment, split payments, paying the wrong stall, limits hit mid-sale, holiday payout delays, wrong device clocks, and every other G-EC case accepted in B1.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Engineering</span><span class="src">G-EC-01…22</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-i" aria-labelledby="pi-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">I</p>
+    <h2 id="pi-h">Controlled pilot</h2>
+    <p class="phase-when">Months 6–12</p>
+    <p class="gate"><strong>Gate 3:</strong> 30-day retention, cost to serve and payout timing measured, then decide to expand or stop.</p>
+    <p class="phase-count">0 of 4 done</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
+      <input type="checkbox" id="t-i1">
+      <div class="task-body">
+        <label for="t-i1" class="task-title"><span class="tid">I1</span>Prepare the market</label>
+        <p class="task-detail">60 tamper-evident QR stands with "scan with your bank app" in English, Thai, Vietnamese and Chinese, listing only certified apps. Set up the help desk and retire personal and foreign QR codes.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">G-UX-09 · G-REG-04 · G-EC-01</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Business">
+      <input type="checkbox" id="t-i2">
+      <div class="task-body">
+        <label for="t-i2" class="task-title"><span class="tid">I2</span>Onboard 30–50 vendors</label>
+        <p class="task-detail">Agent-assisted at the market help desk. Merchants type any credentials on their own device, and acceptance switches on only after partner review.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Business</span><span class="src">F03 · G-UX-06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Product">
+      <input type="checkbox" id="t-i3">
+      <div class="task-body">
+        <label for="t-i3" class="task-title"><span class="tid">I3</span>Run the soundbox trial arm</label>
+        <p class="task-detail">10 paired devices that can be revoked, compared against phone-only vendors.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Product</span><span class="src">F10 · G-UX-04</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="Lead">
+      <input type="checkbox" id="t-i4">
+      <div class="task-body">
+        <label for="t-i4" class="task-title"><span class="tid">I4</span>Measure and decide</label>
+        <p class="task-detail">Track the A6 metrics, the real cost to serve and the real payout timing, then decide whether to expand or stop.</p>
+        <p class="task-meta"><span class="pill pill-later">After competition</span><span class="area">Lead</span><span class="src">Deck Gate 3</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="never" aria-labelledby="never-h">
+  <div>
+    <h2 id="never-h">Never do</h2>
+    <p class="phase-note">Agreed limits. They apply to the demo too.</p>
+  </div>
+  <ul>
+    <li><span>Read bank-app push notifications as a "credit feed", even for a demo. <span class="src">G-RJ-01</span></span></li>
+    <li><span>Add a tourist convenience fee or a startup FX markup. <span class="src">G-RJ-02 · C12</span></span></li>
+    <li><span>Hold customer funds, run balances, do FX or connect directly to LAPNet. <span class="src">C01 · C03</span></span></li>
+    <li><span>Ask for or collect a bank PIN or OTP, including during agent-assisted onboarding. <span class="src">01 §5.1</span></span></li>
+    <li><span>Treat a screenshot or a sound as proof of payment. <span class="src">C07</span></span></li>
+    <li><span>Promise instant payout or advances without an authorised funder under contract. <span class="src">C13 · G-REG-05</span></span></li>
+    <li><span>Show THB, USD or CNY reference prices on merchant materials unless counsel confirms it is allowed. <span class="src">G-REG-02</span></span></li>
+  </ul>
+</section>
+
+<footer class="foot">
+  <p>Built from <code>01_CODEX_ARCH.md</code> v0.1, <code>02_GEMINI_AUDIT.md</code> v0.1, <code>03_FINAL_SPEC.md</code> v0.1, the team brief v2.0, the pitch deck draft, <code>IBC.pdf</code> and the MSME challenge list (challenge #10).</p>
+  <p>Ticks are saved in this browser only. Pitch-stage proposal: no partner agreement, licence, fee quote, regulatory approval or pilot result is implied.</p>
+  <p>v1.0 · 13 October 2026</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var KEY = 'sabaidee-task-list-v1';
+  var ticks = {};
+  try { ticks = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { ticks = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(ticks)); } catch (e) {} }
+
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.task input[type="checkbox"]'));
+  var phases = Array.prototype.slice.call(document.querySelectorAll('.phase'));
+  var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter'));
+  var hideDone = document.getElementById('hide-done');
+  var filter = 'all';
+
+  function matches(li) {
+    if (filter === 'pitch') return li.dataset.when === 'pitch';
+    if (filter === 'later') return li.dataset.when === 'later';
+    if (filter === 'block') return li.dataset.pri === 'block';
+    return true;
+  }
+
+  function render() {
+    var done = 0, blockers = 0, blockersOpen = 0;
+    boxes.forEach(function (box) {
+      var li = box.closest('.task');
+      li.classList.toggle('is-done', box.checked);
+      if (box.checked) done++;
+      if (li.dataset.pri === 'block') { blockers++; if (!box.checked) blockersOpen++; }
+      li.hidden = !matches(li) || (hideDone.checked && box.checked);
+    });
+    phases.forEach(function (section) {
+      var items = section.querySelectorAll('.task');
+      var shown = 0, finished = 0;
+      items.forEach(function (li) {
+        if (!li.hidden) shown++;
+        if (li.classList.contains('is-done')) finished++;
+      });
+      section.hidden = shown === 0;
+      section.querySelector('.phase-count').textContent = finished + ' of ' + items.length + ' done';
+    });
+    document.getElementById('progress-text').textContent = done + ' of ' + boxes.length + ' tasks done';
+    document.getElementById('blocker-text').textContent = blockersOpen === 0
+      ? 'All ' + blockers + ' pitch blockers done'
+      : blockersOpen + ' of ' + blockers + ' pitch blockers still open';
+    document.getElementById('bar-fill').style.width = (boxes.length ? (done / boxes.length) * 100 : 0) + '%';
+  }
+
+  boxes.forEach(function (box) {
+    box.checked = !!ticks[box.id];
+    box.addEventListener('change', function () {
+      if (box.checked) ticks[box.id] = 1; else delete ticks[box.id];
+      save();
+      render();
+    });
+  });
+
+  filterButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filter = btn.dataset.filter;
+      filterButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      render();
+    });
+  });
+  hideDone.addEventListener('change', render);
+
+  function openTasksText() {
+    var lines = ['Sabaidee Merchant: open tasks'];
+    phases.forEach(function (section) {
+      var rows = [];
+      section.querySelectorAll('.task').forEach(function (li) {
+        var box = li.querySelector('input');
+        if (box.checked || !matches(li)) return;
+        var id = li.querySelector('.tid').textContent.trim();
+        var title = li.querySelector('.task-title').textContent.trim().slice(id.length).trim();
+        var pri = li.querySelector('.pill').textContent.trim();
+        rows.push('• ' + id + ' ' + title + ' (' + li.dataset.area + ', ' + pri + ')');
+      });
+      if (rows.length) {
+        var letter = section.querySelector('.phase-letter').textContent.trim();
+        var name = section.querySelector('h2').textContent.trim();
+        lines.push('', letter + '. ' + name);
+        lines = lines.concat(rows);
+      }
+    });
+    return { text: lines.join('\n'), count: lines.filter(function (l) { return l.indexOf('• ') === 0; }).length };
+  }
+
+  var status = document.getElementById('copy-status');
+  var fallback = document.getElementById('copy-fallback');
+  document.getElementById('copy-open').addEventListener('click', function () {
+    var out = openTasksText();
+    function showFallback() {
+      fallback.value = out.text;
+      fallback.hidden = false;
+      fallback.focus();
+      fallback.select();
+      status.textContent = 'Copying is blocked here. The ' + out.count + ' open tasks are selected below; copy them with your keyboard.';
+    }
+    fallback.hidden = true;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out.text).then(function () {
+        status.textContent = 'Copied ' + out.count + ' open tasks.';
+      }, showFallback);
+    } else {
+      showFallback();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
+<!--
+# Version Log
+2026-10-13 03:32:02 +07:00 (Asia/Bangkok) | v1.0 | Claude | Created the project task list: 57 tasks in nine phases (decisions, spec loop, evidence, deck, rehearsal, workspace, feasibility, sandbox, pilot), 19 marked as pitch blockers, plus the agreed never-do list. Sources: 01/02/03 v0.1, brief v2.0, deck draft, IBC template, challenge list #10.
+-->
