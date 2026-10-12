@@ -10,10 +10,10 @@
    Single deliberate light look: market stalls are bright and outdoors, and the traffic-light colours must read the same for everyone. */
 :root{
   color-scheme:light;
-  --ground:#e7ece3;--paper:#fffef9;--card:#ffffff;--line:#d9e3da;
+  --ground:#e7ece3;--paper:#fffef9;--card:#ffffff;--line:#d9e3da;--grid:#e8eee8;
   --ink:#163e39;--body:#304844;--muted:#5f7671;
   --brand:#17684f;--brand2:#1f8a66;--soft:#e4efe6;
-  --go:#1f8a66;--go-deep:#14573f;--wait:#c98a12;--wait-soft:#fbefd6;--stop:#a63838;--stop-soft:#f7e3e0;
+  --go:#1f8a66;--go-deep:#14573f;--wait:#c98a12;--wait-soft:#fbefd6;--wait-ink:#6b4a08;--stop:#a63838;--stop-soft:#f7e3e0;
   --gold:#f3d58f;--frame:#0f1f1c;
   --lao:AppLao,"Noto Sans Lao","Phetsarath OT","Saysettha OT",system-ui,sans-serif;
   --num:system-ui,-apple-system,"Segoe UI",Roboto,Arial,AppLao,sans-serif;
@@ -21,7 +21,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--ground);color:var(--body);font-family:var(--lao);font-size:15px;line-height:1.6}
-button,input{font:inherit;color:inherit}
+button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--wait);outline-offset:2px}
 .page{max-width:1120px;margin:0 auto;padding-block:20px 40px;padding-inline:16px}
@@ -41,21 +41,26 @@ button{cursor:pointer}
 .shop{flex:1;min-width:0}
 .shop b{display:block;color:var(--ink);font-size:15px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .shop small{color:var(--muted);font-size:12px}
-.live{display:flex;align-items:center;gap:6px;font:700 11px var(--lao);padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--brand)}
+.live{display:flex;align-items:center;gap:6px;font:700 11px var(--lao);padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--brand);white-space:nowrap}
 .live i{width:8px;height:8px;border-radius:50%;background:var(--go);animation:beat 1.6s infinite}
 .live.off{background:var(--wait-soft);color:#7a5308}.live.off i{background:var(--wait);animation:none}
 @keyframes beat{50%{opacity:.25}}
-.role{font:700 11px var(--lao);padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--card)}
+.role{font:700 11px var(--lao);padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--card);white-space:nowrap}
 .role.owner{background:var(--ink);color:#fff;border-color:var(--ink)}
 .screen{flex:1;overflow-y:auto;padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--card);padding-bottom:6px}
-.tabs button{border:0;background:none;padding:9px 2px 6px;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.screen>*{flex-shrink:0}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--card);padding-bottom:6px}
+.tabs button{border:0;background:none;padding:9px 2px 6px;font-size:11.5px;line-height:1.3;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
 .tabs button svg{width:22px;height:22px}
 .tabs button[aria-selected="true"]{color:var(--brand);font-weight:700}
-.tabs .badge{position:absolute;top:5px;right:calc(50% - 20px);background:var(--stop);color:#fff;font:700 10px var(--num);border-radius:999px;padding:0 5px;line-height:16px}
+.tabs .badge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--stop);color:#fff;font:700 10px var(--num);border-radius:999px;padding:0 5px;line-height:16px;min-width:16px}
+.subhead{display:flex;align-items:center;gap:8px;margin:-4px 0 0}
+.back{border:0;background:var(--soft);color:var(--brand);border-radius:10px;padding:5px 10px;font-weight:700;font-size:14px}
+.subhead h2{margin:0;font-size:18px;color:var(--ink);line-height:1.4}
 .banner{border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
-.banner.wait{background:var(--wait-soft);color:#6b4a08}
+.banner.wait{background:var(--wait-soft);color:var(--wait-ink)}
 .banner.info{background:var(--soft);color:var(--ink)}
+.banner.stop{background:var(--stop-soft);color:var(--stop)}
 .banner b{display:block}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:#edf2ec;border-radius:12px;padding:4px;gap:4px}
 .seg button{border:0;border-radius:9px;padding:8px 6px;background:none;font-size:14px;color:var(--muted);line-height:1.35}
@@ -64,6 +69,7 @@ button{cursor:pointer}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
 .label{font-size:12.5px;color:var(--muted)}
 h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
+p.label{margin:0}
 /* quick mode */
 .listen{text-align:center;padding:18px 14px;background:linear-gradient(180deg,#f2f8f3,#fff);border:1px solid #cfe0d2}
 .ring{width:96px;height:96px;margin:4px auto 10px;border-radius:50%;display:grid;place-items:center;background:var(--soft);position:relative}
@@ -73,6 +79,7 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 @keyframes ripple{0%{transform:scale(.9);opacity:.5}100%{transform:scale(1.25);opacity:0}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font:600 13.5px var(--num);color:var(--ink)}
+.chip.lao{font-family:var(--lao);font-weight:500}
 .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
 .expect{display:flex;justify-content:space-between;align-items:baseline;margin-top:2px}
 .expect b{font:800 22px var(--num);color:var(--ink)}
@@ -82,23 +89,25 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 .amount .v{font:800 46px/1.1 var(--num);color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .amount .v.empty{color:#b8c6c1}
 .readback{font-size:13px;color:var(--muted);min-height:21px}
-.net{display:flex;justify-content:space-between;background:var(--soft);border-radius:10px;padding:7px 12px;font-size:13.5px;color:var(--brand)}
-.net b{font:800 15px var(--num)}
-.warn{background:var(--wait-soft);color:#6b4a08;border-radius:10px;padding:7px 12px;font-size:13px}
+.net{display:flex;justify-content:space-between;gap:8px;background:var(--soft);border-radius:10px;padding:7px 12px;font-size:13.5px;color:var(--brand)}
+.net b{font:800 15px var(--num);white-space:nowrap}
+.warn{background:var(--wait-soft);color:var(--wait-ink);border-radius:10px;padding:7px 12px;font-size:13px}
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .keys button{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 0;font:700 22px var(--num);color:var(--ink)}
 .keys button:active{background:var(--soft)}
 .keys .z{background:#faf0d9;color:#7a5308;border-color:#eedcb4}
-.primary{border:0;border-radius:14px;background:var(--brand);color:#fff;font-weight:700;font-size:16px;padding:13px}
-.primary:disabled{background:#b8c6c1}
+.primary{border:0;border-radius:14px;background:var(--brand);color:#fff;font-weight:700;font-size:16px;padding:12px}
+.primary:disabled{background:#b8c6c1;cursor:not-allowed}
+.primary.small{font-size:14px;padding:8px 14px;border-radius:10px}
 .ghost{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:9px 12px;font-size:14px;color:var(--ink)}
 .ghost.small{padding:6px 10px;font-size:13px}
 .danger{border:1px solid #ecc9c4;background:var(--stop-soft);color:var(--stop);border-radius:12px;padding:9px 12px;font-weight:700}
+.danger.small{padding:6px 10px;font-size:13px}
 .qrbox{text-align:center}
 .qrbox canvas{width:200px;height:200px;image-rendering:pixelated;border:8px solid #fff;outline:2px solid var(--ink);border-radius:4px;margin:6px auto;display:block}
 .qrbox .amt{font:800 30px var(--num);color:var(--ink)}
 .timer{font:700 13px var(--num);color:var(--muted)}
-.waiting{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--wait-soft);color:#6b4a08;border-radius:10px;padding:8px;font-size:14px}
+.waiting{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--wait-soft);color:var(--wait-ink);border-radius:10px;padding:8px;font-size:14px}
 .waiting i{width:10px;height:10px;border-radius:50%;background:var(--wait);animation:beat 1.2s infinite}
 /* rows */
 .tx{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px;width:100%;text-align:left}
@@ -108,20 +117,76 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 .tx .main b{font:800 15.5px var(--num);color:var(--ink)}
 .tx .main small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx .code{font:800 15px var(--num);color:var(--brand);background:var(--soft);border-radius:8px;padding:2px 7px}
-.pill{display:inline-block;font-size:11px;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:1px}
+.pill{display:inline-block;font-size:11px;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:1px;white-space:nowrap}
 .pill.ok{background:var(--soft);color:var(--brand)}.pill.wait{background:var(--wait-soft);color:#7a5308}.pill.stop{background:var(--stop-soft);color:var(--stop)}.pill.grey{background:#eef1ee;color:var(--muted)}
-/* summary */
+/* summary + report */
 .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
 .stat span{display:block;font-size:12.5px;color:var(--muted)}
 .stat b{font:800 20px var(--num);color:var(--ink);font-variant-numeric:tabular-nums}
 .stat.ok b{color:var(--brand)}.stat.wait b{color:#8a5d12}
 .stat.wide{grid-column:1/-1}
+.stat small{display:block;font-size:12px;color:var(--muted)}
 .creditbar{height:10px;border-radius:999px;background:var(--wait-soft);overflow:hidden;margin-top:6px}
 .creditbar i{display:block;height:100%;background:var(--go);border-radius:999px;transition:width .4s}
-.lock{text-align:center;padding:28px 16px}
-.lock svg{width:40px;height:40px;color:var(--muted)}
-/* settings */
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .readout{font-size:13px;color:var(--ink);min-height:21px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--body);margin-top:4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw-actual{background:var(--go)}
+.sw-fc{background:repeating-linear-gradient(135deg,var(--go) 0 2px,#cfe6da 2px 5px)}
+details.tableview summary{font-size:12.5px;color:var(--brand);cursor:pointer;margin-top:6px}
+details.tableview table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+details.tableview td,details.tableview th{border-bottom:1px solid var(--grid);padding:4px 6px;text-align:left}
+details.tableview td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--num)}
+.hours{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.hour{display:grid;grid-template-columns:44px 1fr 40px;gap:8px;align-items:center;font:600 12.5px var(--num);color:var(--body)}
+.hour .tr{height:12px;background:var(--grid);border-radius:999px;overflow:hidden}
+.hour .tr i{display:block;height:100%;background:var(--go);border-radius:0 4px 4px 0}
+.hour b{text-align:right;color:var(--ink)}
+.tips{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tips li{display:flex;gap:10px;font-size:13.5px;line-height:1.5}
+.tips li i{flex:none;width:24px;height:24px;border-radius:8px;background:var(--soft);color:var(--brand);display:grid;place-items:center;font:800 12px var(--num);font-style:normal}
+.split{display:flex;height:14px;border-radius:999px;overflow:hidden;gap:2px;margin-top:8px}
+.split i{display:block;height:100%}
+/* list menus */
+.menu{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.menu button{display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid var(--grid);background:none;padding:12px 14px;text-align:left;width:100%}
+.menu button:last-child{border-bottom:0}
+.menu .ic{width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--brand);display:grid;place-items:center;flex:none}
+.menu .ic svg{width:19px;height:19px}
+.menu .tx2{flex:1;min-width:0;line-height:1.4}
+.menu .tx2 b{display:block;color:var(--ink);font-size:14.5px}
+.menu .tx2 small{color:var(--muted);font-size:12px}
+.menu .chev{color:var(--muted);font-size:18px}
+.dotbadge{background:var(--stop);color:#fff;font:700 10px var(--num);border-radius:999px;padding:1px 6px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:14px 12px;text-align:left;display:flex;flex-direction:column;gap:6px;line-height:1.4;position:relative}
+.tile .ic{width:38px;height:38px;border-radius:12px;background:var(--soft);color:var(--brand);display:grid;place-items:center}
+.tile .ic svg{width:21px;height:21px}
+.tile b{color:var(--ink);font-size:14.5px}
+.tile small{color:var(--muted);font-size:12px}
+.tile .dotbadge{position:absolute;top:10px;right:10px}
+.profile{display:flex;gap:12px;align-items:center}
+.avatar{width:52px;height:52px;border-radius:16px;background:var(--brand);color:#fff;display:grid;place-items:center;font:800 22px var(--lao);flex:none}
+/* switches + forms */
+.row2{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--grid)}
+.row2:last-child{border-bottom:0}
+.row2 .t{flex:1;min-width:0;line-height:1.45}
+.row2 .t b{display:block;color:var(--ink);font-size:14.5px;font-weight:600}
+.row2 .t small{color:var(--muted);font-size:12px}
+.switch{width:46px;height:28px;border-radius:999px;border:0;background:#c5d0cb;position:relative;flex:none;padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:left .15s}
+.switch[aria-checked="true"]{background:var(--go)}
+.switch[aria-checked="true"]::after{left:21px}
+.switch:disabled{opacity:.6;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12.5px;color:var(--muted)}
+.field input,.field textarea{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;font-size:15px;min-width:0;width:100%}
+.field textarea{min-height:80px;resize:vertical}
+.field input[readonly]{background:#f3f6f1;color:var(--muted)}
+.form{display:flex;flex-direction:column;gap:10px}
 .opt{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .chimes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .chimes button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 4px;font-size:13.5px}
@@ -136,7 +201,60 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 .stand .langs{font-size:12.5px;color:var(--body)}
 .stand .name{font:800 14px var(--num);color:var(--brand);margin-top:4px}
 .result{border-radius:10px;padding:8px 12px;font-size:14px;margin-top:8px}
-.result.ok{background:var(--soft);color:var(--ink)}.result.bad{background:var(--stop-soft);color:var(--stop)}
+.result.ok{background:var(--soft);color:var(--ink)}.result.bad{background:var(--stop-soft);color:var(--stop)}.result.wait{background:var(--wait-soft);color:var(--wait-ink)}
+/* rewards */
+.points{background:linear-gradient(135deg,var(--ink),var(--brand));color:#fff;border-radius:16px;padding:16px}
+.points .v{font:800 34px/1.1 var(--num)}
+.points small{color:#d6ebe2}
+.points .tier{display:inline-block;background:#ffffff26;border-radius:999px;padding:2px 10px;font-size:12px;margin-left:6px}
+.points .bar{height:8px;border-radius:999px;background:#ffffff33;margin-top:10px;overflow:hidden}
+.points .bar i{display:block;height:100%;background:var(--gold);border-radius:999px}
+.reward{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--grid)}
+.reward:last-child{border-bottom:0}
+.reward .ic{width:40px;height:40px;border-radius:12px;background:#faf0d9;color:#8a5d12;display:grid;place-items:center;flex:none}
+.reward .ic svg{width:21px;height:21px}
+.reward .t{flex:1;min-width:0;line-height:1.4}
+.reward .t b{display:block;color:var(--ink);font-size:14px}
+.reward .t small{color:var(--muted);font-size:12px}
+.cost{font:800 13px var(--num);color:#8a5d12;white-space:nowrap}
+.voucher{border:2px dashed #e1c27c;border-radius:12px;padding:10px 12px;background:#fffaf0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.voucher code{font:800 15px var(--num);color:var(--ink);letter-spacing:1px}
+/* bills */
+.billcard{border-radius:14px;background:#f7faf6;border:1px solid var(--line);padding:12px 14px}
+.billcard .amt{font:800 28px var(--num);color:var(--ink)}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;padding:3px 0}
+.kv span{color:var(--muted)}
+.kv b{color:var(--ink);font-weight:600;text-align:right}
+.steps{display:flex;gap:6px;font-size:11.5px;color:var(--muted)}
+.steps span{flex:1;text-align:center;border-top:3px solid var(--grid);padding-top:4px}
+.steps span.on{border-color:var(--go);color:var(--brand);font-weight:700}
+/* support chat */
+.chat{display:flex;flex-direction:column;gap:8px;background:#f3f6f1;border-radius:14px;padding:10px;max-height:300px;overflow-y:auto}
+.msg{max-width:84%;padding:8px 11px;border-radius:14px;font-size:13.5px;line-height:1.5}
+.msg.me{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px;color:var(--body)}
+.msg.sys{align-self:center;background:none;color:var(--muted);font-size:12px;padding:2px}
+.msg small{display:block;font-size:11px;opacity:.75}
+.compose{display:flex;gap:8px}
+.compose input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:#fff}
+details.faq{border-bottom:1px solid var(--grid);padding:8px 0}
+details.faq:last-child{border-bottom:0}
+details.faq summary{cursor:pointer;color:var(--ink);font-weight:600;font-size:14px;line-height:1.5}
+details.faq p{margin:6px 0 0;font-size:13.5px;color:var(--body)}
+/* security */
+.score{display:flex;align-items:center;gap:14px}
+.gauge{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative}
+.gauge b{font:800 22px var(--num);color:var(--ink);background:var(--card);width:64px;height:64px;border-radius:50%;display:grid;place-items:center}
+.lvl{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:15px}
+.lvl i{width:12px;height:12px;border-radius:50%}
+.checkrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--grid);font-size:13.5px}
+.checkrow:last-child{border-bottom:0}
+.checkrow .mk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:800 12px var(--num);color:#fff;flex:none}
+.checkrow .mk.ok{background:var(--go)}.checkrow .mk.no{background:var(--wait)}
+.checkrow .t{flex:1;min-width:0}
+.progress{height:8px;border-radius:999px;background:var(--grid);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--go);transition:width .3s}
+.langs-list button{display:flex;justify-content:space-between;align-items:center;width:100%}
 /* overlay */
 .overlay{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px 22px;color:#fff;animation:pop .22s ease-out}
 .overlay[hidden]{display:none!important}
@@ -146,13 +264,16 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 @keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
 .overlay .icon{width:92px;height:92px;border-radius:50%;background:#ffffff2b;display:grid;place-items:center;margin-bottom:12px}
 .overlay .icon svg{width:52px;height:52px}
-.overlay .t{font-size:30px;font-weight:800;line-height:1.35}
+.overlay .t{font-size:28px;font-weight:800;line-height:1.35}
 .overlay .a{font:800 34px var(--num);margin:6px 0 2px;font-variant-numeric:tabular-nums}
 .overlay .sub{font-size:15px;opacity:.95;max-width:300px;line-height:1.55}
 .overlay .bigcode{background:#fff;color:var(--go-deep);border-radius:16px;padding:2px 22px;font:800 48px var(--num);letter-spacing:6px;margin:10px 0 4px}
 .overlay .codelabel{font-size:13px;opacity:.9}
 .overlay .say{margin-top:12px;background:#00000029;border-radius:12px;padding:8px 12px;font-size:14px;max-width:300px}
-.overlay .done{margin-top:18px;border:2px solid #ffffffb0;background:#ffffff1f;color:#fff;border-radius:14px;padding:11px 28px;font-weight:700;font-size:16px}
+.overlay .pts{margin-top:8px;font-size:13px;background:#ffffff26;border-radius:999px;padding:2px 12px}
+.overlay .btns{display:flex;flex-direction:column;gap:8px;margin-top:18px;width:100%;max-width:280px}
+.overlay .done{border:2px solid #ffffffb0;background:#ffffff1f;color:#fff;border-radius:14px;padding:11px 20px;font-weight:700;font-size:16px}
+.overlay .done.solid{background:#fff;color:#7a5308;border-color:#fff}
 .toast{position:absolute;left:14px;right:14px;bottom:76px;z-index:9;background:var(--ink);color:#fff;border-radius:12px;padding:10px 14px;font-size:13.5px;box-shadow:0 8px 20px #0003}
 /* demo panel */
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -171,33 +292,28 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 .log p{margin:0;line-height:1.5}
 .log time{font:600 11.5px var(--num);color:var(--muted);margin-right:6px}
 .foot{font-size:12.5px;color:var(--muted);line-height:1.55}
-@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="page">
   <header class="intro">
     <h1>Sabaidee Merchant <span>· ຕົ້ນແບບແອັບຝ່າຍຮ້ານ</span></h1>
-    <p>ຕົ້ນແບບສຳລັບສາທິດ: ບໍ່ເຊື່ອມທະນາຄານ ແລະ ບໍ່ມີເງິນຈິງ. ໃຊ້ແຜງ "ຈຳລອງເຫດການ" ເພື່ອສະແດງວ່າແອັບຮັບມືແຕ່ລະກໍລະນີແນວໃດ. ຕົວເລກ ແລະ ຄ່າທຳນຽມ 0.5% ເປັນຕົວຢ່າງ.</p>
+    <p>ຕົ້ນແບບສຳລັບສາທິດ: ບໍ່ເຊື່ອມທະນາຄານ ແລະ ບໍ່ມີເງິນຈິງ. ໃຊ້ແຜງ "ຈຳລອງເຫດການ" ເພື່ອສະແດງວ່າແອັບຮັບມືແຕ່ລະກໍລະນີແນວໃດ. ຕົວເລກ, ຄ່າທຳນຽມ 0.5%, ບິນ ແລະ ລາງວັນ ເປັນຕົວຢ່າງ.</p>
   </header>
 
   <div class="layout">
     <!-- PHONE -->
-    <div class="phone" id="phone" aria-label="ໜ້າຈໍແອັບ Sabaidee Merchant">
+    <div class="phone" id="phone" aria-label="Sabaidee Merchant">
       <div class="sbar"><span id="clock">18:42</span><span id="net">4G</span></div>
       <div class="appbar">
         <div class="logo" aria-hidden="true">S</div>
-        <div class="shop"><b>ຮ້ານ ແມ່ຄຳ · ເຝີ</b><small>ຕະຫຼາດມືດ · ຮ້ານ B-12</small></div>
+        <div class="shop"><b id="shopName">ຮ້ານ ແມ່ຄຳ · ເຝີ</b><small id="shopSub">ຕະຫຼາດມືດ · ຮ້ານ B-12</small></div>
         <span class="live" id="live"><i></i><span id="liveText">ພ້ອມຮັບ</span></span>
         <span class="role" id="roleChip">ພະນັກງານ</span>
       </div>
       <main class="screen" id="screen"></main>
-      <nav class="tabs" role="tablist" aria-label="ເມນູແອັບ">
-        <button role="tab" id="tab-sell" aria-selected="true" data-tab="sell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg>ຂາຍ</button>
-        <button role="tab" id="tab-history" aria-selected="false" data-tab="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 6h14M5 12h14M5 18h9"/></svg>ລາຍການ</button>
-        <button role="tab" id="tab-summary" aria-selected="false" data-tab="summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>ສະຫຼຸບ<span class="badge" id="sumBadge" hidden>1</span></button>
-        <button role="tab" id="tab-settings" aria-selected="false" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>ຕັ້ງຄ່າ</button>
-      </nav>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Menu"></nav>
       <div class="overlay" id="overlay" hidden role="alertdialog" aria-live="assertive"></div>
       <div class="toast" id="toast" hidden role="status"></div>
     </div>
@@ -225,7 +341,15 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
           <button class="ev" data-ev="fake"><span class="sw" style="background:var(--stop)"></span><span><b>ສຽງ "ຈ່າຍແລ້ວ" ປອມ</b><small>ຫຼິ້ນຈາກມືຖືລູກຄ້າ; ແອັບບໍ່ປ່ຽນ</small></span></button>
           <button class="ev" data-ev="dup"><span class="sw" style="background:#9aa9a5"></span><span><b>ຂໍ້ມູນຊ້ຳຈາກທະນາຄານ</b><small>ບໍ່ແຈ້ງຊ້ຳ, ບໍ່ນັບຍອດຊ້ຳ</small></span></button>
           <button class="ev" data-ev="offline" id="evOffline" aria-pressed="false"><span class="sw" style="background:var(--wait)"></span><span><b>ມືຖືຂາດເນັດ</b><small>ກົດອີກຄັ້ງເພື່ອເຊື່ອມຄືນ</small></span></button>
-          <button class="ev" data-ev="credit"><span class="sw" style="background:var(--brand)"></span><span><b>ເງິນເຂົ້າບັນຊີທະນາຄານ</b><small>ອັບເດດສະຫຼຸບ, ບໍ່ແຈ້ງສຽງຕອນຂາຍ</small></span></button>
+          <button class="ev" data-ev="credit"><span class="sw" style="background:var(--brand)"></span><span><b>ເງິນເຂົ້າບັນຊີທະນາຄານ</b><small>ອັບເດດລາຍງານ, ບໍ່ແຈ້ງສຽງຕອນຂາຍ</small></span></button>
+        </div>
+      </div>
+      <div class="group">
+        <div class="gt">ບັນຊີ, ຄວາມປອດໄພ ແລະ ບໍລິການ</div>
+        <div class="evs">
+          <button class="ev" data-ev="login"><span class="sw" style="background:var(--stop)"></span><span><b>ເຂົ້າລະບົບຈາກເຄື່ອງອື່ນ</b><small>ແຈ້ງເຕືອນ + ລັອກເຄື່ອງນັ້ນໄດ້</small></span></button>
+          <button class="ev" data-ev="update"><span class="sw" style="background:var(--wait)"></span><span><b>ມີອັບເດດຄວາມປອດໄພ</b><small>ຄະແນນຄວາມປອດໄພຫຼຸດ ຈົນກວ່າຈະອັບເດດ</small></span></button>
+          <button class="ev" data-ev="billdue"><span class="sw" style="background:var(--brand)"></span><span><b>ໃກ້ຄົບກຳນົດຄ່າໄຟ</b><small>ແຈ້ງເຕືອນ → ຈ່າຍບິນໃນແອັບ</small></span></button>
         </div>
       </div>
       <div class="group">
@@ -247,6 +371,7 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
   var QR_SECONDS = 120;
   var USUAL_MAX = 250000;            // ~5x the stall's usual ticket: warn about extra zeros
   var SHOP_NAME = 'MAE KHAM PHO';
+  var OWNER_PIN = '1234';
   var CHIMES = [
     {name:'ກະດິ່ງ', notes:[[1046,0],[1318,.12],[1568,.24]]},
     {name:'ຄ້ອງ', notes:[[392,0],[523,.18]]},
@@ -255,6 +380,22 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     {name:'ນ້ຳ', notes:[[880,0],[740,.12],[660,.24]]},
     {name:'ລະຄັງ', notes:[[659,0],[988,.2]]}
   ];
+  var REWARDS = [
+    {id:'ad',  cost:600,  name:'ໂຄສະນາຮ້ານໃນແຜນທີ່ຕະຫຼາດ 1 ອາທິດ', note:'ຮ້ານຂຶ້ນເປັນ "ແນະນຳ" ໃນປ້າຍ ແລະ ແຜນທີ່ຂອງຕະຫຼາດ', icon:'mega'},
+    {id:'pro', cost:400,  name:'ໃຊ້ Pro ຟຣີ 1 ເດືອນ', note:'ລາຍງານລະອຽດ ແລະ ພະນັກງານຫຼາຍຄົນ', icon:'star'},
+    {id:'qr',  cost:300,  name:'ປ້າຍ QR ກັນປອມ ອັນໃໝ່', note:'ຮັບທີ່ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ', icon:'qr'},
+    {id:'box', cost:1000, name:'ສ່ວນຫຼຸດກ່ອງສຽງ 50%', note:'ກ່ອງສຽງແຈ້ງການຈ່າຍ ບໍ່ຕ້ອງເປີດໂທລະສັບ', icon:'speaker'},
+    {id:'net', cost:700,  name:'ແພັກເກັດເນັດມືຖື 1 ເດືອນ', note:'ໃຫ້ແອັບເຊື່ອມຕໍ່ຕະຫຼອດເວລາຂາຍ', icon:'wifi'},
+    {id:'apron',cost:250, name:'ຜ້າກັນເປື້ອນ Sabaidee', note:'ບອກລູກຄ້າວ່າຮ້ານນີ້ຮັບແອັບທະນາຄານ', icon:'gift'}
+  ];
+  var BILLERS = {
+    power:{name:'ຄ່າໄຟຟ້າ', who:'ຜູ້ໃຫ້ບໍລິການໄຟຟ້າ (ຕົວຢ່າງ)', acct:'0201-345678', amount:186500, icon:'bolt'},
+    water:{name:'ຄ່ານ້ຳປະປາ', who:'ຜູ້ໃຫ້ບໍລິການນ້ຳປະປາ (ຕົວຢ່າງ)', acct:'W-77120', amount:54000, icon:'drop'},
+    phone:{name:'ໂທລະສັບ ແລະ ເນັດ', who:'ຜູ້ໃຫ້ບໍລິການໂທລະສັບ (ຕົວຢ່າງ)', acct:'020 5555 1234', amount:80000, icon:'phone'},
+    insure:{name:'ປະກັນໄພ', who:'ບໍລິສັດປະກັນໄພ (ຕົວຢ່າງ) · ປະກັນສຸຂະພາບແມ່ຄ້າ', acct:'HP-20931', amount:45000, icon:'shield'},
+    rent:{name:'ຄ່າເຊົ່າບ່ອນຂາຍ', who:'ຜູ້ດູແລຕະຫຼາດມືດ (ຕົວຢ່າງ)', acct:'B-12', amount:300000, icon:'store'}
+  };
+  var EN = {"ມອບເຄື່ອງແລ້ວ · ຂາຍຕໍ່": "Handed over · Next sale", "ປິດ": "Close", "ໄດ້ຮັບ {0} ກີບ · ລະຫັດ {1}": "Received {0} kip · code {1}", "ໄດ້ຮັບ": "Received", "ລະຫັດ": "code", "ມອບເຄື່ອງໄດ້": "Hand over goods", "ກີບ": "kip", "ລະຫັດນີ້ຕ້ອງກົງກັບສຽງທີ່ໄດ້ຍິນ": "This code must match the voice you heard", "ສຽງ": "Voice", "ຄະແນນ": "points", "ມີອັບເດດຄວາມປອດໄພ: ເປີດ ບັນຊີ → ເວີຊັນ": "Security update available: open Account → Version", "ຄ່າໄຟຟ້າ {0} ກີບ ຄົບກຳນົດໃນ 3 ມື້": "Electricity bill {0} kip due in 3 days", "ລໍຖ້າ": "Wait", "ທະນາຄານຍັງບໍ່ຢືນຢັນ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ ແລະ ຢ່າເພີ່ງມອບເຄື່ອງ.": "The bank has not confirmed yet. Do not let the customer pay again, and do not hand over yet.", "ທະນາຄານຢືນຢັນຊ້າ ແຕ່ຢືນຢັນແລ້ວ": "The bank confirmed late, but it is confirmed", "ຢ່າເພີ່ງມອບເຄື່ອງ": "Don't hand over yet", "ການຈ່າຍບໍ່ສຳເລັດ. ໃຫ້ລູກຄ້າກວດແອັບຂອງຕົນ ແລ້ວລອງໃໝ່.": "The payment failed. Ask the customer to check their app and try again.", "ກົງກັບ QR ຂອງການຂາຍນີ້": "Matches this sale's QR", "ບໍ່ໄດ້ຕັ້ງລາຄາ: ກວດຍອດກັບລາຄາທີ່ບອກລູກຄ້າ": "No price set: check the amount against the price you said", "ສ່ວນໜຶ່ງຂອງການຂາຍ {0}": "Part of a {0} sale", "ຍັງຂາດ {0} ກີບ": "{0} kip still missing", "ລາຄາ {0} ກີບ. ລູກຄ້າອາດໃສ່ເລກສູນຂາດ. ໃຫ້ລູກຄ້າຈ່າຍເພີ່ມສ່ວນທີ່ຂາດ, ຢ່າເພີ່ງມອບເຄື່ອງ.": "Price {0} kip. The customer may have missed a zero. Ask them to pay the difference; don't hand over yet.", "ຈ່າຍເພີ່ມ ຄົບ {0}": "Top-up, {0} complete", "ຈ່າຍເພີ່ມແລ້ວ · ຄົບ {0} ກີບ": "Topped up · {0} kip complete", "ຈ່າຍເກີນ {0} ກີບ. ຢ່າທອນເງິນສົດ; ເຈົ້າຂອງຄືນສ່ວນເກີນຜ່ານແອັບ.": "Overpaid by {0} kip. Don't give cash change; the owner refunds the extra in the app.", "ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ": "Received while offline", "ອັບເດດ {0} ລາຍການທີ່ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ (ບໍ່ແຈ້ງສຽງ)": "Updated {0} payments received while offline (no sound)", "ມີການເຂົ້າລະບົບຈາກເຄື່ອງໃໝ່": "New device signed in", "Android · ວຽງຈັນ · 1 ນາທີກ່ອນ. ຖ້າບໍ່ແມ່ນທ່ານ, ໃຫ້ອອກຈາກລະບົບເຄື່ອງນັ້ນ ແລະ ປ່ຽນ PIN.": "Android · Vientiane · 1 minute ago. If this wasn't you, sign that device out and change your PIN.", "ບໍ່ແມ່ນຂ້ອຍ · ອອກຈາກລະບົບເຄື່ອງນັ້ນ": "Not me · Sign that device out", "ແມ່ນຂ້ອຍເອງ": "It was me", "ອອກຈາກລະບົບເຄື່ອງນັ້ນແລ້ວ. ແນະນຳໃຫ້ປ່ຽນ PIN.": "That device is signed out. We recommend changing your PIN.", "ສະເພາະເຈົ້າຂອງຮ້ານ": "Shop owner only", "ເຂົ້າໂໝດເຈົ້າຂອງ": "Switch to owner mode", "ຕົກລົງ": "OK", "PIN ຕົວຢ່າງ: 1234": "Demo PIN: 1234", "PIN ບໍ່ຖືກ": "Wrong PIN", "ກັບ": "Back", "ຄືນເງິນແລ້ວ": "Refunded", "ກຳລັງຄືນເງິນ": "Refunding", "ເຂົ້າບັນຊີແລ້ວ": "Credited", "ລໍເງິນເຂົ້າບັນຊີ": "Awaiting credit", "ລໍຜົນ": "Pending", "ບໍ່ສຳເລັດ": "Failed", "ປ້າຍ QR": "QR stand", "QR ຕໍ່ການຂາຍ": "Order QR", "ຕົວຢ່າງ": "sample", "ມືຖືຂາດເນັດ · ສີເຫຼືອງ": "Phone offline · amber", "ແອັບກວດຜົນບໍ່ໄດ້. ປ້າຍ QR ຍັງຮັບເງິນໄດ້; ຢ່າມອບເຄື່ອງຈົນກວ່າຈະເຫັນສີຂຽວ ຫຼື ກວດໃນແອັບທະນາຄານ.": "The app can't check payments. The QR stand still accepts them; don't hand over until you see green or check your bank app.", "{0} ລາຍການລໍອັບເດດ": "{0} waiting to update", "ປ້າຍ QR · ຮ້ານອາຫານ": "QR stand · food stalls", "QR ຕໍ່ການຂາຍ · ຂອງທີ່ລະນຶກ": "Order QR · souvenirs", "ກຳລັງຟັງການຈ່າຍ": "Listening for payments", "ຂາດເນັດ · ຍັງບໍ່ຮູ້ຜົນ": "Offline · result unknown", "ລູກຄ້າສະແກນປ້າຍ QR ແລະ ໃສ່ຍອດເອງ. ເມື່ອທະນາຄານຢືນຢັນ ແອັບຈະເປັນສີຂຽວ ແລະ ດັງສຽງ.": "The customer scans the QR stand and types the amount. When the bank confirms, the app turns green and plays a sound.", "ລາຄາທີ່ບອກລູກຄ້າ": "Price you told the customer", "ບໍ່ຕັ້ງ": "None", "ການຂາຍ {0} ₭ ຍັງຂາດ": "{0} ₭ sale still missing", "ລ່າສຸດ": "Latest", "ຍັງບໍ່ມີການຈ່າຍໃນຮອບນີ້. ກົດ \"ລູກຄ້າຈ່າຍຄົບ\" ໃນແຜງຈຳລອງ.": "No payments yet this session. Press \"ລູກຄ້າຈ່າຍຄົບ\" in the demo panel.", "ໃຫ້ລູກຄ້າສະແກນດ້ວຍແອັບທະນາຄານ": "Ask the customer to scan with their bank app", "ຊື່ທີ່ລູກຄ້າຕ້ອງເຫັນ": "Name the customer must see", "QR ໝົດອາຍຸໃນ {0}": "QR expires in {0}", "ລໍລູກຄ້າຈ່າຍ · ສີເຫຼືອງ": "Waiting for payment · amber", "ຍອດຮັບສຸດທິ (ຄ່າທຳນຽມ {0})": "Net received (fee {0})", "ຍົກເລີກ QR ນີ້": "Cancel this QR", "ໃສ່ລາຄາ (ກີບ)": "Enter price (kip)", "ອ່ານຄືນ": "Read back", "ຍອດຮັບສຸດທິ · ຄ່າທຳນຽມ {0}": "Net received · fee {0}", "ຍອດນີ້ສູງກວ່າປົກກະຕິຂອງຮ້ານ. ກວດເລກສູນອີກຄັ້ງ.": "This is higher than your usual sale. Check the zeros again.", "ລຶບ": "Delete", "ສະແດງ QR": "Show QR", "ລາຍການມື້ນີ້": "Today's payments", "{0} ລາຍການ": "{0} payments", "ກົດລາຍການເພື່ອເບິ່ງລາຍລະອຽດ ແລະ ຄືນເງິນ.": "Tap a payment for details and refunds.", "ກົດລາຍການເພື່ອເບິ່ງລາຍລະອຽດ.": "Tap a payment for details.", "ເວລາ": "Time", "ເລກອ້າງອີງ": "Reference", "ຄ່າທຳນຽມ": "Fee", "ສຸດທິ": "Net", "ການຄືນເງິນ: ສະເພາະເຈົ້າຂອງຮ້ານ.": "Refunds: shop owner only.", "ຂໍຄືນເງິນລາຍການນີ້": "Refund this payment", "ເງິນຈະຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ ເທົ່ານັ້ນ, ບໍ່ຄືນເປັນເງິນສົດ. ຄະແນນຂອງລາຍການນີ້ຈະຖືກຫັກຄືນ.": "Money goes back only to the customer's original app, never as cash. Points from this payment are removed.", "ສົ່ງຄຳຂໍແລ້ວ · ລໍທະນາຄານ": "Request sent · waiting for the bank", "ທະນາຄານກຳລັງດຳເນີນການ · ຍັງບໍ່ແມ່ນ \"ຄືນແລ້ວ\"": "The bank is processing · not \"refunded\" yet", "ທະນາຄານຢືນຢັນ: ຄືນເງິນແລ້ວ. ເວລາເງິນເຖິງລູກຄ້າ ຂຶ້ນກັບທະນາຄານຂອງລູກຄ້າ.": "Bank confirmed: refunded. When the customer sees it depends on their bank.", "ຖາມພະນັກງານກ່ຽວກັບລາຍການນີ້": "Ask support about this payment", "ບໍ່ສຳເລັດ: ບໍ່ມີເງິນເຂົ້າ.": "Failed: no money received.", "ລໍຜົນຈາກທະນາຄານ.": "Waiting for the bank.", "ຍອດຂາຍ 7 ມື້ຜ່ານມາ ແລະ ຄາດການ 7 ມື້ຂ້າງໜ້າ": "Sales for the past 7 days and forecast for the next 7", "ມື້ນີ້": "Today", "{0} (ຄາດການ): ~{1} ₭, ໄລຍະ {2}–{3}": "{0} (forecast): ~{1} ₭, range {2}–{3}", "ມື້ນີ້ (ຍັງບໍ່ປິດຮ້ານ): {0} ₭": "Today (still open): {0} ₭", "{0}: {1} ₭ (ຕົວຈິງ)": "{0}: {1} ₭ (actual)", "ພະນັກງານຂາຍໄດ້ ແລະ ເບິ່ງລາຍການໄດ້. ລາຍງານເງິນ, ຄາດການ ແລະ ການຄືນເງິນ ເປີດສະເພາະເຈົ້າຂອງ.": "Staff can sell and view payments. Money reports, forecasts and refunds are for the owner only.", "ຍອດເງິນທີ່ໄດ້ຮັບມື້ນີ້": "Money received today", "ຍອດຂາຍ": "Sales", "ເງິນສຸດທິ": "Net", "ຄ່າທຳນຽມ {0}": "Fees {0}", "ເງິນເຂົ້າບັນຊີແລ້ວ": "Credited to bank", "ກຳລັງລໍເຂົ້າບັນຊີ": "Awaiting credit", "ເງິນສຸດທິທີ່ເຂົ້າບັນຊີແລ້ວ {0}%": "{0}% of net credited", "ຄືນເງິນແລ້ວ (ບໍ່ນັບໃນຍອດ)": "Refunded (not counted)", "ຍອດຂາຍ ແລະ ຄາດການ": "Sales and forecast", "7 ມື້ຜ່ານມາ · 7 ມື້ຂ້າງໜ້າ": "Past 7 days · next 7 days", "ຕົວຈິງ": "Actual", "ຄາດການ (ເສັ້ນ = ໄລຍະທີ່ອາດເປັນ)": "Forecast (line = likely range)", "ເບິ່ງເປັນຕາຕະລາງ": "View as table", "ມື້": "Day", "ປະເພດ": "Type", "ຄາດການ": "Forecast", "ມື້ອື່ນ ({0}) ຄາດວ່າ": "Tomorrow ({0}) expected", "7 ມື້ຂ້າງໜ້າ ຄາດວ່າ": "Next 7 days expected", "{0}% ທຽບກັບ 6 ມື້ຜ່ານມາ + ມື້ນີ້": "{0}% vs the past 6 days + today", "ວິທີຄາດການ: ສະເລ່ຍຍອດຂາຍວັນດຽວກັນໃນອາທິດກ່ອນໆ × ປັດໄຈລະດູທ່ອງທ່ຽວ (+8%). ເປັນການຄາດຄະເນ, ບໍ່ແມ່ນການຮັບປະກັນ.": "Method: average sales for the same weekday in past weeks × tourist-season factor (+8%). An estimate, not a guarantee.", "ຊ່ວງເວລາຂາຍດີ": "Busy hours", "ສ່ວນແບ່ງຍອດຂາຍຕາມຊົ່ວໂມງ · 4 ອາທິດ": "Share of sales by hour · 4 weeks", "ລູກຄ້າຈ່າຍດ້ວຍແອັບຈາກໃສ": "Where paying apps come from", "ແອັບທະນາຄານໄທ 72%": "Thai bank apps 72%", "ແອັບທະນາຄານລາວ 28%": "Lao bank apps 28%", "ສະຖິຕິລວມ ບໍ່ລະບຸຕົວຕົນລູກຄ້າ.": "Aggregate figures; no customer is identified.", "ຄຳແນະນຳການຕະຫຼາດ": "Marketing tips", "19:00–20:00 ຂາຍດີທີ່ສຸດ: ກຽມວັດຖຸດິບ ແລະ ຄົນຊ່ວຍກ່ອນ 18:30.": "19:00–20:00 is your busiest hour: prepare ingredients and helpers before 18:30.", "{0} ຄາດວ່າຂາຍໄດ້ຫຼາຍທີ່ສຸດຂອງອາທິດ: ເພີ່ມວັດຖຸດິບປະມານ 30%.": "{0} is expected to be your best day this week: stock about 30% more.", "ລູກຄ້າໄທ 72%: ເພີ່ມເມນູພາສາໄທ ແລະ ຮູບອາຫານ ຢູ່ປ້າຍໜ້າຮ້ານ.": "72% of customers pay with Thai apps: add a Thai menu and food photos to your sign.", "ວັນຈັນ–ພຸດ ລູກຄ້າໜ້ອຍ: ໃຊ້ຄະແນນແລກ \"ໂຄສະນາຮ້ານໃນແຜນທີ່ຕະຫຼາດ\" ເພື່ອດຶງລູກຄ້າ.": "Monday–Wednesday are quiet: redeem points for \"Featured on the market map\" to attract customers.", "ເບິ່ງຄະແນນ ແລະ ລາງວັນ": "See points and rewards", "ບໍລິການ": "Services", "ຄະແນນ ແລະ ລາງວັນ": "Points & rewards", "{0} ຄະແນນ": "{0} points", "ຈ່າຍບິນ": "Pay bills", "ໄຟຟ້າ, ນ້ຳ, ໂທລະສັບ, ປະກັນໄພ": "Power, water, phone, insurance", "ຊ່ວຍເຫຼືອ": "Help", "ລົມກັບພະນັກງານ, ຄຳຖາມທີ່ພົບເລື້ອຍ": "Chat with staff, FAQ", "ປົກປ້ອງຜູ້ບໍລິໂພກ": "Consumer protection", "ສິດຂອງທ່ານ, ຄ່າທຳນຽມ, ຮ້ອງຮຽນ": "Your rights, fees, complaints", "ຄ່າໄຟຟ້າໃກ້ຄົບກຳນົດ": "Electricity bill due soon", "{0} ກີບ · ຄົບກຳນົດໃນ 3 ມື້": "{0} kip · due in 3 days", "ເງິນຂອງທ່ານຢູ່ໃນທະນາຄານ": "Your money stays in the bank", "ການຈ່າຍບິນຕັດເງິນຈາກບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ ຜ່ານທະນາຄານ partner. Sabaidee Merchant ບໍ່ຖືເງິນ ແລະ ບໍ່ມີຍອດເງິນໃນແອັບ.": "Bills are paid directly from the shop's bank account through the partner bank. Sabaidee Merchant never holds money and has no in-app balance.", "ຄຳ": "Gold", "ເງິນ": "Silver", "ຄະແນນຂອງຮ້ານ": "Shop points", "ລະດັບ {0}": "{0} tier", "ທ່ານຢູ່ລະດັບສູງສຸດແລ້ວ": "You are at the top tier", "ອີກ {0} ຄະແນນ ເຖິງລະດັບຄຳ": "{0} more points to Gold", "ໄດ້ຄະແນນແນວໃດ": "How to earn points", "1 ຄະແນນ ທຸກ 10,000 ₭ ທີ່ໄດ້ຮັບ": "1 point for every 10,000 ₭ received", "+20 ກວດປ້າຍ QR ປະຈຳອາທິດ": "+20 weekly QR stand check", "+5 ກວດກ່ອນເປີດຮ້ານ": "+5 pre-shift check", "+10 ຈ່າຍບິນຕົງເວລາໃນແອັບ": "+10 bill paid on time in the app", "ລາງວັນຂອງຂ້ອຍ": "My rewards", "ໃຊ້ໄດ້ຮອດ {0}": "Valid until {0}", "ແລກລາງວັນ": "Redeem rewards", "ຢືນຢັນ": "Confirm", "ຍົກເລີກ": "Cancel", "ແລກລາງວັນໄດ້ສະເພາະເຈົ້າຂອງຮ້ານ.": "Only the shop owner can redeem rewards.", "ປະຫວັດຄະແນນ": "Points history", "ມື້ວານ": "Yesterday", "ຄະແນນບໍ່ແມ່ນເງິນ": "Points are not money", "ແລກເປັນເງິນສົດ ຫຼື ໂອນໃຫ້ຄົນອື່ນບໍ່ໄດ້, ໝົດອາຍຸພາຍໃນ 12 ເດືອນ. ລາງວັນສະໜັບສະໜູນໂດຍທະນາຄານ partner ແລະ ຜູ້ດູແລຕະຫຼາດ. ຖ້າຄືນເງິນ, ຄະແນນຂອງລາຍການນັ້ນຈະຖືກຫັກຄືນ.": "They can't be cashed out or transferred, and expire after 12 months. Rewards are funded by the partner bank and the market operator. Points from a refunded payment are removed.", "ການຈ່າຍບິນຕັດເງິນຈາກບັນຊີທະນາຄານຂອງຮ້ານ, ສະນັ້ນເປີດສະເພາະເຈົ້າຂອງ.": "Bill payments debit the shop's bank account, so only the owner can use them.", "ເລືອກ": "Choose", "ເລກບັນຊີ": "Account no.", "ກວດ ແລະ ຈ່າຍ": "Check & pay", "ສຳເລັດ": "Done", "ໃກ້ຄົບກຳນົດ": "Due soon", "ແຈ້ງເຕືອນກ່ອນຄົບກຳນົດ": "Remind me before the due date", "ປະຫວັດການຈ່າຍບິນ": "Bill payment history", "ເລກບັນຊີລູກຄ້າ / ເລກສັນຍາ": "Customer or contract number", "ໃຊ້ເລກທີ່ບັນທຶກໄວ້: {0}": "Use saved number: {0}", "ກວດບິນ": "Look up bill", "ເລືອກບິນອື່ນ": "Choose another bill", "ເດືອນ {0}": "Month {0}", "ຊື່ລູກຄ້າ": "Customer name", "ງວດ": "Period", "ຄ່າບໍລິການຈ່າຍບິນ": "Bill payment fee", "ຟຣີ (ຕົວຢ່າງ)": "Free (example)", "ຕັດເງິນຈາກ": "Paid from", "ບັນຊີທະນາຄານຂອງຮ້ານ ••4521": "Shop bank account ••4521", "ຈ່າຍ {0} ₭": "Pay {0} ₭", "ຢືນຢັນດ້ວຍ PIN": "Confirm with PIN", "ທະນາຄານກຳລັງຈ່າຍບິນ...": "The bank is paying the bill...", "ຈ່າຍບິນສຳເລັດ": "Bill paid", "ເລກອ້າງອີງ {0} · ທະນາຄານຢືນຢັນແລ້ວ. +10 ຄະແນນ.": "Reference {0} · confirmed by the bank. +10 points.", "ຈ່າຍບິນອື່ນ": "Pay another bill", "ທະນາຄານ partner ເປັນຜູ້ຕັດເງິນ ແລະ ຈ່າຍໃຫ້ຜູ້ໃຫ້ບໍລິການ. ແອັບສົ່ງຄຳສັ່ງ ແລະ ສະແດງຜົນເທົ່ານັ້ນ.": "The partner bank debits the account and pays the provider. The app only sends the instruction and shows the result.", "ຕິດຕໍ່ພະນັກງານ": "Contact staff", "ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ": "Help desk at the market", "ຮ້ານ A-01 · 17:00–22:00": "Stall A-01 · 17:00–22:00", "ສາຍດ່ວນ": "Hotline", "ເບີຈະກຳນົດກັບ partner": "Number to be set with the partner", "ແຊັດໃນແອັບ": "In-app chat", "ພະນັກງານອອນລາຍ": "Staff online", "ຜູ້ຊ່ວຍອັດຕະໂນມັດ": "Auto assistant", "ພິມຄຳຖາມ...": "Type a question...", "ສົ່ງ": "Send", "ຄຳຖາມທີ່ພົບເລື້ອຍ": "Frequently asked questions", "ພະນັກງານຈະບໍ່ຂໍ PIN, OTP ຫຼື ລະຫັດທະນາຄານຂອງທ່ານ ບໍ່ວ່າກໍລະນີໃດ.": "Our staff will never ask for your PIN, OTP or bank password.", "ສິດຂອງທ່ານ": "Your rights", "ຮູ້ຄ່າທຳນຽມທັງໝົດ ກ່ອນໃຊ້ບໍລິການ": "Know every fee before you use a service", "ໄດ້ຮັບໃບຮັບເງິນ ແລະ ເລກອ້າງອີງທຸກລາຍການ": "Get a receipt and reference for every payment", "ຂໍຄືນເງິນ ແລະ ຮ້ອງຮຽນ ໄດ້ໂດຍບໍ່ເສຍຄ່າ": "Request refunds and complain free of charge", "ຂໍ້ມູນສ່ວນຕົວໃຊ້ຕາມທີ່ທ່ານຍິນຍອມເທົ່ານັ້ນ": "Your data is used only as you consent", "ເງິນຢູ່ໃນທະນາຄານທີ່ມີໃບອະນຸຍາດ": "Money stays with a licensed bank", "ຕາຕະລາງຄ່າທຳນຽມ": "Fee table", "ຮັບເງິນຈາກລູກຄ້າ": "Accepting customer payments", "ໃຊ້ແອັບ (ພື້ນຖານ)": "Using the app (basic)", "ຟຣີ": "Free", "ຟຣີ *": "Free *", "ຄືນເງິນ": "Refunds", "30,000 ₭/ເດືອນ (ທາງເລືອກ)": "30,000 ₭/month (optional)", "* ຕົວຢ່າງ; ອັດຕາຈິງຕາມສັນຍາກັບທະນາຄານ partner.": "* Example; actual rates follow the partner-bank contract.", "ລະວັງການສໍ້ໂກງ": "Watch out for scams", "ບໍ່ມີໃຜຈາກເຮົາຈະຂໍ PIN ຫຼື OTP": "No one from us will ask for your PIN or OTP", "ສຽງ ຫຼື screenshot ຈາກມືຖືລູກຄ້າ ບໍ່ແມ່ນຫຼັກຖານ": "Sounds or screenshots on a customer's phone are not proof", "ກວດປ້າຍ QR ຂອງຮ້ານທຸກອາທິດ": "Check your QR stand every week", "ຢ່າທອນເງິນສົດ ໃຫ້ການຈ່າຍດ້ວຍແອັບ": "Never give cash change for an app payment", "ຮ້ອງຮຽນ": "Make a complaint", "ເລກອ້າງອີງລາຍການ (ຖ້າມີ)": "Payment reference (if any)", "ລາຍລະອຽດ": "Details", "ເລົ່າສິ່ງທີ່ເກີດຂຶ້ນ": "Describe what happened", "ສົ່ງຄຳຮ້ອງຮຽນ": "Send complaint", "ຄຳຮ້ອງຮຽນຂອງຂ້ອຍ": "My complaints", "ເຮົາຕອບຄຳຮ້ອງຮຽນ ແລະ ແຈ້ງຄວາມຄືບໜ້າໃນແອັບ. ຖ້າບໍ່ພໍໃຈຜົນ, ທ່ານຮ້ອງຮຽນຕໍ່ທະນາຄານ partner ຫຼື ໜ່ວຍງານປົກປ້ອງຜູ້ບໍລິໂພກດ້ານການເງິນ ຕາມລະບຽບຂອງທະນາຄານແຫ່ງ ສປປ ລາວ ໄດ້.": "We reply to complaints and show progress in the app. If you are not satisfied, you can escalate to the partner bank or the financial consumer-protection unit under Bank of the Lao PDR rules.", "ຢືນຢັນຕົວຕົນໂດຍທະນາຄານ": "Identity verified by the bank", "ໂໝດຜູ້ໃຊ້": "User mode", "ເຈົ້າຂອງ: ລາຍງານ, ຄືນເງິນ, ຈ່າຍບິນ ແລະ ຕັ້ງຄ່າ": "Owner: reports, refunds, bills and settings", "ພະນັກງານ: ຂາຍ ແລະ ເບິ່ງລາຍການ": "Staff: sell and view payments", "ກັບໄປພະນັກງານ": "Back to staff", "ເຈົ້າຂອງ": "Owner", "ສູງ": "High", "ກາງ": "Medium", "ຕ່ຳ": "Low", "ຂໍ້ມູນສ່ວນຕົວ": "Personal details", "ຊື່, ເບີໂທ, ຮ້ານ, ການຍິນຍອມ": "Name, phone, shop, consent", "ຄວາມປອດໄພບັນຊີ": "Account security", "PIN, ລາຍນິ້ວມື, 2 ຂັ້ນ, ອຸປະກອນ": "PIN, fingerprint, 2-step, devices", "ພາສາ": "Language", "ສຽງກະດິ່ງຂອງຮ້ານ": "Shop chime", "ກວດກ່ອນເປີດຮ້ານ": "Pre-shift check", "ສຽງ, ເນັດ, ແບັດເຕີຣີ": "Sound, internet, battery", "ປ້າຍ QR ຂອງຮ້ານ": "Shop QR stand", "ກວດປ້າຍປະຈຳອາທິດ": "Weekly stand check", "ເວີຊັນ ແລະ ຄວາມປອດໄພແອັບ": "Version & app security", "v{0} · ຄວາມປອດໄພ {1} ({2}/{3})": "v{0} · security {1} ({2}/{3})", "ອັບເດດ": "Update", "ຂໍ້ມູນສ່ວນຕົວ ແລະ ບັນຊີຮັບເງິນ ເປີດສະເພາະເຈົ້າຂອງ.": "Personal details and the payout account are for the owner only.", "ຊື່ ແລະ ນາມສະກຸນ": "Full name", "ເບີໂທ": "Phone", "ຊື່ຮ້ານ": "Shop name", "ທີ່ຕັ້ງຮ້ານ": "Shop location", "ບັນທຶກ": "Save", "ບັນຊີຮັບເງິນ": "Payout account", "ບັນຊີ": "Account", "ສະຖານະ": "Status", "ຢືນຢັນໂດຍທະນາຄານ": "Verified by the bank", "ປ່ຽນບັນຊີຮັບເງິນໄດ້ ໂດຍຢືນຢັນກັບທະນາຄານເທົ່ານັ້ນ ເພື່ອປ້ອງກັນການລັກບັນຊີ.": "The payout account can only be changed with bank verification, to prevent account takeover.", "ການຍິນຍອມໃຊ້ຂໍ້ມູນ": "Data consent", "ແບ່ງປັນສະຖິຕິຮວມກັບຜູ້ດູແລຕະຫຼາດ": "Share aggregate statistics with the market operator", "ບໍ່ລະບຸຊື່ຮ້ານ ຫຼື ລູກຄ້າ": "No shop or customer names", "ຮັບຂ່າວ ແລະ ໂປຣໂມຊັນ": "Receive news and promotions", "ໃຊ້ປະຫວັດການຂາຍ ເພື່ອຂໍສິນເຊື່ອ": "Use sales history for loan applications", "ຖາມທ່ານທຸກຄັ້ງ ກ່ອນສົ່ງໃຫ້ທະນາຄານ": "We ask you every time before sending it to a bank", "ຂໍ້ມູນຂອງຂ້ອຍ": "My data", "ຂໍສຳເນົາຂໍ້ມູນ": "Request a copy", "ຂໍປິດບັນຊີ": "Close my account", "ສົ່ງຄຳຂໍແລ້ວ ({0}). ທ່ານຈະໄດ້ຮັບໄຟລ໌ຜ່ານໂຕະຊ່ວຍເຫຼືອ.": "Request sent ({0}). You'll receive the file through the help desk.", "ປິດບັນຊີແລ້ວ ຈະຮັບເງິນຜ່ານແອັບບໍ່ໄດ້. ປະຫວັດການເງິນຖືກເກັບຕາມກົດໝາຍ.": "After closing you can't accept payments in the app. Financial records are kept as the law requires.", "ການຕັ້ງຄ່າຄວາມປອດໄພ ເປີດສະເພາະເຈົ້າຂອງ.": "Security settings are for the owner only.", "ລັອກແອັບດ້ວຍ PIN": "Lock the app with a PIN", "ເປີດຕະຫຼອດ": "Always on", "ລາຍນິ້ວມື / ສະແກນໃບໜ້າ": "Fingerprint / face unlock", "ເປີດແອັບ ແລະ ຢືນຢັນໄວຂຶ້ນ": "Faster unlock and confirmation", "ຢືນຢັນ 2 ຂັ້ນ (OTP)": "2-step verification (OTP)", "ສຳລັບຄືນເງິນ, ຈ່າຍບິນ ແລະ ເຄື່ອງໃໝ່": "For refunds, bills and new devices", "ລັອກອັດຕະໂນມັດ ຫຼັງ 2 ນາທີ": "Auto-lock after 2 minutes", "ແຈ້ງເຕືອນເມື່ອເຂົ້າລະບົບໃໝ່": "Alert on new sign-in", "ໃນແອັບ ແລະ SMS": "In the app and by SMS", "ເຊື່ອງຍອດເງິນໃນໜ້າຂາຍ": "Hide amounts on the sell screen", "ເມື່ອມີຄົນອື່ນເບິ່ງໜ້າຈໍ": "When others can see your screen", "ອຸປະກອນທີ່ເຂົ້າລະບົບ": "Signed-in devices", "ເຄື່ອງນີ້": "This device", "ອອກຈາກລະບົບ": "Sign out", "ປ່ຽນ PIN": "Change PIN", "ປ່ຽນ PIN ແລ້ວ (ຈຳລອງ). ໃນລະບົບຈິງຕ້ອງໃສ່ PIN ເກົ່າ ແລະ OTP.": "PIN changed (simulated). The real app requires the old PIN and an OTP.", "ໄວໆນີ້": "Coming soon", "ພາສາຂອງແອັບຝ່າຍຮ້ານ. ປ້າຍ QR ສຳລັບນັກທ່ອງທ່ຽວ ມີ 5 ພາສາຢູ່ແລ້ວ. ສຽງແຈ້ງການຈ່າຍ ໃຊ້ພາສາທີ່ເລືອກ.": "Language of the merchant app. The tourist QR stand already has 5 languages. Payment voice alerts use the language you choose.", "ເລືອກສຽງທີ່ຮ້ານຈື່ໄດ້. ສຽງປອມທົ່ວໄປຈະບໍ່ຄືກັບສຽງນີ້.": "Pick a sound your shop will remember. A generic fake sound won't match it.", "ກວດສຽງ, ເນັດ ແລະ ແບັດເຕີຣີ": "Check sound, internet and battery", "ກວດດຽວນີ້": "Check now", "ສຽງເປີດ · ໄດ້ຍິນສຽງ \"{0}\"": "Sound on · you heard \"{0}\"", "ເຊື່ອມເນັດແລ້ວ": "Internet connected", "ຂາດເນັດ: ກວດຂໍ້ມູນມືຖື": "Offline: check mobile data", "ອະນຸຍາດໃຫ້ແອັບເຮັດວຽກເບື້ອງຫຼັງ (ແບັດເຕີຣີ)": "App allowed to run in the background (battery)", "ປ້າຍ QR ຕັ້ງຢູ່ໜ້າຮ້ານ": "QR stand is at the front of the stall", "ກວດກ່ອນຂາຍ ເພື່ອບໍ່ໃຫ້ພາດການແຈ້ງເຕືອນ. +5 ຄະແນນ.": "Check before selling so you don't miss alerts. +5 points.", "ຮ້ານ ແມ່ຄຳ · ຮ້ານ B-12": "Mae Kham · Stall B-12", "ຊື່ທີ່ຕ້ອງເຫັນ": "Name customers must see", "ກວດປ້າຍຂອງຮ້ານ": "Check my stand", "ຈຳລອງປ້າຍຖືກປ່ຽນ": "Simulate a swapped stand", "✓ ປ້າຍນີ້ເປັນຂອງ {0}. ກວດອີກຄັ້ງອາທິດໜ້າ. +20 ຄະແນນ.": "✓ This stand belongs to {0}. Check again next week. +20 points.", "✗ QR ນີ້ບໍ່ແມ່ນຂອງຮ້ານເຈົ້າ. ເອົາປ້າຍອອກ ແລະ ແຈ້ງທີມຊ່ວຍເຫຼືອ.": "✗ This QR is not yours. Remove the stand and tell the support team.", "ເວີຊັນ": "Version", "ຕົ້ນແບບ": "prototype", "ກວດຫຼ້າສຸດ": "Last checked", "ກຳລັງກວດຫາອັບເດດ...": "Checking for updates...", "ກຳລັງຕິດຕັ້ງ 1.0.1...": "Installing 1.0.1...", "ມີເວີຊັນ 1.0.1": "Version 1.0.1 is available", "ແກ້ໄຂຄວາມປອດໄພ ແລະ ປັບປຸງການເຊື່ອມຕໍ່. ແນະນຳໃຫ້ອັບເດດດຽວນີ້.": "Security fixes and connection improvements. Update now.", "ອັບເດດດຽວນີ້": "Update now", "✓ ທ່ານໃຊ້ເວີຊັນລ່າສຸດແລ້ວ": "✓ You have the latest version", "ກວດຫາອັບເດດ": "Check for updates", "ຄະແນນຄວາມປອດໄພຂອງເຄື່ອງນີ້": "Security score on this device", "ຕັ້ງຄ່າຄົບທຸກຂໍ້": "Every check passes", "ແກ້ {0} ຂໍ້ ເພື່ອປອດໄພຂຶ້ນ": "Fix {0} items to be safer", "ແກ້ໄຂ": "Fix", "ການປ້ອງກັນໃນລະບົບ": "Built-in protection", "ເງິນຢູ່ໃນທະນາຄານ partner, ບໍ່ຢູ່ໃນແອັບ": "Money stays at the partner bank, not in the app", "ການເຊື່ອມຕໍ່ທັງໝົດເຂົ້າລະຫັດ": "All connections are encrypted", "ບໍ່ເກັບ PIN ຫຼື OTP ຂອງທະນາຄານ": "Bank PINs and OTPs are never stored", "ສີຂຽວມາຈາກຂໍ້ມູນທີ່ທະນາຄານຢືນຢັນເທົ່ານັ້ນ": "Green comes only from bank-confirmed data", "ເວີຊັນເກົ່າທີ່ມີຊ່ອງໂຫວ່ຮ້າຍແຮງ ຈະຖືກບັງຄັບໃຫ້ອັບເດດ": "Old versions with serious flaws are forced to update", "ຄະແນນນີ້ກວດການຕັ້ງຄ່າໃນເຄື່ອງ, ບໍ່ແມ່ນການຮັບປະກັນ 100%. ກ່ອນເປີດໃຊ້ຈິງ ລະບົບຈະຖືກທົດສອບຄວາມປອດໄພໂດຍຜູ້ຊ່ຽວຊານພາຍນອກ ແລະ ທະນາຄານ partner.": "This score checks settings on this device; it is not a 100% guarantee. Before launch, the system will be security-tested by outside experts and the partner bank.", "ພ້ອມຮັບ": "Ready", "ຂາດເນັດ": "Offline", "ບໍ່ມີເນັດ": "No signal", "ພະນັກງານ": "Staff", "ຕະຫຼາດມືດ · ຮ້ານ B-12": "Night market · Stall B-12", "QR ໝົດເວລາ": "QR expired", "ສ້າງ QR ໃໝ່ກ່ອນໃຫ້ລູກຄ້າຈ່າຍ. ຖ້າລູກຄ້າບອກວ່າຈ່າຍແລ້ວ, ລໍລະບົບກວດກ່ອນ.": "Make a new QR before the customer pays. If they say they already paid, wait for the system to check.", "ແລກສຳເລັດ: {0}": "Redeemed: {0}", "ສອບຖາມລາຍການ {0} ({1} ₭)": "Question about payment {0} ({1} ₭)", "ໃສ່ເລກບັນຊີໃຫ້ຄົບ (ຢ່າງໜ້ອຍ 4 ຕົວ).": "Enter the full number (at least 4 characters).", "ກະລຸນາຂຽນລາຍລະອຽດ": "Please describe the problem", "ສົ່ງແລ້ວ: {0}": "Sent: {0}", "ບັນທຶກແລ້ວ": "Saved", "ສົ່ງຄຳຂໍປິດບັນຊີແລ້ວ (ຈຳລອງ). ພະນັກງານຈະໂທຢືນຢັນ.": "Closure request sent (simulated). Staff will call to confirm.", "ອັບເດດເປັນ 1.0.1 ແລ້ວ": "Updated to 1.0.1", "ກະດິ່ງ": "Bell", "ຄ້ອງ": "Gong", "ແຄນ": "Khaen", "ນົກ": "Bird", "ນ້ຳ": "Water", "ລະຄັງ": "Temple bell", "ໂຄສະນາຮ້ານໃນແຜນທີ່ຕະຫຼາດ 1 ອາທິດ": "Featured on the market map for 1 week", "ຮ້ານຂຶ້ນເປັນ \"ແນະນຳ\" ໃນປ້າຍ ແລະ ແຜນທີ່ຂອງຕະຫຼາດ": "Your stall appears as \"recommended\" on market signs and maps", "ໃຊ້ Pro ຟຣີ 1 ເດືອນ": "Pro free for 1 month", "ລາຍງານລະອຽດ ແລະ ພະນັກງານຫຼາຍຄົນ": "Detailed reports and multiple staff", "ປ້າຍ QR ກັນປອມ ອັນໃໝ່": "New tamper-evident QR stand", "ຮັບທີ່ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ": "Collect at the market help desk", "ສ່ວນຫຼຸດກ່ອງສຽງ 50%": "50% off a soundbox", "ກ່ອງສຽງແຈ້ງການຈ່າຍ ບໍ່ຕ້ອງເປີດໂທລະສັບ": "Announces payments without opening the phone", "ແພັກເກັດເນັດມືຖື 1 ເດືອນ": "1-month mobile data package", "ໃຫ້ແອັບເຊື່ອມຕໍ່ຕະຫຼອດເວລາຂາຍ": "Keeps the app online while you sell", "ຜ້າກັນເປື້ອນ Sabaidee": "Sabaidee apron", "ບອກລູກຄ້າວ່າຮ້ານນີ້ຮັບແອັບທະນາຄານ": "Tells customers you accept bank apps", "ຄ່າໄຟຟ້າ": "Electricity", "ຜູ້ໃຫ້ບໍລິການໄຟຟ້າ (ຕົວຢ່າງ)": "Electricity provider (example)", "ຄ່ານ້ຳປະປາ": "Water", "ຜູ້ໃຫ້ບໍລິການນ້ຳປະປາ (ຕົວຢ່າງ)": "Water provider (example)", "ໂທລະສັບ ແລະ ເນັດ": "Phone & internet", "ຜູ້ໃຫ້ບໍລິການໂທລະສັບ (ຕົວຢ່າງ)": "Phone provider (example)", "ປະກັນໄພ": "Insurance", "ບໍລິສັດປະກັນໄພ (ຕົວຢ່າງ) · ປະກັນສຸຂະພາບແມ່ຄ້າ": "Insurer (example) · vendor health cover", "ຄ່າເຊົ່າບ່ອນຂາຍ": "Stall rent", "ຜູ້ດູແລຕະຫຼາດມືດ (ຕົວຢ່າງ)": "Night-market operator (example)", "ຂາຍ {0} ₭": "Sale {0} ₭", "ກວດປ້າຍ QR ປະຈຳອາທິດ": "Weekly QR stand check", "ສະບາຍດີ! ມີຫຍັງໃຫ້ຊ່ວຍບໍ່? ເລືອກຄຳຖາມຂ້າງລຸ່ມ ຫຼື ພິມຖາມໄດ້ເລີຍ.": "Sabaidee! How can we help? Pick a question below or type your own.", "ໂທລະສັບນີ້ · Android": "This phone · Android", "ຫຼວງພະບາງ": "Luang Prabang", "ດຽວນີ້": "now", "Android · ເຄື່ອງໃໝ່": "Android · new device", "ວຽງຈັນ": "Vientiane", "1 ນາທີກ່ອນ": "1 minute ago", "ພະນັກງານ ແກ້ວ ເຂົ້າຮ່ວມການສົນທະນາ": "Kaew from support joined the chat", "ສະບາຍດີ, ແກ້ວ ຈາກທີມຊ່ວຍເຫຼືອ. ຍິນດີຊ່ວຍ. ຖ້າກ່ຽວກັບລາຍການ, ສົ່ງເລກອ້າງອີງ SM- ມາໄດ້ເລີຍ.": "Sabaidee, this is Kaew from support. Happy to help. If it's about a payment, send the SM- reference.", "ແກ້ວ · ພະນັກງານຊ່ວຍເຫຼືອ": "Kaew · support staff", "ເວີຊັນແອັບລ່າສຸດ": "Latest app version", "ຢືນຢັນ 2 ຂັ້ນ ສຳລັບການເງິນ": "2-step verification for money actions", "ບໍ່ມີເຄື່ອງທີ່ບໍ່ຮູ້ຈັກ": "No unknown devices", "ໂທລະສັບບໍ່ຖືກດັດແປງ (root)": "Phone not rooted or modified", "ແລກ: {0}": "Redeemed: {0}", "ຄືນເງິນ {0} ₭": "Refund {0} ₭", "ໄດ້ຮັບແລ້ວ": "Received", "ກຳລັງກວດ": "Under review", "ຈ່າຍບິນ: {0}": "Bill: {0}", "ສີເຫຼືອງໝາຍຄວາມວ່າແນວໃດ?": "What does amber mean?", "ທະນາຄານຍັງບໍ່ຢືນຢັນ ຫຼື ມືຖືຂາດເນັດ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ ແລະ ຢ່າມອບເຄື່ອງ ຈົນກວ່າຈະເຫັນສີຂຽວ.": "The bank hasn't confirmed or the phone is offline. Don't let the customer pay again, and don't hand over until you see green.", "ລູກຄ້າບອກວ່າຈ່າຍແລ້ວ ແຕ່ບໍ່ເຫັນສີຂຽວ?": "The customer says they paid but there's no green?", "ເບິ່ງໜ້າ \"ລາຍການ\". ຖ້າບໍ່ມີ, ໃຫ້ລູກຄ້າເປີດໃບຮັບເງິນໃນແອັບຂອງເຂົາ ແລ້ວສົ່ງເລກອ້າງອີງໃຫ້ພະນັກງານຊ່ວຍເຫຼືອ. ຮູບ screenshot ບໍ່ແມ່ນຫຼັກຖານ.": "Check \"Payments\". If it's not there, ask the customer to open the receipt in their app and send the reference to support. A screenshot is not proof.", "ຄືນເງິນແນວໃດ?": "How do I refund?", "ເຈົ້າຂອງເຂົ້າ \"ລາຍການ\" → ເລືອກລາຍການ → \"ຂໍຄືນເງິນ\". ເງິນຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ, ບໍ່ຄືນເປັນເງິນສົດ.": "The owner opens \"Payments\" → picks the payment → \"Refund\". Money returns to the customer's original app, never as cash.", "ເງິນເຂົ້າບັນຊີເມື່ອໃດ?": "When does money reach my account?", "ຕາມເວລາຂອງທະນາຄານ partner. ເບິ່ງ \"ລາຍງານ\" → ເງິນເຂົ້າບັນຊີແລ້ວ / ກຳລັງລໍ.": "On the partner bank's schedule. See \"Reports\" → credited / awaiting.", "ປ່ຽນບັນຊີຮັບເງິນໄດ້ບໍ່?": "Can I change my payout account?", "ໄດ້ ແຕ່ຕ້ອງຢືນຢັນກັບທະນາຄານ ເພື່ອປ້ອງກັນການລັກບັນຊີ. ຕິດຕໍ່ໂຕະຊ່ວຍເຫຼືອ ພ້ອມບັດປະຈຳຕົວ.": "Yes, with bank verification to prevent account takeover. Visit the help desk with your ID card.", "ກວດໜ້າ \"ລາຍການ\" ກ່ອນ. ຖ້າບໍ່ມີລາຍການ, ຂໍເລກອ້າງອີງຈາກແອັບຂອງລູກຄ້າ ແລ້ວສົ່ງມານີ້. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ.": "Check \"Payments\" first. If it's not there, get the reference from the customer's app and send it here. Don't let them pay twice.", "ການຄືນເງິນເຮັດໄດ້ສະເພາະເຈົ້າຂອງ: ລາຍການ → ເລືອກລາຍການ → ຂໍຄືນເງິນ. ເງິນຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ.": "Only the owner can refund: Payments → pick the payment → Refund. Money returns to the customer's original app.", "ການປ່ຽນບັນຊີຮັບເງິນ ຕ້ອງຢືນຢັນກັບທະນາຄານ. ພະນັກງານຈະນັດໃຫ້ມາໂຕະຊ່ວຍເຫຼືອ ພ້ອມບັດປະຈຳຕົວ.": "Changing the payout account needs bank verification. We'll book you a help-desk visit; bring your ID card.", "ຈ່າຍບິນໄດ້ທີ່ ບໍລິການ → ຈ່າຍບິນ. ເງິນຕັດຈາກບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ.": "Pay bills in Services → Pay bills. Money is taken directly from the shop's bank account.", "ໄດ້ 1 ຄະແນນ ທຸກ 10,000 ₭. ແລກໄດ້ທີ່ ບໍລິການ → ຄະແນນ ແລະ ລາງວັນ.": "You earn 1 point per 10,000 ₭. Redeem in Services → Points & rewards.", "ຂາຍ": "Sell", "ລາຍການ": "Payments", "ລາຍງານ": "Reports", "ລູກຄ້າຈ່າຍແລ້ວ ແຕ່ບໍ່ເຫັນສີຂຽວ": "Customer paid but no green", "ປ່ຽນບັນຊີຮັບເງິນ": "Change payout account", "ຢາກລົມກັບພະນັກງານ": "Talk to a staff member", "ຂອບໃຈ. ພະນັກງານຈະຕອບກັບພາຍໃນເວລາເປີດບໍລິການ. ກົດ \"ຢາກລົມກັບພະນັກງານ\" ຖ້າຮີບດ່ວນ.": "Thanks. Staff will reply during opening hours. Tap \"Talk to a staff member\" if it's urgent.", "ເງິນບໍ່ເຂົ້າ": "Money not received", "ການຄືນເງິນ": "Refund", "ການບໍລິການ": "Service"};
 
   var $ = function(id){return document.getElementById(id)};
   var fmt = function(n){return Math.round(n).toLocaleString('en-US')};
@@ -262,7 +403,15 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
   var pad = function(n){return (n<10?'0':'')+n};
   var nowTime = function(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
   var code2 = function(){return 10+Math.floor(Math.random()*90)};
+  var esc = function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var ptsFor = function(a){return Math.floor(a/10000)};
 
+  // ---------- language ----------
+  function T(s){
+    var out=(S&&S.lang==='en'&&EN[s])?EN[s]:s;
+    for(var i=1;i<arguments.length;i++)out=out.split('{'+(i-1)+'}').join(arguments[i]);
+    return out;
+  }
   // Lao number reading for LAK prices: groups of thousands (ພັນ) and millions (ລ້ານ)
   var D=['','ໜຶ່ງ','ສອງ','ສາມ','ສີ່','ຫ້າ','ຫົກ','ເຈັດ','ແປດ','ເກົ້າ'];
   function under1000(n){
@@ -280,12 +429,27 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     if(r)s+=under1000(r);
     return s;
   }
+  var EW=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  var ET=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  function en1000(n){var h=Math.floor(n/100),r=n%100,s=h?EW[h]+' hundred':'';if(r){s+=(s?' ':'')+(r<20?EW[r]:ET[Math.floor(r/10)]+(r%10?'-'+EW[r%10]:''))}return s}
+  function enNumber(n){if(!n)return 'zero';var m=Math.floor(n/1e6),k=Math.floor(n%1e6/1000),r=n%1000,p=[];if(m)p.push(en1000(m)+' million');if(k)p.push(en1000(k)+' thousand');if(r)p.push(en1000(r));return p.join(' ')}
+  function sayNumber(n){return S.lang==='en'?enNumber(n)+' kip':laoNumber(n)+'ກີບ'}
 
   // ---------- state ----------
-  var S;
+  var S=null;
+  function savedLang(){try{return localStorage.getItem('sm-lang')==='en'?'en':'lo'}catch(e){return 'lo'}}
   function seed(){
-    S={tab:'sell',mode:'quick',role:'cashier',online:true,chime:0,expected:40000,
-       order:'',active:null,open:null,queue:[],lastPaid:null,newCredit:0,pinOpen:false,standCheck:null,shift:null,
+    S={tab:'sell',sub:null,mode:'quick',role:'cashier',online:true,chime:0,expected:40000,lang:savedLang(),
+       order:'',active:null,open:null,queue:[],lastPaid:null,newCredit:0,pinFor:null,pinErr:false,standCheck:null,shift:null,detail:null,
+       points:1240,pointsLog:[{t:'17:22',d:'ຂາຍ {0} ₭',a:'150,000',p:15},{t:'17:05',d:'ຂາຍ {0} ₭',a:'40,000',p:4},{t:'ມື້ວານ',d:'ກວດປ້າຍ QR ປະຈຳອາທິດ',p:20}],
+       vouchers:[],confirmReward:null,
+       bill:{step:'cat',cat:null,acct:'',err:null},bills:[{t:'01/10',cat:'water',amount:51000,ref:'BP-30482'}],remind:{power:true,water:true,phone:false,insure:true,rent:true},billDue:false,
+       chat:[{who:'them',text:'ສະບາຍດີ! ມີຫຍັງໃຫ້ຊ່ວຍບໍ່? ເລືອກຄຳຖາມຂ້າງລຸ່ມ ຫຼື ພິມຖາມໄດ້ເລີຍ.',by:'ຜູ້ຊ່ວຍອັດຕະໂນມັດ'}],agent:false,
+       complaints:[],cpCat:'fee',
+       sec:{bio:false,twofa:true,autolock:true,alert:true,hide:false},devices:[{id:'me',name:'ໂທລະສັບນີ້ · Android',where:'ຫຼວງພະບາງ',when:'ດຽວນີ້',me:true}],
+       profile:{name:'ນາງ ຄຳ ພົມມະວົງ',phone:'020 5xxx 8812',shop:'ຮ້ານ ແມ່ຄຳ · ເຝີ',addr:'ຕະຫຼາດມືດ ຫຼວງພະບາງ · ຮ້ານ B-12'},
+       consent:{market:true,promo:false,credit:false},privacyReq:null,deleteAsk:false,
+       version:'1.0.0',update:{avail:false,state:'idle',progress:0},
        tx:[
         {id:1,time:'17:05',amount:40000,code:31,status:'paid',credit:'credited',refund:null,mode:'quick',sample:true},
         {id:2,time:'17:22',amount:150000,code:58,status:'paid',credit:'credited',refund:null,mode:'order',sample:true},
@@ -311,7 +475,8 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
   function speak(text){
     try{
       if(!('speechSynthesis' in window))return;
-      var v=speechSynthesis.getVoices().filter(function(x){return /^lo/i.test(x.lang)})[0];
+      var want=S.lang==='en'?/^en/i:/^lo/i;
+      var v=speechSynthesis.getVoices().filter(function(x){return want.test(x.lang)})[0];
       if(!v)return;
       var u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;speechSynthesis.cancel();speechSynthesis.speak(u);
     }catch(e){}
@@ -324,28 +489,62 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
   }
   var toastTimer;
   function toast(msg){var t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true},3800)}
+  var P='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
   var ICON={
     ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-    wait:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    wait:P+'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
     stop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>',
-    ear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h3l5 4V5L7 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
-    lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+    ear:P+'<path d="M4 9v6h3l5 4V5L7 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+    lock:P+'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+    sell:P+'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg>',
+    list:P+'<path d="M5 6h14M5 12h14M5 18h9"/></svg>',
+    chart:P+'<path d="M5 19V11M12 19V5M19 19v-6"/></svg>',
+    grid:P+'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>',
+    user:P+'<circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>',
+    gift:P+'<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9v11M4 13h16M12 9c-2-4-6-4-6-1.5S9 9 12 9zM12 9c2-4 6-4 6-1.5S15 9 12 9z"/></svg>',
+    bolt:P+'<path d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"/></svg>',
+    drop:P+'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>',
+    phone:P+'<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>',
+    shield:P+'<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>',
+    store:P+'<path d="M4 10h16l-1-5H5l-1 5zM5 10v9h14v-9M10 19v-5h4v5"/></svg>',
+    chat:P+'<path d="M5 5h14v10H9l-4 4V5z"/></svg>',
+    scale:P+'<path d="M12 4v16M6 20h12M5 8h14M5 8l-2 6a3 3 0 0 0 6 0L7 8M19 8l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>',
+    globe:P+'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
+    bell:P+'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 21h4"/></svg>',
+    check:P+'<path d="M4 12l5 5L20 6"/></svg>',
+    qr:P+'<rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2M18 14h2M14 18h2v2M20 18v2h-2"/></svg>',
+    info:P+'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
+    mega:P+'<path d="M4 10v4h3l8 4V6L7 10H4zM18 9a4 4 0 0 1 0 6"/></svg>',
+    star:P+'<path d="M12 4l2.5 5 5.5.8-4 3.9.9 5.5L12 16.6 7.1 19.2 8 13.7 4 9.8 9.5 9 12 4z"/></svg>',
+    speaker:P+'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M12 7v.5"/></svg>',
+    wifi:P+'<path d="M4 9a12 12 0 0 1 16 0M7 12.5a7.5 7.5 0 0 1 10 0M10 16a3 3 0 0 1 4 0M12 19v.5"/></svg>',
+    tag:P+'<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8" r="1.5"/></svg>'
   };
   var autoClose;
-  function showOverlay(kind,html){
-    var o=$('overlay');o.className='overlay '+kind;o.innerHTML=html+'<button class="done" id="ovDone">'+(kind==='g'?'ມອບເຄື່ອງແລ້ວ · ຂາຍຕໍ່':'ປິດ')+'</button>';o.hidden=false;
-    $('ovDone').onclick=closeOverlay;$('ovDone').focus({preventScroll:true});
+  // buttons: [{label, cls, id}] ; default one close button
+  function showOverlay(kind,html,buttons){
+    var o=$('overlay');o.className='overlay '+kind;
+    buttons=buttons||[{label:kind==='g'?T('ມອບເຄື່ອງແລ້ວ · ຂາຍຕໍ່'):T('ປິດ'),id:'ovDone'}];
+    o.innerHTML=html+'<div class="btns">'+buttons.map(function(b){return '<button class="done '+(b.cls||'')+'" id="'+b.id+'">'+b.label+'</button>'}).join('')+'</div>';
+    o.hidden=false;
+    var d=$('ovDone');if(d)d.onclick=closeOverlay;
+    var first=o.querySelector('button');if(first)first.focus({preventScroll:true});
     clearTimeout(autoClose);if(kind==='g')autoClose=setTimeout(closeOverlay,12000);
   }
   function closeOverlay(){$('overlay').hidden=true;clearTimeout(autoClose)}
+  function sw(on,id,dis){return '<button class="switch" role="switch" aria-checked="'+(!!on)+'" data-sw="'+id+'"'+(dis?' disabled':'')+'></button>'}
+
+  function addPoints(p,key,arg,ak){if(p<=0)return;S.points+=p;S.pointsLog.unshift({t:nowTime(),d:key,a:arg,ak:ak,p:p})}
 
   function green(tx,label){
-    var said='ໄດ້ຮັບ '+fmt(tx.amount)+' ກີບ · ລະຫັດ '+tx.code;
-    playChime(S.chime);speak('ໄດ້ຮັບ '+laoNumber(tx.amount)+' ກີບ ລະຫັດ '+laoNumber(tx.code));
-    showOverlay('g','<div class="icon">'+ICON.ok+'</div><div class="t">ມອບເຄື່ອງໄດ້</div><div class="a">'+fmt(tx.amount)+' ກີບ</div>'+
+    var said=T('ໄດ້ຮັບ {0} ກີບ · ລະຫັດ {1}',fmt(tx.amount),tx.code);
+    var earned=ptsFor(tx.amount);
+    playChime(S.chime);speak(T('ໄດ້ຮັບ')+' '+sayNumber(tx.amount)+' '+T('ລະຫັດ')+' '+(S.lang==='en'?enNumber(tx.code):laoNumber(tx.code)));
+    showOverlay('g','<div class="icon">'+ICON.ok+'</div><div class="t">'+T('ມອບເຄື່ອງໄດ້')+'</div><div class="a">'+fmt(tx.amount)+' '+T('ກີບ')+'</div>'+
       (label?'<div class="sub">'+label+'</div>':'')+
-      '<div class="bigcode">'+tx.code+'</div><div class="codelabel">ລະຫັດນີ້ຕ້ອງກົງກັບສຽງທີ່ໄດ້ຍິນ</div>'+
-      '<div class="say">ສຽງ: "'+said+'"<br><small>('+laoNumber(tx.amount)+'ກີບ)</small></div>');
+      '<div class="bigcode">'+tx.code+'</div><div class="codelabel">'+T('ລະຫັດນີ້ຕ້ອງກົງກັບສຽງທີ່ໄດ້ຍິນ')+'</div>'+
+      '<div class="say">'+T('ສຽງ')+': "'+said+'"<br><small>('+sayNumber(tx.amount)+')</small></div>'+
+      (earned?'<div class="pts">+'+earned+' '+T('ຄະແນນ')+'</div>':''));
   }
 
   function addTx(amount,status,extra){
@@ -353,8 +552,8 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     for(var k in extra)t[k]=extra[k];
     S.tx.unshift(t);return t;
   }
+  function paidTx(t){t.status='paid';t.credit='pending';addPoints(ptsFor(t.amount),'ຂາຍ {0} ₭',fmt(t.amount));}
 
-  // Which price is the customer expected to pay right now?
   function expectedNow(){
     if(S.mode==='order')return S.active?S.active.amount:null;
     return S.expected;
@@ -370,9 +569,12 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     }
     if(kind==='offline'){setOnline(!S.online);return}
     if(kind==='credit'){bankCredit();return}
+    if(kind==='login'){newLogin();return}
+    if(kind==='update'){S.update.avail=true;S.update.state='idle';log('<b>ອັບເດດຄວາມປອດໄພ:</b> ມີເວີຊັນ 1.0.1. ຄະແນນຄວາມປອດໄພໃນ "ບັນຊີ → ເວີຊັນ ແລະ ຄວາມປອດໄພ" ຫຼຸດລົງ ຈົນກວ່າຈະອັບເດດ. ແອັບຈະບໍ່ໃຫ້ໃຊ້ເວີຊັນເກົ່າທີ່ມີຊ່ອງໂຫວ່ຮ້າຍແຮງ.');toast(T('ມີອັບເດດຄວາມປອດໄພ: ເປີດ ບັນຊີ → ເວີຊັນ'));render();return}
+    if(kind==='billdue'){S.billDue=true;log('<b>ແຈ້ງເຕືອນບິນ:</b> ຄ່າໄຟຟ້າໃກ້ຄົບກຳນົດ. ເຈົ້າຂອງຈ່າຍໄດ້ໃນ "ບໍລິການ → ຈ່າຍບິນ". ທະນາຄານ partner ເປັນຜູ້ຕັດເງິນ ແລະ ຈ່າຍ; ແອັບບໍ່ຖືເງິນ.');toast(T('ຄ່າໄຟຟ້າ {0} ກີບ ຄົບກຳນົດໃນ 3 ມື້',fmt(BILLERS.power.amount)));render();return}
     if(kind==='dup'){
       if(!S.lastPaid){log('ຍັງບໍ່ມີລາຍການທີ່ຈ່າຍແລ້ວໃນຮອບນີ້. ລອງ "ລູກຄ້າຈ່າຍຄົບ" ກ່ອນ.');return}
-      log('<b>ຂໍ້ມູນຊ້ຳ:</b> ທະນາຄານສົ່ງລາຍການລະຫັດ '+S.lastPaid.code+' ມາອີກຄັ້ງ. ລະບົບຮູ້ວ່າເປັນລາຍການເກົ່າ → ບໍ່ແຈ້ງສຽງ ແລະ ບໍ່ນັບຍອດຊ້ຳ.');
+      log('<b>ຂໍ້ມູນຊ້ຳ:</b> ທະນາຄານສົ່ງລາຍການລະຫັດ '+S.lastPaid.code+' ມາອີກຄັ້ງ. ລະບົບຮູ້ວ່າເປັນລາຍການເກົ່າ → ບໍ່ແຈ້ງສຽງ, ບໍ່ນັບຍອດ ແລະ ຄະແນນຊ້ຳ.');
       return;
     }
     if(S.overlayPending){log('ລໍໃຫ້ລາຍການທີ່ກຳລັງລໍຖ້າຜົນ ຈົບກ່ອນ.');return}
@@ -383,25 +585,24 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
 
     if(kind==='topup'){
       if(!S.open){log('ບໍ່ມີການຂາຍທີ່ຍັງຂາດເງິນ. ລອງ "ລູກຄ້າໃສ່ເລກສູນຂາດ" ກ່ອນ.');return}
-      var rest=S.open.expected-S.open.paid;
-      return pay(rest,{topup:true});
+      return pay(S.open.expected-S.open.paid);
     }
     if(kind==='short'){
       if(S.mode==='order'){log('<b>Order mode:</b> ຍອດເງິນຢູ່ໃນ QR ແລ້ວ, ລູກຄ້າບໍ່ຕ້ອງພິມເອງ → ໃສ່ເລກສູນຜິດບໍ່ໄດ້. ກໍລະນີນີ້ເກີດໃນ Quick mode.');return}
-      return pay(Math.round(price/10),{});
+      return pay(Math.round(price/10));
     }
-    if(kind==='over')return pay(S.mode==='order'?price:price*10,{});
-    if(kind==='paid')return pay(price,{});
+    if(kind==='over')return pay(S.mode==='order'?price:price*10);
+    if(kind==='paid')return pay(price);
     if(kind==='pending'){
       if(!S.online){queueOffline(price);return}
       var t=addTx(price,'pending',{});S.overlayPending=true;
-      showOverlay('a','<div class="icon">'+ICON.wait+'</div><div class="t">ລໍຖ້າ</div><div class="a">'+fmt(price)+' ກີບ</div><div class="sub">ທະນາຄານຍັງບໍ່ຢືນຢັນ. <b>ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ</b> ແລະ ຢ່າເພີ່ງມອບເຄື່ອງ.</div>');
+      showOverlay('a','<div class="icon">'+ICON.wait+'</div><div class="t">'+T('ລໍຖ້າ')+'</div><div class="a">'+fmt(price)+' '+T('ກີບ')+'</div><div class="sub">'+T('ທະນາຄານຍັງບໍ່ຢືນຢັນ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ ແລະ ຢ່າເພີ່ງມອບເຄື່ອງ.')+'</div>');
       log('<b>ຍັງບໍ່ຮູ້ຜົນ:</b> ລູກຄ້າອາດຖືກຫັກເງິນແລ້ວ ແຕ່ທະນາຄານຍັງບໍ່ຢືນຢັນ → ສີເຫຼືອງ. ລະບົບກວດຈາກເລກອ້າງອີງເດີມ, ບໍ່ຂໍໃຫ້ຈ່າຍໃໝ່.');
       render();
       setTimeout(function(){
-        S.overlayPending=false;t.status='paid';t.credit='pending';S.lastPaid=t;
+        S.overlayPending=false;paidTx(t);S.lastPaid=t;
         if(S.mode==='order')S.active=null;
-        green(t,'ທະນາຄານຢືນຢັນຊ້າ ແຕ່ຢືນຢັນແລ້ວ');
+        green(t,T('ທະນາຄານຢືນຢັນຊ້າ ແຕ່ຢືນຢັນແລ້ວ'));
         log('ທະນາຄານຢືນຢັນລາຍການເດີມ → ສີຂຽວ. ການຈ່າຍຊ້ຳຖືກປ້ອງກັນ.');render();
       },4500);
       return;
@@ -409,32 +610,31 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     if(kind==='failed'){
       if(!S.online){log('ມືຖືຂາດເນັດ: ແອັບຍັງບໍ່ຮູ້ຜົນ, ສະແດງສີເຫຼືອງໄວ້.');return}
       addTx(price,'failed',{});playLow();
-      showOverlay('r','<div class="icon">'+ICON.stop+'</div><div class="t">ຢ່າເພີ່ງມອບເຄື່ອງ</div><div class="a">'+fmt(price)+' ກີບ</div><div class="sub">ການຈ່າຍບໍ່ສຳເລັດ. ໃຫ້ລູກຄ້າກວດແອັບຂອງຕົນ ແລ້ວລອງໃໝ່.</div>');
+      showOverlay('r','<div class="icon">'+ICON.stop+'</div><div class="t">'+T('ຢ່າເພີ່ງມອບເຄື່ອງ')+'</div><div class="a">'+fmt(price)+' '+T('ກີບ')+'</div><div class="sub">'+T('ການຈ່າຍບໍ່ສຳເລັດ. ໃຫ້ລູກຄ້າກວດແອັບຂອງຕົນ ແລ້ວລອງໃໝ່.')+'</div>');
       log('<b>ບໍ່ສຳເລັດ:</b> ທະນາຄານແຈ້ງວ່າບໍ່ສຳເລັດ → ສີແດງ, ສຽງຕ່ຳ, ບໍ່ບອກຍອດເງິນເປັນສຽງ.');
       render();return;
     }
   }
 
-  function pay(amount,opt){
+  function pay(amount){
     if(!S.online){queueOffline(amount);return}
-    var t=addTx(amount,'paid',{});S.lastPaid=t;
-    if(S.mode==='order'){S.active=null;green(t,'ກົງກັບ QR ຂອງການຂາຍນີ້');log('<b>ຈ່າຍຄົບ:</b> ທະນາຄານຢືນຢັນ, ຮ້ານ/ຍອດ/ເລກອ້າງອີງກົງກັນ → ສີຂຽວ + ສຽງກະດິ່ງ + ລະຫັດ '+t.code+'.');render();return}
+    var t=addTx(amount,'paid',{});paidTx(t);S.lastPaid=t;
+    if(S.mode==='order'){S.active=null;green(t,T('ກົງກັບ QR ຂອງການຂາຍນີ້'));log('<b>ຈ່າຍຄົບ:</b> ທະນາຄານຢືນຢັນ, ຮ້ານ/ຍອດ/ເລກອ້າງອີງກົງກັນ → ສີຂຽວ + ສຽງກະດິ່ງ + ລະຫັດ '+t.code+'. ຮ້ານໄດ້ '+ptsFor(amount)+' ຄະແນນ.');render();return}
 
-    // Quick mode: compare what arrived with the price the vendor said
     var exp=S.open?S.open.expected:S.expected;
-    if(!exp){green(t,'ບໍ່ໄດ້ຕັ້ງລາຄາ: ກວດຍອດກັບລາຄາທີ່ບອກລູກຄ້າ');log('<b>ໄດ້ຮັບເງິນ:</b> ບໍ່ໄດ້ຕັ້ງລາຄາໄວ້, ແມ່ຄ້າກວດຍອດທີ່ສະແດງກັບລາຄາທີ່ບອກ.');render();return}
+    if(!exp){green(t,T('ບໍ່ໄດ້ຕັ້ງລາຄາ: ກວດຍອດກັບລາຄາທີ່ບອກລູກຄ້າ'));log('<b>ໄດ້ຮັບເງິນ:</b> ບໍ່ໄດ້ຕັ້ງລາຄາໄວ້, ແມ່ຄ້າກວດຍອດທີ່ສະແດງກັບລາຄາທີ່ບອກ.');render();return}
     var paid=(S.open?S.open.paid:0)+amount;
     if(paid<exp){
-      S.open={expected:exp,paid:paid};t.status='paid';t.note='ສ່ວນໜຶ່ງຂອງການຂາຍ '+fmt(exp);
+      S.open={expected:exp,paid:paid};t.note=T('ສ່ວນໜຶ່ງຂອງການຂາຍ {0}',fmt(exp));
       playLow();
-      showOverlay('a','<div class="icon">'+ICON.wait+'</div><div class="t">ຍັງຂາດ '+fmt(exp-paid)+' ກີບ</div><div class="a">ໄດ້ຮັບ '+fmt(paid)+'</div><div class="sub">ລາຄາ '+fmt(exp)+' ກີບ. ລູກຄ້າອາດໃສ່ເລກສູນຂາດ. ໃຫ້ລູກຄ້າຈ່າຍເພີ່ມສ່ວນທີ່ຂາດ, ຢ່າເພີ່ງມອບເຄື່ອງ.</div>');
+      showOverlay('a','<div class="icon">'+ICON.wait+'</div><div class="t">'+T('ຍັງຂາດ {0} ກີບ',fmt(exp-paid))+'</div><div class="a">'+T('ໄດ້ຮັບ')+' '+fmt(paid)+'</div><div class="sub">'+T('ລາຄາ {0} ກີບ. ລູກຄ້າອາດໃສ່ເລກສູນຂາດ. ໃຫ້ລູກຄ້າຈ່າຍເພີ່ມສ່ວນທີ່ຂາດ, ຢ່າເພີ່ງມອບເຄື່ອງ.',fmt(exp))+'</div>');
       log('<b>ຈ່າຍຂາດ:</b> ລາຄາ '+fmt(exp)+' ແຕ່ໄດ້ຮັບ '+fmt(paid)+' → ສີເຫຼືອງ ບອກຍອດທີ່ຍັງຂາດ. ເງິນທີ່ຈ່າຍແລ້ວບໍ່ເສຍ; ລູກຄ້າຈ່າຍເພີ່ມໄດ້.');
       render();return;
     }
     var label=null;
-    if(S.open){t.note='ຈ່າຍເພີ່ມ ຄົບ '+fmt(exp);label='ຈ່າຍເພີ່ມແລ້ວ · ຄົບ '+fmt(exp)+' ກີບ';log('<b>ຈ່າຍເພີ່ມຄົບ:</b> 2 ລາຍການລວມກັນ = '+fmt(exp)+' → ສີຂຽວ.')}
-    else if(paid>exp){label='ຈ່າຍເກີນ '+fmt(paid-exp)+' ກີບ. ຢ່າທອນເງິນສົດ; ເຈົ້າຂອງຄືນສ່ວນເກີນຜ່ານແອັບ.';log('<b>ຈ່າຍເກີນ:</b> ໄດ້ຮັບ '+fmt(paid)+' ສຳລັບລາຄາ '+fmt(exp)+'. ບໍ່ທອນເງິນສົດ ເພື່ອປ້ອງກັນການສໍ້ໂກງ; ເຈົ້າຂອງຄືນເງິນເຂົ້າແອັບເດີມຂອງລູກຄ້າ.')}
-    else log('<b>ຈ່າຍຄົບ:</b> ທະນາຄານຢືນຢັນ '+fmt(amount)+' ກີບ → ສີຂຽວ + ສຽງກະດິ່ງ "'+CHIMES[S.chime].name+'" + ລະຫັດ '+t.code+'.');
+    if(S.open){t.note=T('ຈ່າຍເພີ່ມ ຄົບ {0}',fmt(exp));label=T('ຈ່າຍເພີ່ມແລ້ວ · ຄົບ {0} ກີບ',fmt(exp));log('<b>ຈ່າຍເພີ່ມຄົບ:</b> 2 ລາຍການລວມກັນ = '+fmt(exp)+' → ສີຂຽວ.')}
+    else if(paid>exp){label=T('ຈ່າຍເກີນ {0} ກີບ. ຢ່າທອນເງິນສົດ; ເຈົ້າຂອງຄືນສ່ວນເກີນຜ່ານແອັບ.',fmt(paid-exp));log('<b>ຈ່າຍເກີນ:</b> ໄດ້ຮັບ '+fmt(paid)+' ສຳລັບລາຄາ '+fmt(exp)+'. ບໍ່ທອນເງິນສົດ ເພື່ອປ້ອງກັນການສໍ້ໂກງ; ເຈົ້າຂອງຄືນເງິນເຂົ້າແອັບເດີມຂອງລູກຄ້າ.')}
+    else log('<b>ຈ່າຍຄົບ:</b> ທະນາຄານຢືນຢັນ '+fmt(amount)+' ກີບ → ສີຂຽວ + ສຽງກະດິ່ງ "'+CHIMES[S.chime].name+'" + ລະຫັດ '+t.code+'. ຮ້ານໄດ້ '+ptsFor(amount)+' ຄະແນນ.');
     S.open=null;green(t,label);render();
   }
 
@@ -447,9 +647,9 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     S.online=on;$('evOffline').setAttribute('aria-pressed',String(!on));
     if(!on){log('<b>ຂາດເນັດ:</b> ສະຖານະເປັນສີເຫຼືອງ. ແອັບບໍ່ສະແດງສີຂຽວ ຖ້າບໍ່ມີຫຼັກຖານ.');render();return}
     var n=S.queue.length;
-    S.queue.forEach(function(q){var t=addTx(q.amount,'paid',{offline:true});t.time=q.time;t.note='ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ'});
+    S.queue.forEach(function(q){var t=addTx(q.amount,'paid',{offline:true});paidTx(t);t.time=q.time;t.note=T('ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ')});
     S.queue=[];
-    if(n){toast('ອັບເດດ '+n+' ລາຍການທີ່ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ (ບໍ່ແຈ້ງສຽງ)');log('<b>ເຊື່ອມຄືນ:</b> ດຶງ '+n+' ລາຍການເຂົ້າປະຫວັດ. <b>ບໍ່ແຈ້ງສຽງ</b> ເພາະເປັນລາຍການເກົ່າ; ແມ່ຄ້າກວດຢູ່ໜ້າ "ລາຍການ".')}
+    if(n){toast(T('ອັບເດດ {0} ລາຍການທີ່ໄດ້ຮັບໃນລະຫວ່າງຂາດເນັດ (ບໍ່ແຈ້ງສຽງ)',n));log('<b>ເຊື່ອມຄືນ:</b> ດຶງ '+n+' ລາຍການເຂົ້າປະຫວັດ. <b>ບໍ່ແຈ້ງສຽງ</b> ເພາະເປັນລາຍການເກົ່າ; ແມ່ຄ້າກວດຢູ່ໜ້າ "ລາຍການ".')}
     else log('<b>ເຊື່ອມຄືນ:</b> ພ້ອມຮັບເງິນອີກຄັ້ງ.');
     render();
   }
@@ -458,9 +658,19 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     S.tx.forEach(function(t){if(t.status==='paid'&&t.credit==='pending'&&!t.refund){t.credit='credited';n++;sum+=t.amount-feeOf(t.amount)}});
     if(!n){log('ບໍ່ມີລາຍການທີ່ລໍເງິນເຂົ້າບັນຊີ.');return}
     S.newCredit+=n;
-    log('<b>ເງິນເຂົ້າບັນຊີ:</b> ທະນາຄານຢືນຢັນເງິນສຸດທິ '+fmt(sum)+' ກີບ ('+n+' ລາຍການ) ເຂົ້າບັນຊີຮ້ານ. ສະແດງໃນ "ສະຫຼຸບ" ເທົ່ານັ້ນ, ບໍ່ແຈ້ງສຽງໃນເວລາຂາຍ.');
+    log('<b>ເງິນເຂົ້າບັນຊີ:</b> ທະນາຄານຢືນຢັນເງິນສຸດທິ '+fmt(sum)+' ກີບ ('+n+' ລາຍການ) ເຂົ້າບັນຊີຮ້ານ. ສະແດງໃນ "ລາຍງານ" ເທົ່ານັ້ນ, ບໍ່ແຈ້ງສຽງໃນເວລາຂາຍ.');
     render();
   }
+  function newLogin(){
+    if(!S.devices.some(function(d){return d.id==='new'}))S.devices.push({id:'new',name:'Android · ເຄື່ອງໃໝ່',where:'ວຽງຈັນ',when:'1 ນາທີກ່ອນ',me:false});
+    playLow();
+    showOverlay('a','<div class="icon">'+ICON.shield+'</div><div class="t">'+T('ມີການເຂົ້າລະບົບຈາກເຄື່ອງໃໝ່')+'</div><div class="sub">'+T('Android · ວຽງຈັນ · 1 ນາທີກ່ອນ. ຖ້າບໍ່ແມ່ນທ່ານ, ໃຫ້ອອກຈາກລະບົບເຄື່ອງນັ້ນ ແລະ ປ່ຽນ PIN.')+'</div>',
+      [{label:T('ບໍ່ແມ່ນຂ້ອຍ · ອອກຈາກລະບົບເຄື່ອງນັ້ນ'),cls:'solid',id:'ovKick'},{label:T('ແມ່ນຂ້ອຍເອງ'),id:'ovDone'}]);
+    $('ovKick').onclick=function(){kickDevice();closeOverlay()};
+    log('<b>ເຂົ້າລະບົບຈາກເຄື່ອງອື່ນ:</b> ລະບົບແຈ້ງເຕືອນທັນທີ (ແລະ ສົ່ງ SMS ໃນລະບົບຈິງ). ເຄື່ອງໃໝ່ຍັງເຮັດການເງິນບໍ່ໄດ້ ຈົນກວ່າຈະຢືນຢັນ 2 ຂັ້ນ. ເຈົ້າຂອງກົດອອກຈາກລະບົບເຄື່ອງນັ້ນໄດ້.');
+    render();
+  }
+  function kickDevice(){S.devices=S.devices.filter(function(d){return d.me});toast(T('ອອກຈາກລະບົບເຄື່ອງນັ້ນແລ້ວ. ແນະນຳໃຫ້ປ່ຽນ PIN.'));log('ເຈົ້າຂອງອອກຈາກລະບົບເຄື່ອງທີ່ບໍ່ຮູ້ຈັກແລ້ວ. ຄະແນນຄວາມປອດໄພກັບຄືນ.');render()}
 
   // ---------- QR drawing (placeholder pattern, not a payable code) ----------
   function drawQR(canvas,seedStr){
@@ -471,78 +681,99 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     c.fillStyle='#163e39';
     for(var y=0;y<N;y++)for(var x=0;x<N;x++){if(rnd()<0.47)c.fillRect(x,y,1,1)}
     [[0,0],[N-7,0],[0,N-7]].forEach(function(p){
-      c.fillStyle='#fff';c.fillRect(p[0]-1<0?0:p[0]-1,p[1]-1<0?0:p[1]-1,8,8);
+      c.fillStyle='#fff';c.fillRect(Math.max(0,p[0]-1),Math.max(0,p[1]-1),8,8);
       c.fillStyle='#163e39';c.fillRect(p[0],p[1],7,7);c.fillStyle='#fff';c.fillRect(p[0]+1,p[1]+1,5,5);c.fillStyle='#163e39';c.fillRect(p[0]+2,p[1]+2,3,3);
     });
   }
 
-  // ---------- views ----------
+  // ---------- shared view pieces ----------
+  function lockView(msg){
+    return '<div class="card" style="text-align:center;padding:26px 16px">'+ICON.lock.replace('<svg','<svg width="40" height="40" style="color:var(--muted)"')+'<h3>'+T('ສະເພາະເຈົ້າຂອງຮ້ານ')+'</h3><p class="label" style="margin:6px 0 12px">'+msg+'</p><button class="primary" data-act="askOwner" style="width:100%">'+T('ເຂົ້າໂໝດເຈົ້າຂອງ')+'</button>'+pinBox()+'</div>';
+  }
+  function pinBox(){
+    if(!S.pinFor||S.role==='owner')return '';
+    return '<div class="pin"><input id="pin" inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="PIN"><button class="primary small" data-act="pinOk">'+T('ຕົກລົງ')+'</button></div><div class="label" style="margin-top:4px">'+T('PIN ຕົວຢ່າງ: 1234')+'</div>'+(S.pinErr?'<div class="result bad">'+T('PIN ບໍ່ຖືກ')+'</div>':'');
+  }
+  function subhead(title){return '<div class="subhead"><button class="back" data-act="back" aria-label="'+T('ກັບ')+'">‹ '+T('ກັບ')+'</button><h2>'+title+'</h2></div>'}
   function txRow(t,btn){
     var dot=t.status==='paid'?'g':t.status==='pending'?'a':t.status==='failed'?'r':'x';
     var pills='';
     if(t.status==='paid'){
-      if(t.refund==='refunded')pills+='<span class="pill grey">ຄືນເງິນແລ້ວ</span>';
-      else if(t.refund)pills+='<span class="pill wait">ກຳລັງຄືນເງິນ</span>';
-      else pills+=t.credit==='credited'?'<span class="pill ok">ເຂົ້າບັນຊີແລ້ວ</span>':'<span class="pill wait">ລໍເງິນເຂົ້າບັນຊີ</span>';
-    } else if(t.status==='pending')pills+='<span class="pill wait">ລໍຜົນ</span>';
-    else pills+='<span class="pill stop">ບໍ່ສຳເລັດ</span>';
-    var sub=t.time+' · '+(t.mode==='quick'?'ປ້າຍ QR':'QR ຕໍ່ການຂາຍ')+(t.note?' · '+t.note:'')+(t.sample?' · ຕົວຢ່າງ':'');
+      if(t.refund==='refunded')pills+='<span class="pill grey">'+T('ຄືນເງິນແລ້ວ')+'</span>';
+      else if(t.refund)pills+='<span class="pill wait">'+T('ກຳລັງຄືນເງິນ')+'</span>';
+      else pills+=t.credit==='credited'?'<span class="pill ok">'+T('ເຂົ້າບັນຊີແລ້ວ')+'</span>':'<span class="pill wait">'+T('ລໍເງິນເຂົ້າບັນຊີ')+'</span>';
+    } else if(t.status==='pending')pills+='<span class="pill wait">'+T('ລໍຜົນ')+'</span>';
+    else pills+='<span class="pill stop">'+T('ບໍ່ສຳເລັດ')+'</span>';
+    var sub=t.time+' · '+(t.mode==='quick'?T('ປ້າຍ QR'):T('QR ຕໍ່ການຂາຍ'))+(t.note?' · '+t.note:'')+(t.sample?' · '+T('ຕົວຢ່າງ'):'');
     var tag=btn?'button':'div';
     return '<'+tag+' class="tx"'+(btn?' data-tx="'+t.id+'"':'')+'><span class="dot '+dot+'"></span><span class="main"><b>'+fmt(t.amount)+' ₭</b>'+pills+'<small>'+sub+'</small></span>'+(t.status==='paid'?'<span class="code">'+t.code+'</span>':'')+'</'+tag+'>';
   }
+  function menuItem(act,icon,title,sub,extra){
+    return '<button data-act="'+act+'"><span class="ic">'+ICON[icon]+'</span><span class="tx2"><b>'+title+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span>'+(extra||'')+'<span class="chev" aria-hidden="true">›</span></button>';
+  }
 
+  // ---------- SELL ----------
   function viewSell(){
     var h='';
-    if(!S.online)h+='<div class="banner wait">'+ICON.wait.replace('<svg','<svg width="22" height="22"')+'<div><b>ມືຖືຂາດເນັດ · ສີເຫຼືອງ</b>ແອັບກວດຜົນບໍ່ໄດ້. ປ້າຍ QR ຍັງຮັບເງິນໄດ້; ຢ່າມອບເຄື່ອງຈົນກວ່າຈະເຫັນສີຂຽວ ຫຼື ກວດໃນແອັບທະນາຄານ.'+(S.queue.length?' ('+S.queue.length+' ລາຍການລໍອັບເດດ)':'')+'</div></div>';
-    h+='<div class="seg" role="group" aria-label="ໂໝດການຂາຍ"><button data-mode="quick" aria-pressed="'+(S.mode==='quick')+'">Quick mode<small>ປ້າຍ QR · ຮ້ານອາຫານ</small></button><button data-mode="order" aria-pressed="'+(S.mode==='order')+'">Order mode<small>QR ຕໍ່ການຂາຍ · ຂອງທີ່ລະນຶກ</small></button></div>';
+    if(!S.online)h+='<div class="banner wait">'+ICON.wait.replace('<svg','<svg width="22" height="22"')+'<div><b>'+T('ມືຖືຂາດເນັດ · ສີເຫຼືອງ')+'</b>'+T('ແອັບກວດຜົນບໍ່ໄດ້. ປ້າຍ QR ຍັງຮັບເງິນໄດ້; ຢ່າມອບເຄື່ອງຈົນກວ່າຈະເຫັນສີຂຽວ ຫຼື ກວດໃນແອັບທະນາຄານ.')+(S.queue.length?' ('+T('{0} ລາຍການລໍອັບເດດ',S.queue.length)+')':'')+'</div></div>';
+    h+='<div class="seg" role="group"><button data-mode="quick" aria-pressed="'+(S.mode==='quick')+'">Quick mode<small>'+T('ປ້າຍ QR · ຮ້ານອາຫານ')+'</small></button><button data-mode="order" aria-pressed="'+(S.mode==='order')+'">Order mode<small>'+T('QR ຕໍ່ການຂາຍ · ຂອງທີ່ລະນຶກ')+'</small></button></div>';
     if(S.mode==='quick'){
-      h+='<div class="card listen'+(S.online?'':' off')+'"><div class="ring">'+ICON.ear+'</div><h3>'+(S.online?'ກຳລັງຟັງການຈ່າຍ':'ຂາດເນັດ · ຍັງບໍ່ຮູ້ຜົນ')+'</h3><div class="label">ລູກຄ້າສະແກນປ້າຍ QR ແລະ ໃສ່ຍອດເອງ. ເມື່ອທະນາຄານຢືນຢັນ ແອັບຈະເປັນສີຂຽວ ແລະ ດັງສຽງ.</div></div>';
-      h+='<div class="card"><div class="expect"><span class="label">ລາຄາທີ່ບອກລູກຄ້າ</span><b>'+(S.expected?fmt(S.expected)+' ₭':'—')+'</b></div>';
-      h+='<div class="chips">'+[20000,30000,40000,50000,60000].map(function(v){return '<button class="chip" data-exp="'+v+'" aria-pressed="'+(S.expected===v)+'">'+fmt(v)+'</button>'}).join('')+'<button class="chip" data-exp="0" aria-pressed="'+(!S.expected)+'">ບໍ່ຕັ້ງ</button></div>';
-      if(S.open)h+='<div class="warn" style="margin-top:8px">ການຂາຍ '+fmt(S.open.expected)+' ₭ ຍັງຂາດ <b>'+fmt(S.open.expected-S.open.paid)+' ₭</b></div>';
+      h+='<div class="card listen'+(S.online?'':' off')+'"><div class="ring">'+ICON.ear+'</div><h3>'+(S.online?T('ກຳລັງຟັງການຈ່າຍ'):T('ຂາດເນັດ · ຍັງບໍ່ຮູ້ຜົນ'))+'</h3><div class="label">'+T('ລູກຄ້າສະແກນປ້າຍ QR ແລະ ໃສ່ຍອດເອງ. ເມື່ອທະນາຄານຢືນຢັນ ແອັບຈະເປັນສີຂຽວ ແລະ ດັງສຽງ.')+'</div></div>';
+      h+='<div class="card"><div class="expect"><span class="label">'+T('ລາຄາທີ່ບອກລູກຄ້າ')+'</span><b>'+(S.expected?fmt(S.expected)+' ₭':'—')+'</b></div>';
+      h+='<div class="chips">'+[20000,30000,40000,50000,60000].map(function(v){return '<button class="chip" data-exp="'+v+'" aria-pressed="'+(S.expected===v)+'">'+fmt(v)+'</button>'}).join('')+'<button class="chip lao" data-exp="0" aria-pressed="'+(!S.expected)+'">'+T('ບໍ່ຕັ້ງ')+'</button></div>';
+      if(S.open)h+='<div class="warn" style="margin-top:8px">'+T('ການຂາຍ {0} ₭ ຍັງຂາດ',fmt(S.open.expected))+' <b>'+fmt(S.open.expected-S.open.paid)+' ₭</b></div>';
       h+='</div>';
       var last=S.tx.filter(function(t){return !t.sample}).slice(0,3);
-      h+='<div><div class="label" style="margin:0 2px 6px">ລ່າສຸດ</div><div class="recent">'+(last.length?last.map(function(t){return txRow(t,false)}).join(''):'<div class="label" style="padding:8px 2px">ຍັງບໍ່ມີການຈ່າຍໃນຮອບນີ້. ກົດ "ລູກຄ້າຈ່າຍຄົບ" ໃນແຜງຈຳລອງ.</div>')+'</div></div>';
+      h+='<div><div class="label" style="margin:0 2px 6px">'+T('ລ່າສຸດ')+'</div><div class="recent">'+(last.length?last.map(function(t){return txRow(t,false)}).join(''):'<div class="label" style="padding:8px 2px">'+T('ຍັງບໍ່ມີການຈ່າຍໃນຮອບນີ້. ກົດ "ລູກຄ້າຈ່າຍຄົບ" ໃນແຜງຈຳລອງ.')+'</div>')+'</div></div>';
       return h;
     }
     if(S.active){
       var left=Math.max(0,Math.ceil((S.active.expires-Date.now())/1000));
-      h+='<div class="card qrbox"><div class="label">ໃຫ້ລູກຄ້າສະແກນດ້ວຍແອັບທະນາຄານ</div><canvas id="qr" width="25" height="25" aria-label="QR ຕົວຢ່າງ"></canvas><div class="amt">'+fmt(S.active.amount)+' ກີບ</div><div class="label">ຊື່ທີ່ລູກຄ້າຕ້ອງເຫັນ: <b style="color:var(--brand)">'+SHOP_NAME+'</b></div><div class="timer" id="timer">QR ໝົດອາຍຸໃນ '+Math.floor(left/60)+':'+pad(left%60)+'</div></div>';
-      h+='<div class="waiting"><i></i>ລໍລູກຄ້າຈ່າຍ · ສີເຫຼືອງ</div>';
-      h+='<div class="net"><span>ຍອດຮັບສຸດທິ (ຄ່າທຳນຽມ '+fmt(feeOf(S.active.amount))+')</span><b>'+fmt(S.active.amount-feeOf(S.active.amount))+' ₭</b></div>';
-      h+='<button class="ghost" id="cancelQR">ຍົກເລີກ QR ນີ້</button>';
+      h+='<div class="card qrbox"><div class="label">'+T('ໃຫ້ລູກຄ້າສະແກນດ້ວຍແອັບທະນາຄານ')+'</div><canvas id="qr" width="25" height="25" aria-label="QR"></canvas><div class="amt">'+fmt(S.active.amount)+' '+T('ກີບ')+'</div><div class="label">'+T('ຊື່ທີ່ລູກຄ້າຕ້ອງເຫັນ')+': <b style="color:var(--brand)">'+SHOP_NAME+'</b></div><div class="timer" id="timer">'+T('QR ໝົດອາຍຸໃນ {0}',Math.floor(left/60)+':'+pad(left%60))+'</div></div>';
+      h+='<div class="waiting"><i></i>'+T('ລໍລູກຄ້າຈ່າຍ · ສີເຫຼືອງ')+'</div>';
+      h+='<div class="net"><span>'+T('ຍອດຮັບສຸດທິ (ຄ່າທຳນຽມ {0})',fmt(feeOf(S.active.amount)))+'</span><b>'+fmt(S.active.amount-feeOf(S.active.amount))+' ₭</b></div>';
+      h+='<button class="ghost" data-act="cancelQR">'+T('ຍົກເລີກ QR ນີ້')+'</button>';
       return h;
     }
     var amt=parseInt(S.order||'0',10);
-    h+='<div class="amount"><div class="label">ໃສ່ລາຄາ (ກີບ)</div><div class="v'+(amt?'':' empty')+'">'+(amt?fmt(amt):'0')+'</div><div class="readback">'+(amt?'ອ່ານຄືນ: "'+laoNumber(amt)+'ກີບ"':'')+'</div></div>';
-    if(amt)h+='<div class="net"><span>ຍອດຮັບສຸດທິ · ຄ່າທຳນຽມ '+fmt(feeOf(amt))+'</span><b>'+fmt(amt-feeOf(amt))+' ₭</b></div>';
-    if(amt>USUAL_MAX)h+='<div class="warn">ຍອດນີ້ສູງກວ່າປົກກະຕິຂອງຮ້ານ. ກວດເລກສູນອີກຄັ້ງ.</div>';
-    h+='<div class="keys">'+['1','2','3','4','5','6','7','8','9','000','0','⌫'].map(function(k){return '<button data-key="'+k+'"'+(k==='000'?' class="z"':'')+' aria-label="'+(k==='⌫'?'ລຶບ':k)+'">'+k+'</button>'}).join('')+'</div>';
-    h+='<button class="primary" id="showQR"'+(amt?'':' disabled')+'>ສະແດງ QR</button>';
+    h+='<div class="amount"><div class="label">'+T('ໃສ່ລາຄາ (ກີບ)')+'</div><div class="v'+(amt?'':' empty')+'">'+(amt?fmt(amt):'0')+'</div><div class="readback">'+(amt?T('ອ່ານຄືນ')+': "'+sayNumber(amt)+'"':'')+'</div></div>';
+    if(amt)h+='<div class="net"><span>'+T('ຍອດຮັບສຸດທິ · ຄ່າທຳນຽມ {0}',fmt(feeOf(amt)))+'</span><b>'+fmt(amt-feeOf(amt))+' ₭</b></div>';
+    if(amt>USUAL_MAX)h+='<div class="warn">'+T('ຍອດນີ້ສູງກວ່າປົກກະຕິຂອງຮ້ານ. ກວດເລກສູນອີກຄັ້ງ.')+'</div>';
+    h+='<div class="keys">'+['1','2','3','4','5','6','7','8','9','000','0','⌫'].map(function(k){return '<button data-key="'+k+'"'+(k==='000'?' class="z"':'')+' aria-label="'+(k==='⌫'?T('ລຶບ'):k)+'">'+k+'</button>'}).join('')+'</div>';
+    h+='<button class="primary" data-act="showQR"'+(amt?'':' disabled')+'>'+T('ສະແດງ QR')+'</button>';
     return h;
   }
 
+  // ---------- HISTORY ----------
   function viewHistory(){
-    var h='<div class="opt"><h3>ລາຍການມື້ນີ້</h3><span class="label">'+S.tx.length+' ລາຍການ</span></div>';
+    var h='<div class="opt"><h3>'+T('ລາຍການມື້ນີ້')+'</h3><span class="label">'+T('{0} ລາຍການ',S.tx.length)+'</span></div>';
     h+='<div class="recent">'+S.tx.map(function(t){return txRow(t,true)}).join('')+'</div>';
-    h+='<p class="label" style="margin:0">ກົດລາຍການເພື່ອເບິ່ງລາຍລະອຽດ'+(S.role==='owner'?' ແລະ ຄືນເງິນ':'')+'.</p>';
+    h+='<p class="label">'+(S.role==='owner'?T('ກົດລາຍການເພື່ອເບິ່ງລາຍລະອຽດ ແລະ ຄືນເງິນ.'):T('ກົດລາຍການເພື່ອເບິ່ງລາຍລະອຽດ.'))+'</p>';
     if(S.detail){
       var t=S.tx.filter(function(x){return x.id===S.detail})[0];
       if(t){
-        h+='<div class="card" id="detail"><div class="opt"><h3>'+fmt(t.amount)+' ກີບ</h3>'+(t.status==='paid'?'<span class="code" style="font:800 15px var(--num);color:var(--brand);background:var(--soft);border-radius:8px;padding:2px 8px">'+t.code+'</span>':'')+'</div>';
-        h+='<div class="label">ເວລາ '+t.time+' · ເລກອ້າງອີງ SM-'+(1000+t.id)+'</div>';
+        h+='<div class="card" id="detail"><div class="opt"><h3>'+fmt(t.amount)+' '+T('ກີບ')+'</h3>'+(t.status==='paid'?'<span style="font:800 15px var(--num);color:var(--brand);background:var(--soft);border-radius:8px;padding:2px 8px">'+t.code+'</span>':'')+'</div>';
+        h+='<div class="label">'+T('ເວລາ')+' '+t.time+' · '+T('ເລກອ້າງອີງ')+' SM-'+(1000+t.id)+'</div>';
         if(t.status==='paid'){
-          h+='<div class="sumgrid" style="margin-top:8px"><div class="stat"><span>ຄ່າທຳນຽມ</span><b>'+fmt(feeOf(t.amount))+'</b></div><div class="stat ok"><span>ສຸດທິ</span><b>'+fmt(t.amount-feeOf(t.amount))+'</b></div></div>';
-          if(S.role!=='owner')h+='<p class="label" style="margin:8px 0 0">ການຄືນເງິນ: ສະເພາະເຈົ້າຂອງຮ້ານ.</p>';
-          else if(!t.refund)h+='<button class="danger" id="refund" style="margin-top:10px;width:100%">ຂໍຄືນເງິນລາຍການນີ້</button><p class="label" style="margin:6px 0 0">ເງິນຈະຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ ເທົ່ານັ້ນ, ບໍ່ຄືນເປັນເງິນສົດ.</p>';
-          else h+='<div class="result '+(t.refund==='refunded'?'ok':'bad')+'" style="'+(t.refund==='refunded'?'':'background:var(--wait-soft);color:#6b4a08')+'">'+(t.refund==='requested'?'ສົ່ງຄຳຂໍແລ້ວ · ລໍທະນາຄານ':t.refund==='processing'?'ທະນາຄານກຳລັງດຳເນີນການ · ຍັງບໍ່ແມ່ນ "ຄືນແລ້ວ"':'ທະນາຄານຢືນຢັນ: ຄືນເງິນແລ້ວ. ເວລາເງິນເຖິງລູກຄ້າ ຂຶ້ນກັບທະນາຄານຂອງລູກຄ້າ.')+'</div>';
-        } else h+='<p class="label" style="margin:8px 0 0">'+(t.status==='failed'?'ບໍ່ສຳເລັດ: ບໍ່ມີເງິນເຂົ້າ.':'ລໍຜົນຈາກທະນາຄານ.')+'</p>';
+          h+='<div class="sumgrid" style="margin-top:8px"><div class="stat"><span>'+T('ຄ່າທຳນຽມ')+'</span><b>'+fmt(feeOf(t.amount))+'</b></div><div class="stat ok"><span>'+T('ສຸດທິ')+'</span><b>'+fmt(t.amount-feeOf(t.amount))+'</b></div></div>';
+          if(S.role!=='owner')h+='<p class="label" style="margin-top:8px">'+T('ການຄືນເງິນ: ສະເພາະເຈົ້າຂອງຮ້ານ.')+'</p>';
+          else if(!t.refund)h+='<button class="danger" data-act="refund" style="margin-top:10px;width:100%">'+T('ຂໍຄືນເງິນລາຍການນີ້')+'</button><p class="label" style="margin-top:6px">'+T('ເງິນຈະຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ ເທົ່ານັ້ນ, ບໍ່ຄືນເປັນເງິນສົດ. ຄະແນນຂອງລາຍການນີ້ຈະຖືກຫັກຄືນ.')+'</p>';
+          else h+='<div class="result '+(t.refund==='refunded'?'ok':'wait')+'">'+(t.refund==='requested'?T('ສົ່ງຄຳຂໍແລ້ວ · ລໍທະນາຄານ'):t.refund==='processing'?T('ທະນາຄານກຳລັງດຳເນີນການ · ຍັງບໍ່ແມ່ນ "ຄືນແລ້ວ"'):T('ທະນາຄານຢືນຢັນ: ຄືນເງິນແລ້ວ. ເວລາເງິນເຖິງລູກຄ້າ ຂຶ້ນກັບທະນາຄານຂອງລູກຄ້າ.'))+'</div>';
+          h+='<button class="ghost small" data-act="askHelp" style="margin-top:8px">'+T('ຖາມພະນັກງານກ່ຽວກັບລາຍການນີ້')+'</button>';
+        } else h+='<p class="label" style="margin-top:8px">'+(t.status==='failed'?T('ບໍ່ສຳເລັດ: ບໍ່ມີເງິນເຂົ້າ.'):T('ລໍຜົນຈາກທະນາຄານ.'))+'</p>';
         h+='</div>';
       }
     }
     return h;
   }
 
+  // ---------- REPORT (income + forecast + marketing) ----------
+  var DAYS_LO=['ອາ','ຈ','ອ','ພ','ພຫ','ສຸ','ສ'],DAYS_EN=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  var DAYF_LO=['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'],DAYF_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var BASE=[1320000,820000,760000,800000,880000,1150000,1480000];   // typical sales by weekday (illustrative)
+  var NOISE=[0.96,1.04,0.92,1.07,0.98,1.03];
+  var SEASON=1.08;                                                    // start of the cool-season tourist peak (assumption)
+  var round10k=function(n){return Math.round(n/10000)*10000};
   function totals(){
     var r={n:0,sales:0,fees:0,net:0,credited:0,pending:0,refunded:0};
     S.tx.forEach(function(t){
@@ -553,113 +784,448 @@ h3{margin:0;color:var(--ink);font-size:16px;line-height:1.4}
     });
     return r;
   }
-  function viewSummary(){
-    if(S.role!=='owner')return '<div class="card lock">'+ICON.lock+'<h3>ສະເພາະເຈົ້າຂອງຮ້ານ</h3><p class="label">ພະນັກງານຂາຍໄດ້ ແລະ ເບິ່ງລາຍການໄດ້. ສະຫຼຸບເງິນ, ການຄືນເງິນ ແລະ ບັນຊີຮັບເງິນ ເປີດສະເພາະເຈົ້າຂອງ.</p><button class="primary" id="goOwner" style="width:100%">ເຂົ້າໂໝດເຈົ້າຂອງ</button></div>';
-    var r=totals(),pct=r.net?Math.round(r.credited/r.net*100):0;
-    var h='<div class="opt"><h3>ສະຫຼຸບມື້ນີ້</h3><span class="label">'+nowTime()+'</span></div>';
-    h+='<div class="sumgrid"><div class="stat"><span>ລາຍການທີ່ຈ່າຍແລ້ວ</span><b>'+r.n+'</b></div><div class="stat"><span>ຍອດຂາຍ</span><b>'+fmt(r.sales)+'</b></div>';
-    h+='<div class="stat"><span>ຄ່າທຳນຽມ (0.5%)</span><b>'+fmt(r.fees)+'</b></div><div class="stat"><span>ເງິນສຸດທິ</span><b>'+fmt(r.net)+'</b></div>';
-    h+='<div class="stat ok"><span>ເງິນເຂົ້າບັນຊີແລ້ວ</span><b>'+fmt(r.credited)+'</b></div><div class="stat wait"><span>ກຳລັງລໍເຂົ້າບັນຊີ</span><b>'+fmt(r.pending)+'</b></div>';
-    h+='<div class="stat wide"><span>ເງິນສຸດທິທີ່ເຂົ້າບັນຊີແລ້ວ '+pct+'%</span><div class="creditbar"><i style="width:'+pct+'%"></i></div></div>';
-    if(r.refunded)h+='<div class="stat wide"><span>ຄືນເງິນແລ້ວ (ບໍ່ນັບໃນຍອດ)</span><b>'+fmt(r.refunded)+'</b></div>';
-    h+='</div><div class="banner info"><div><b>ເງິນເຂົ້າບັນຊີສະແດງຢູ່ນີ້</b>ຕອນຂາຍ ແອັບແຈ້ງພຽງ "ມອບເຄື່ອງໄດ້". ເງິນເຂົ້າບັນຊີຕາມເວລາຂອງທະນາຄານ ແລະ ສະຫຼຸບໃຫ້ເບິ່ງບ່ອນດຽວ.</div></div>';
-    h+='<p class="label" style="margin:0">ລວມລາຍການຕົວຢ່າງ. ເງິນໃນບັນຊີແທ້ ເບິ່ງໃນແອັບທະນາຄານຂອງຮ້ານ.</p>';
+  function series(){
+    var today=new Date(),out=[];
+    for(var i=6;i>=1;i--){var d=new Date(today);d.setDate(d.getDate()-i);out.push({dow:d.getDay(),v:round10k(BASE[d.getDay()]*NOISE[6-i]),kind:'actual'})}
+    out.push({dow:today.getDay(),v:totals().sales,kind:'today'});
+    for(var j=1;j<=7;j++){var e=new Date(today);e.setDate(e.getDate()+j);var f=BASE[e.getDay()]*SEASON;out.push({dow:e.getDay(),v:round10k(f),lo:round10k(f*0.85),hi:round10k(f*1.15),kind:'forecast'})}
+    return out;
+  }
+  function compact(n){return n>=1e6?(n/1e6).toFixed(n%1e6?1:0)+'M':n>=1000?Math.round(n/1000)+'K':String(n)}
+  function chartSVG(data){
+    var W=340,H=170,L=34,B=24,Tp=10,max=Math.ceil(Math.max.apply(null,data.map(function(d){return d.hi||d.v}))/500000)*500000,band=(W-L)/data.length,bw=Math.min(14,band-6);
+    var y=function(v){return Tp+(H-Tp-B)*(1-v/max)};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+T('ຍອດຂາຍ 7 ມື້ຜ່ານມາ ແລະ ຄາດການ 7 ມື້ຂ້າງໜ້າ')+'"><defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#cfe6da"/><rect width="2" height="5" fill="#1f8a66"/></pattern></defs>';
+    [0,1,2,3,4].map(function(i){return i*500000}).filter(function(v){return v<=max}).forEach(function(v){s+='<line x1="'+L+'" x2="'+W+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#e8eee8" stroke-width="1"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="10" fill="#5f7671" font-family="system-ui,Arial">'+compact(v)+'</text>'});
+    var sep=L+band*7;
+    s+='<line x1="'+sep+'" x2="'+sep+'" y1="'+Tp+'" y2="'+(H-B)+'" stroke="#5f7671" stroke-width="1" stroke-dasharray="3 3"/>';
+    data.forEach(function(d,i){
+      var cx=L+band*i+band/2,x=cx-bw/2,top=y(Math.max(d.v,0)),base=H-B,r=Math.min(4,(base-top)/2);
+      var fill=d.kind==='forecast'?'url(#hatch)':'#1f8a66';
+      if(base-top>0.5)s+='<path d="M'+x+' '+base+'V'+(top+r)+'Q'+x+' '+top+' '+(x+r)+' '+top+'H'+(x+bw-r)+'Q'+(x+bw)+' '+top+' '+(x+bw)+' '+(top+r)+'V'+base+'Z" fill="'+fill+'"/>';
+      if(d.kind==='forecast')s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+y(d.hi)+'" y2="'+y(d.lo)+'" stroke="#163e39" stroke-width="1.5"/><line x1="'+(cx-3)+'" x2="'+(cx+3)+'" y1="'+y(d.hi)+'" y2="'+y(d.hi)+'" stroke="#163e39" stroke-width="1.5"/><line x1="'+(cx-3)+'" x2="'+(cx+3)+'" y1="'+y(d.lo)+'" y2="'+y(d.lo)+'" stroke="#163e39" stroke-width="1.5"/>';
+      var lab=d.kind==='today'?T('ມື້ນີ້'):(S.lang==='en'?DAYS_EN:DAYS_LO)[d.dow];
+      s+='<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" font-size="'+(d.kind==='today'?10:10)+'" font-weight="'+(d.kind==='today'?700:400)+'" fill="'+(d.kind==='today'?'#163e39':'#5f7671')+'" font-family="AppLao,system-ui,Arial">'+lab+'</text>';
+      s+='<rect x="'+(L+band*i)+'" y="'+Tp+'" width="'+band+'" height="'+(H-Tp-B)+'" fill="transparent" data-bar="'+i+'" tabindex="0" style="cursor:pointer;outline:none"/>';
+    });
+    return s+'</svg>';
+  }
+  function barText(d){
+    var name=(S.lang==='en'?DAYF_EN:DAYF_LO)[d.dow];
+    if(d.kind==='forecast')return T('{0} (ຄາດການ): ~{1} ₭, ໄລຍະ {2}–{3}',name,fmt(d.v),fmt(d.lo),fmt(d.hi));
+    if(d.kind==='today')return T('ມື້ນີ້ (ຍັງບໍ່ປິດຮ້ານ): {0} ₭',fmt(d.v));
+    return T('{0}: {1} ₭ (ຕົວຈິງ)',name,fmt(d.v));
+  }
+  function viewReport(){
+    if(S.role!=='owner')return lockView(T('ພະນັກງານຂາຍໄດ້ ແລະ ເບິ່ງລາຍການໄດ້. ລາຍງານເງິນ, ຄາດການ ແລະ ການຄືນເງິນ ເປີດສະເພາະເຈົ້າຂອງ.'));
+    var r=totals(),pct=r.net?Math.round(r.credited/r.net*100):0,data=series();
+    var fc=data.filter(function(d){return d.kind==='forecast'}),tom=fc[0];
+    var wk=fc.reduce(function(a,d){return a+d.v},0),wlo=fc.reduce(function(a,d){return a+d.lo},0),whi=fc.reduce(function(a,d){return a+d.hi},0);
+    var past=data.filter(function(d){return d.kind==='actual'}).reduce(function(a,d){return a+d.v},0);
+    var h='<div class="opt"><h3>'+T('ຍອດເງິນທີ່ໄດ້ຮັບມື້ນີ້')+'</h3><span class="label">'+nowTime()+'</span></div>';
+    h+='<div class="sumgrid"><div class="stat"><span>'+T('ຍອດຂາຍ')+'</span><b>'+fmt(r.sales)+'</b><small>'+T('{0} ລາຍການ',r.n)+'</small></div><div class="stat"><span>'+T('ເງິນສຸດທິ')+'</span><b>'+fmt(r.net)+'</b><small>'+T('ຄ່າທຳນຽມ {0}',fmt(r.fees))+'</small></div>';
+    h+='<div class="stat ok"><span>'+T('ເງິນເຂົ້າບັນຊີແລ້ວ')+'</span><b>'+fmt(r.credited)+'</b></div><div class="stat wait"><span>'+T('ກຳລັງລໍເຂົ້າບັນຊີ')+'</span><b>'+fmt(r.pending)+'</b></div>';
+    h+='<div class="stat wide"><span>'+T('ເງິນສຸດທິທີ່ເຂົ້າບັນຊີແລ້ວ {0}%',pct)+'</span><div class="creditbar"><i style="width:'+pct+'%"></i></div></div>';
+    if(r.refunded)h+='<div class="stat wide"><span>'+T('ຄືນເງິນແລ້ວ (ບໍ່ນັບໃນຍອດ)')+'</span><b>'+fmt(r.refunded)+'</b></div>';
+    h+='</div>';
+    // chart
+    h+='<div class="card chart"><div class="opt"><h3>'+T('ຍອດຂາຍ ແລະ ຄາດການ')+'</h3></div><div class="label">'+T('7 ມື້ຜ່ານມາ · 7 ມື້ຂ້າງໜ້າ')+'</div>';
+    h+='<div class="readout" id="readout">'+barText(tom)+'</div>'+chartSVG(data);
+    h+='<div class="legend"><span><i class="sw-actual"></i>'+T('ຕົວຈິງ')+'</span><span><i class="sw-fc"></i>'+T('ຄາດການ (ເສັ້ນ = ໄລຍະທີ່ອາດເປັນ)')+'</span></div>';
+    h+='<details class="tableview"><summary>'+T('ເບິ່ງເປັນຕາຕະລາງ')+'</summary><table><tr><th>'+T('ມື້')+'</th><th>'+T('ປະເພດ')+'</th><th style="text-align:right">₭</th></tr>'+data.map(function(d){return '<tr><td>'+(d.kind==='today'?T('ມື້ນີ້'):(S.lang==='en'?DAYF_EN:DAYF_LO)[d.dow])+'</td><td>'+(d.kind==='forecast'?T('ຄາດການ'):T('ຕົວຈິງ'))+'</td><td class="n">'+fmt(d.v)+(d.kind==='forecast'?' ('+fmt(d.lo)+'–'+fmt(d.hi)+')':'')+'</td></tr>'}).join('')+'</table></details></div>';
+    h+='<div class="sumgrid"><div class="stat"><span>'+T('ມື້ອື່ນ ({0}) ຄາດວ່າ',(S.lang==='en'?DAYF_EN:DAYF_LO)[tom.dow])+'</span><b>'+compact(tom.lo)+'–'+compact(tom.hi)+'</b><small>₭</small></div><div class="stat"><span>'+T('7 ມື້ຂ້າງໜ້າ ຄາດວ່າ')+'</span><b>'+compact(wlo)+'–'+compact(whi)+'</b><small>'+T('{0}% ທຽບກັບ 6 ມື້ຜ່ານມາ + ມື້ນີ້',(wk>=past?'+':'')+Math.round((wk/(past+r.sales)-1)*100))+'</small></div></div>';
+    h+='<p class="label">'+T('ວິທີຄາດການ: ສະເລ່ຍຍອດຂາຍວັນດຽວກັນໃນອາທິດກ່ອນໆ × ປັດໄຈລະດູທ່ອງທ່ຽວ (+8%). ເປັນການຄາດຄະເນ, ບໍ່ແມ່ນການຮັບປະກັນ.')+'</p>';
+    // busy hours
+    var hours=[['17:00',6],['18:00',14],['19:00',27],['20:00',24],['21:00',18],['22:00',11]];
+    h+='<div class="card"><h3>'+T('ຊ່ວງເວລາຂາຍດີ')+'</h3><div class="label">'+T('ສ່ວນແບ່ງຍອດຂາຍຕາມຊົ່ວໂມງ · 4 ອາທິດ')+'</div><div class="hours">'+hours.map(function(x){return '<div class="hour"><span>'+x[0]+'</span><span class="tr"><i style="width:'+(x[1]/27*100)+'%"></i></span><b>'+x[1]+'%</b></div>'}).join('')+'</div></div>';
+    // payer origin
+    h+='<div class="card"><h3>'+T('ລູກຄ້າຈ່າຍດ້ວຍແອັບຈາກໃສ')+'</h3><div class="split"><i style="width:72%;background:#1f8a66"></i><i style="width:28%;background:#c98a12"></i></div><div class="legend"><span><i style="background:#1f8a66"></i>'+T('ແອັບທະນາຄານໄທ 72%')+'</span><span><i style="background:#c98a12"></i>'+T('ແອັບທະນາຄານລາວ 28%')+'</span></div><p class="label" style="margin-top:6px">'+T('ສະຖິຕິລວມ ບໍ່ລະບຸຕົວຕົນລູກຄ້າ.')+'</p></div>';
+    // marketing tips
+    h+='<div class="card"><h3>'+T('ຄຳແນະນຳການຕະຫຼາດ')+'</h3><ul class="tips">'+
+      '<li><i>1</i><span>'+T('19:00–20:00 ຂາຍດີທີ່ສຸດ: ກຽມວັດຖຸດິບ ແລະ ຄົນຊ່ວຍກ່ອນ 18:30.')+'</span></li>'+
+      '<li><i>2</i><span>'+T('{0} ຄາດວ່າຂາຍໄດ້ຫຼາຍທີ່ສຸດຂອງອາທິດ: ເພີ່ມວັດຖຸດິບປະມານ 30%.',(S.lang==='en'?DAYF_EN:DAYF_LO)[fc.slice().sort(function(a,b){return b.v-a.v})[0].dow])+'</span></li>'+
+      '<li><i>3</i><span>'+T('ລູກຄ້າໄທ 72%: ເພີ່ມເມນູພາສາໄທ ແລະ ຮູບອາຫານ ຢູ່ປ້າຍໜ້າຮ້ານ.')+'</span></li>'+
+      '<li><i>4</i><span>'+T('ວັນຈັນ–ພຸດ ລູກຄ້າໜ້ອຍ: ໃຊ້ຄະແນນແລກ "ໂຄສະນາຮ້ານໃນແຜນທີ່ຕະຫຼາດ" ເພື່ອດຶງລູກຄ້າ.')+'</span></li>'+
+      '</ul><button class="ghost small" data-act="openRewards" style="margin-top:10px">'+T('ເບິ່ງຄະແນນ ແລະ ລາງວັນ')+'</button></div>';
     return h;
   }
 
-  function viewSettings(){
-    var h='<div class="card"><div class="opt"><div><h3>ໂໝດຜູ້ໃຊ້</h3><div class="label">'+(S.role==='owner'?'ເຈົ້າຂອງ: ເບິ່ງສະຫຼຸບ ແລະ ຄືນເງິນໄດ້':'ພະນັກງານ: ຂາຍ ແລະ ເບິ່ງລາຍການ')+'</div></div>';
-    h+=S.role==='owner'?'<button class="ghost small" id="toCashier">ກັບໄປພະນັກງານ</button>':'<button class="ghost small" id="toOwner">ເຈົ້າຂອງ</button>';
+  // ---------- SERVICES ----------
+  function viewServices(){
+    var h='<h3>'+T('ບໍລິການ')+'</h3><div class="tiles">';
+    h+='<button class="tile" data-act="openRewards"><span class="ic">'+ICON.gift+'</span><b>'+T('ຄະແນນ ແລະ ລາງວັນ')+'</b><small>'+T('{0} ຄະແນນ',fmt(S.points))+'</small></button>';
+    h+='<button class="tile" data-act="openBills">'+(S.billDue?'<span class="dotbadge">1</span>':'')+'<span class="ic">'+ICON.bolt+'</span><b>'+T('ຈ່າຍບິນ')+'</b><small>'+T('ໄຟຟ້າ, ນ້ຳ, ໂທລະສັບ, ປະກັນໄພ')+'</small></button>';
+    h+='<button class="tile" data-act="openSupport"><span class="ic">'+ICON.chat+'</span><b>'+T('ຊ່ວຍເຫຼືອ')+'</b><small>'+T('ລົມກັບພະນັກງານ, ຄຳຖາມທີ່ພົບເລື້ອຍ')+'</small></button>';
+    h+='<button class="tile" data-act="openProtect"><span class="ic">'+ICON.scale+'</span><b>'+T('ປົກປ້ອງຜູ້ບໍລິໂພກ')+'</b><small>'+T('ສິດຂອງທ່ານ, ຄ່າທຳນຽມ, ຮ້ອງຮຽນ')+'</small></button>';
     h+='</div>';
-    if(S.pinOpen&&S.role!=='owner')h+='<div class="pin"><input id="pin" inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="PIN ເຈົ້າຂອງ"><button class="primary" id="pinOk" style="padding:8px 14px">ຕົກລົງ</button></div><div class="label" style="margin-top:4px">PIN ຕົວຢ່າງ: 1234</div>'+(S.pinErr?'<div class="result bad">PIN ບໍ່ຖືກ</div>':'');
+    if(S.billDue)h+='<div class="banner wait">'+ICON.bell.replace('<svg','<svg width="22" height="22"')+'<div><b>'+T('ຄ່າໄຟຟ້າໃກ້ຄົບກຳນົດ')+'</b>'+T('{0} ກີບ · ຄົບກຳນົດໃນ 3 ມື້',fmt(BILLERS.power.amount))+'</div></div>';
+    h+='<div class="banner info"><div><b>'+T('ເງິນຂອງທ່ານຢູ່ໃນທະນາຄານ')+'</b>'+T('ການຈ່າຍບິນຕັດເງິນຈາກບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ ຜ່ານທະນາຄານ partner. Sabaidee Merchant ບໍ່ຖືເງິນ ແລະ ບໍ່ມີຍອດເງິນໃນແອັບ.')+'</div></div>';
+    return h;
+  }
+
+  function viewRewards(){
+    var tierNext=2000,tier=S.points>=tierNext?T('ຄຳ'):T('ເງິນ'),prog=Math.min(100,S.points/tierNext*100);
+    var h=subhead(T('ຄະແນນ ແລະ ລາງວັນ'));
+    h+='<div class="points"><small>'+T('ຄະແນນຂອງຮ້ານ')+'</small><div class="v">'+fmt(S.points)+'<span class="tier">'+T('ລະດັບ {0}',tier)+'</span></div><div class="bar"><i style="width:'+prog+'%"></i></div><small>'+(S.points>=tierNext?T('ທ່ານຢູ່ລະດັບສູງສຸດແລ້ວ'):T('ອີກ {0} ຄະແນນ ເຖິງລະດັບຄຳ',fmt(tierNext-S.points)))+'</small></div>';
+    h+='<div class="card"><h3>'+T('ໄດ້ຄະແນນແນວໃດ')+'</h3><ul class="checks"><li>'+T('1 ຄະແນນ ທຸກ 10,000 ₭ ທີ່ໄດ້ຮັບ')+'</li><li>'+T('+20 ກວດປ້າຍ QR ປະຈຳອາທິດ')+'</li><li>'+T('+5 ກວດກ່ອນເປີດຮ້ານ')+'</li><li>'+T('+10 ຈ່າຍບິນຕົງເວລາໃນແອັບ')+'</li></ul></div>';
+    if(S.vouchers.length)h+='<div class="card"><h3>'+T('ລາງວັນຂອງຂ້ອຍ')+'</h3><div class="form" style="margin-top:8px">'+S.vouchers.map(function(v){return '<div class="voucher"><span><b style="color:var(--ink);font-size:13.5px">'+T(v.name)+'</b><br><small class="label">'+T('ໃຊ້ໄດ້ຮອດ {0}',v.until)+'</small></span><code>'+v.code+'</code></div>'}).join('')+'</div></div>';
+    h+='<div class="card"><h3>'+T('ແລກລາງວັນ')+'</h3>';
+    h+=REWARDS.map(function(rw){
+      var can=S.points>=rw.cost,conf=S.confirmReward===rw.id,btn;
+      if(S.role!=='owner')btn='<span class="cost">'+fmt(rw.cost)+'</span>';
+      else if(conf)btn='<span style="display:flex;gap:6px"><button class="primary small" data-redeem="'+rw.id+'">'+T('ຢືນຢັນ')+'</button><button class="ghost small" data-act="cancelRedeem">'+T('ຍົກເລີກ')+'</button></span>';
+      else btn='<button class="'+(can?'ghost':'ghost')+' small" data-ask="'+rw.id+'"'+(can?'':' disabled style="opacity:.5;cursor:not-allowed"')+'><span class="cost">'+fmt(rw.cost)+'</span></button>';
+      return '<div class="reward"><span class="ic">'+ICON[rw.icon]+'</span><span class="t"><b>'+T(rw.name)+'</b><small>'+T(rw.note)+'</small></span>'+btn+'</div>';
+    }).join('');
+    if(S.role!=='owner')h+='<p class="label" style="margin-top:6px">'+T('ແລກລາງວັນໄດ້ສະເພາະເຈົ້າຂອງຮ້ານ.')+'</p>';
     h+='</div>';
-    h+='<div class="card"><h3>ສຽງກະດິ່ງຂອງຮ້ານ</h3><div class="label">ເລືອກສຽງທີ່ຮ້ານຈື່ໄດ້. ສຽງປອມທົ່ວໄປຈະບໍ່ຄືກັບສຽງນີ້.</div><div class="chimes">'+CHIMES.map(function(c,i){return '<button data-chime="'+i+'" aria-pressed="'+(S.chime===i)+'">'+c.name+'</button>'}).join('')+'</div></div>';
-    h+='<div class="card"><div class="opt"><h3>ກວດກ່ອນເປີດຮ້ານ</h3><button class="ghost small" id="shift">ກວດດຽວນີ້</button></div>';
-    if(S.shift)h+='<ul class="checks"><li>ສຽງເປີດ · ໄດ້ຍິນສຽງ "'+CHIMES[S.chime].name+'"</li><li class="'+(S.online?'':'bad')+'">'+(S.online?'ເຊື່ອມເນັດແລ້ວ':'ຂາດເນັດ: ກວດຂໍ້ມູນມືຖື')+'</li><li>ອະນຸຍາດໃຫ້ແອັບເຮັດວຽກເບື້ອງຫຼັງ (ແບັດເຕີຣີ)</li><li>ປ້າຍ QR ຕັ້ງຢູ່ໜ້າຮ້ານ</li></ul>';
-    else h+='<div class="label">ກວດສຽງ, ເນັດ ແລະ ການຕັ້ງຄ່າແບັດເຕີຣີ ກ່ອນຂາຍ ເພື່ອບໍ່ໃຫ້ພາດການແຈ້ງເຕືອນ.</div>';
+    h+='<div class="card"><h3>'+T('ປະຫວັດຄະແນນ')+'</h3>'+S.pointsLog.slice(0,6).map(function(l){return '<div class="kv"><span>'+(l.t==='ມື້ວານ'?T('ມື້ວານ'):l.t)+' · '+T(l.d,l.ak?T(l.a):l.a)+'</span><b style="color:'+(l.p<0?'var(--stop)':'var(--brand)')+'">'+(l.p>0?'+':'')+l.p+'</b></div>'}).join('')+'</div>';
+    h+='<div class="banner info"><div><b>'+T('ຄະແນນບໍ່ແມ່ນເງິນ')+'</b>'+T('ແລກເປັນເງິນສົດ ຫຼື ໂອນໃຫ້ຄົນອື່ນບໍ່ໄດ້, ໝົດອາຍຸພາຍໃນ 12 ເດືອນ. ລາງວັນສະໜັບສະໜູນໂດຍທະນາຄານ partner ແລະ ຜູ້ດູແລຕະຫຼາດ. ຖ້າຄືນເງິນ, ຄະແນນຂອງລາຍການນັ້ນຈະຖືກຫັກຄືນ.')+'</div></div>';
+    return h;
+  }
+
+  function viewBills(){
+    var h=subhead(T('ຈ່າຍບິນ'));
+    if(S.role!=='owner')return h+lockView(T('ການຈ່າຍບິນຕັດເງິນຈາກບັນຊີທະນາຄານຂອງຮ້ານ, ສະນັ້ນເປີດສະເພາະເຈົ້າຂອງ.'));
+    var b=S.bill,steps=['cat','acct','bill','done'],si=Math.max(0,steps.indexOf(b.step==='confirm'||b.step==='processing'?'bill':b.step));
+    h+='<div class="steps">'+[T('ເລືອກ'),T('ເລກບັນຊີ'),T('ກວດ ແລະ ຈ່າຍ'),T('ສຳເລັດ')].map(function(l,i){return '<span class="'+(i<=si?'on':'')+'">'+l+'</span>'}).join('')+'</div>';
+    if(b.step==='cat'){
+      h+='<div class="menu">'+Object.keys(BILLERS).map(function(k){var x=BILLERS[k];return '<button data-bill="'+k+'"><span class="ic">'+ICON[x.icon]+'</span><span class="tx2"><b>'+T(x.name)+'</b><small>'+T(x.who)+'</small></span>'+(k==='power'&&S.billDue?'<span class="dotbadge">'+T('ໃກ້ຄົບກຳນົດ')+'</span>':'')+'<span class="chev">›</span></button>'}).join('')+'</div>';
+      h+='<div class="card"><h3>'+T('ແຈ້ງເຕືອນກ່ອນຄົບກຳນົດ')+'</h3>'+Object.keys(BILLERS).map(function(k){return '<div class="row2"><span class="t"><b>'+T(BILLERS[k].name)+'</b></span>'+sw(S.remind[k],'remind-'+k)+'</div>'}).join('')+'</div>';
+      h+='<div class="card"><h3>'+T('ປະຫວັດການຈ່າຍບິນ')+'</h3>'+S.bills.map(function(x){return '<div class="kv"><span>'+x.t+' · '+T(BILLERS[x.cat].name)+' · '+x.ref+'</span><b>'+fmt(x.amount)+' ₭</b></div>'}).join('')+'</div>';
+      return h;
+    }
+    var x=BILLERS[b.cat];
+    if(b.step==='acct'){
+      h+='<div class="card form"><h3>'+T(x.name)+'</h3><div class="label">'+T(x.who)+'</div><div class="field"><label for="acct">'+T('ເລກບັນຊີລູກຄ້າ / ເລກສັນຍາ')+'</label><input id="acct" value="'+esc(b.acct)+'" autocomplete="off"></div>'+(b.err?'<div class="result bad">'+b.err+'</div>':'')+'<button class="ghost small" data-act="useSaved" style="align-self:flex-start">'+T('ໃຊ້ເລກທີ່ບັນທຶກໄວ້: {0}',x.acct)+'</button><button class="primary" data-act="fetchBill">'+T('ກວດບິນ')+'</button><button class="ghost" data-act="billBack">'+T('ເລືອກບິນອື່ນ')+'</button></div>';
+      return h;
+    }
+    var period=T('ເດືອນ {0}',(new Date().getMonth()+1)+'/'+new Date().getFullYear());
+    h+='<div class="billcard"><div class="label">'+T(x.who)+'</div><div class="amt">'+fmt(x.amount)+' ₭</div>';
+    h+='<div class="kv"><span>'+T('ຊື່ລູກຄ້າ')+'</span><b>'+esc(S.profile.name)+'</b></div><div class="kv"><span>'+T('ເລກບັນຊີ')+'</span><b>'+esc(b.acct)+'</b></div><div class="kv"><span>'+T('ງວດ')+'</span><b>'+period+'</b></div><div class="kv"><span>'+T('ຄ່າບໍລິການຈ່າຍບິນ')+'</span><b>'+T('ຟຣີ (ຕົວຢ່າງ)')+'</b></div><div class="kv"><span>'+T('ຕັດເງິນຈາກ')+'</span><b>'+T('ບັນຊີທະນາຄານຂອງຮ້ານ ••4521')+'</b></div></div>';
+    if(b.step==='bill')h+='<button class="primary" data-act="payBill">'+T('ຈ່າຍ {0} ₭',fmt(x.amount))+'</button><button class="ghost" data-act="billBack">'+T('ຍົກເລີກ')+'</button>';
+    if(b.step==='confirm')h+='<div class="card"><h3>'+T('ຢືນຢັນດ້ວຍ PIN')+'</h3><div class="pin"><input id="billpin" inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="PIN"><button class="primary small" data-act="billPinOk">'+T('ຢືນຢັນ')+'</button></div><div class="label" style="margin-top:4px">'+T('PIN ຕົວຢ່າງ: 1234')+'</div>'+(b.err?'<div class="result bad">'+b.err+'</div>':'')+'</div>';
+    if(b.step==='processing')h+='<div class="waiting"><i></i>'+T('ທະນາຄານກຳລັງຈ່າຍບິນ...')+'</div>';
+    if(b.step==='done')h+='<div class="result ok"><b>'+T('ຈ່າຍບິນສຳເລັດ')+'</b><br>'+T('ເລກອ້າງອີງ {0} · ທະນາຄານຢືນຢັນແລ້ວ. +10 ຄະແນນ.',b.ref)+'</div><button class="primary" data-act="billBack">'+T('ຈ່າຍບິນອື່ນ')+'</button>';
+    h+='<p class="label">'+T('ທະນາຄານ partner ເປັນຜູ້ຕັດເງິນ ແລະ ຈ່າຍໃຫ້ຜູ້ໃຫ້ບໍລິການ. ແອັບສົ່ງຄຳສັ່ງ ແລະ ສະແດງຜົນເທົ່ານັ້ນ.')+'</p>';
+    return h;
+  }
+
+  var FAQ=[
+    ['ສີເຫຼືອງໝາຍຄວາມວ່າແນວໃດ?','ທະນາຄານຍັງບໍ່ຢືນຢັນ ຫຼື ມືຖືຂາດເນັດ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ ແລະ ຢ່າມອບເຄື່ອງ ຈົນກວ່າຈະເຫັນສີຂຽວ.'],
+    ['ລູກຄ້າບອກວ່າຈ່າຍແລ້ວ ແຕ່ບໍ່ເຫັນສີຂຽວ?','ເບິ່ງໜ້າ "ລາຍການ". ຖ້າບໍ່ມີ, ໃຫ້ລູກຄ້າເປີດໃບຮັບເງິນໃນແອັບຂອງເຂົາ ແລ້ວສົ່ງເລກອ້າງອີງໃຫ້ພະນັກງານຊ່ວຍເຫຼືອ. ຮູບ screenshot ບໍ່ແມ່ນຫຼັກຖານ.'],
+    ['ຄືນເງິນແນວໃດ?','ເຈົ້າຂອງເຂົ້າ "ລາຍການ" → ເລືອກລາຍການ → "ຂໍຄືນເງິນ". ເງິນຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ, ບໍ່ຄືນເປັນເງິນສົດ.'],
+    ['ເງິນເຂົ້າບັນຊີເມື່ອໃດ?','ຕາມເວລາຂອງທະນາຄານ partner. ເບິ່ງ "ລາຍງານ" → ເງິນເຂົ້າບັນຊີແລ້ວ / ກຳລັງລໍ.'],
+    ['ປ່ຽນບັນຊີຮັບເງິນໄດ້ບໍ່?','ໄດ້ ແຕ່ຕ້ອງຢືນຢັນກັບທະນາຄານ ເພື່ອປ້ອງກັນການລັກບັນຊີ. ຕິດຕໍ່ໂຕະຊ່ວຍເຫຼືອ ພ້ອມບັດປະຈຳຕົວ.']
+  ];
+  var BOT=[
+    [/ສີຂຽວ|ຈ່າຍແລ້ວ|green|paid/i,'ກວດໜ້າ "ລາຍການ" ກ່ອນ. ຖ້າບໍ່ມີລາຍການ, ຂໍເລກອ້າງອີງຈາກແອັບຂອງລູກຄ້າ ແລ້ວສົ່ງມານີ້. ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ.'],
+    [/ຄືນ|refund/i,'ການຄືນເງິນເຮັດໄດ້ສະເພາະເຈົ້າຂອງ: ລາຍການ → ເລືອກລາຍການ → ຂໍຄືນເງິນ. ເງິນຄືນເຂົ້າແອັບເດີມຂອງລູກຄ້າ.'],
+    [/ບັນຊີ|account/i,'ການປ່ຽນບັນຊີຮັບເງິນ ຕ້ອງຢືນຢັນກັບທະນາຄານ. ພະນັກງານຈະນັດໃຫ້ມາໂຕະຊ່ວຍເຫຼືອ ພ້ອມບັດປະຈຳຕົວ.'],
+    [/ບິນ|ໄຟ|ນ້ຳ|bill/i,'ຈ່າຍບິນໄດ້ທີ່ ບໍລິການ → ຈ່າຍບິນ. ເງິນຕັດຈາກບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ.'],
+    [/ຄະແນນ|ລາງວັນ|point|reward/i,'ໄດ້ 1 ຄະແນນ ທຸກ 10,000 ₭. ແລກໄດ້ທີ່ ບໍລິການ → ຄະແນນ ແລະ ລາງວັນ.']
+  ];
+  function viewSupport(){
+    var h=subhead(T('ຊ່ວຍເຫຼືອ'));
+    h+='<div class="card"><h3>'+T('ຕິດຕໍ່ພະນັກງານ')+'</h3><div class="kv"><span>'+T('ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ')+'</span><b>'+T('ຮ້ານ A-01 · 17:00–22:00')+'</b></div><div class="kv"><span>'+T('ສາຍດ່ວນ')+'</span><b>'+T('ເບີຈະກຳນົດກັບ partner')+'</b></div><div class="kv"><span>'+T('ແຊັດໃນແອັບ')+'</span><b>'+(S.agent?T('ພະນັກງານອອນລາຍ'):T('ຜູ້ຊ່ວຍອັດຕະໂນມັດ'))+'</b></div></div>';
+    h+='<div class="chat" id="chat">'+S.chat.map(function(m){return '<div class="msg '+m.who+'">'+(m.by?'<small>'+T(m.by)+'</small>':'')+esc(T(m.text))+'</div>'}).join('')+'</div>';
+    h+='<div class="chips" style="margin-top:0">'+['ລູກຄ້າຈ່າຍແລ້ວ ແຕ່ບໍ່ເຫັນສີຂຽວ','ຄືນເງິນແນວໃດ?','ປ່ຽນບັນຊີຮັບເງິນ','ຢາກລົມກັບພະນັກງານ'].map(function(q){return '<button class="chip lao" data-q="'+esc(q)+'">'+T(q)+'</button>'}).join('')+'</div>';
+    h+='<form class="compose" id="chatForm"><input id="chatIn" placeholder="'+T('ພິມຄຳຖາມ...')+'" aria-label="'+T('ພິມຄຳຖາມ...')+'" autocomplete="off"><button class="primary small" type="submit">'+T('ສົ່ງ')+'</button></form>';
+    h+='<div class="card"><h3>'+T('ຄຳຖາມທີ່ພົບເລື້ອຍ')+'</h3>'+FAQ.map(function(f){return '<details class="faq"><summary>'+T(f[0])+'</summary><p>'+T(f[1])+'</p></details>'}).join('')+'</div>';
+    h+='<p class="label">'+T('ພະນັກງານຈະບໍ່ຂໍ PIN, OTP ຫຼື ລະຫັດທະນາຄານຂອງທ່ານ ບໍ່ວ່າກໍລະນີໃດ.')+'</p>';
+    return h;
+  }
+  function chatSend(text){
+    text=String(text||'').trim();if(!text)return;
+    S.chat.push({who:'me',text:text});
+    var wantsHuman=/ພະນັກງານ|ຄົນ|human|staff|agent/i.test(text);
+    var reply=null;BOT.forEach(function(b){if(!reply&&b[0].test(text))reply=b[1]});
+    render();scrollChat();
+    setTimeout(function(){
+      if(wantsHuman&&!S.agent){S.agent=true;S.chat.push({who:'sys',text:'ພະນັກງານ ແກ້ວ ເຂົ້າຮ່ວມການສົນທະນາ'});S.chat.push({who:'them',text:'ສະບາຍດີ, ແກ້ວ ຈາກທີມຊ່ວຍເຫຼືອ. ຍິນດີຊ່ວຍ. ຖ້າກ່ຽວກັບລາຍການ, ສົ່ງເລກອ້າງອີງ SM- ມາໄດ້ເລີຍ.',by:'ແກ້ວ · ພະນັກງານຊ່ວຍເຫຼືອ'});log('<b>ຊ່ວຍເຫຼືອ:</b> ຜູ້ຊ່ວຍອັດຕະໂນມັດຕອບຄຳຖາມທົ່ວໄປ; ເມື່ອຂໍ, ພະນັກງານແທ້ເຂົ້າຮ່ວມແຊັດ (ໃນລະບົບຈິງ ມີໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ).')}
+      else S.chat.push({who:'them',text:reply||'ຂອບໃຈ. ພະນັກງານຈະຕອບກັບພາຍໃນເວລາເປີດບໍລິການ. ກົດ "ຢາກລົມກັບພະນັກງານ" ຖ້າຮີບດ່ວນ.',by:S.agent?'ແກ້ວ · ພະນັກງານຊ່ວຍເຫຼືອ':'ຜູ້ຊ່ວຍອັດຕະໂນມັດ'});
+      render();scrollChat();
+    },700);
+  }
+  function scrollChat(){var c=$('chat');if(c)c.scrollTop=c.scrollHeight}
+
+  function viewProtect(){
+    var h=subhead(T('ປົກປ້ອງຜູ້ບໍລິໂພກ'));
+    h+='<div class="card"><h3>'+T('ສິດຂອງທ່ານ')+'</h3><ul class="checks">'+
+      '<li>'+T('ຮູ້ຄ່າທຳນຽມທັງໝົດ ກ່ອນໃຊ້ບໍລິການ')+'</li><li>'+T('ໄດ້ຮັບໃບຮັບເງິນ ແລະ ເລກອ້າງອີງທຸກລາຍການ')+'</li><li>'+T('ຂໍຄືນເງິນ ແລະ ຮ້ອງຮຽນ ໄດ້ໂດຍບໍ່ເສຍຄ່າ')+'</li><li>'+T('ຂໍ້ມູນສ່ວນຕົວໃຊ້ຕາມທີ່ທ່ານຍິນຍອມເທົ່ານັ້ນ')+'</li><li>'+T('ເງິນຢູ່ໃນທະນາຄານທີ່ມີໃບອະນຸຍາດ')+'</li></ul></div>';
+    h+='<div class="card"><h3>'+T('ຕາຕະລາງຄ່າທຳນຽມ')+'</h3><div class="kv"><span>'+T('ຮັບເງິນຈາກລູກຄ້າ')+'</span><b>0.5% *</b></div><div class="kv"><span>'+T('ໃຊ້ແອັບ (ພື້ນຖານ)')+'</span><b>'+T('ຟຣີ')+'</b></div><div class="kv"><span>'+T('ຈ່າຍບິນ')+'</span><b>'+T('ຟຣີ *')+'</b></div><div class="kv"><span>'+T('ຄືນເງິນ')+'</span><b>'+T('ຟຣີ')+'</b></div><div class="kv"><span>Pro</span><b>'+T('30,000 ₭/ເດືອນ (ທາງເລືອກ)')+'</b></div><p class="label" style="margin-top:4px">'+T('* ຕົວຢ່າງ; ອັດຕາຈິງຕາມສັນຍາກັບທະນາຄານ partner.')+'</p></div>';
+    h+='<div class="card"><h3>'+T('ລະວັງການສໍ້ໂກງ')+'</h3><ul class="checks"><li class="bad">'+T('ບໍ່ມີໃຜຈາກເຮົາຈະຂໍ PIN ຫຼື OTP')+'</li><li class="bad">'+T('ສຽງ ຫຼື screenshot ຈາກມືຖືລູກຄ້າ ບໍ່ແມ່ນຫຼັກຖານ')+'</li><li class="bad">'+T('ກວດປ້າຍ QR ຂອງຮ້ານທຸກອາທິດ')+'</li><li class="bad">'+T('ຢ່າທອນເງິນສົດ ໃຫ້ການຈ່າຍດ້ວຍແອັບ')+'</li></ul></div>';
+    h+='<div class="card form" id="cpForm"><h3>'+T('ຮ້ອງຮຽນ')+'</h3><div class="chips" style="margin-top:0">'+[['fee','ຄ່າທຳນຽມ'],['money','ເງິນບໍ່ເຂົ້າ'],['refund','ການຄືນເງິນ'],['staff','ການບໍລິການ'],['data','ຂໍ້ມູນສ່ວນຕົວ']].map(function(c){return '<button class="chip lao" data-cp="'+c[0]+'" aria-pressed="'+(S.cpCat===c[0])+'">'+T(c[1])+'</button>'}).join('')+'</div>';
+    var lastRef=S.tx.filter(function(t){return t.status==='paid'})[0];
+    h+='<div class="field"><label for="cpRef">'+T('ເລກອ້າງອີງລາຍການ (ຖ້າມີ)')+'</label><input id="cpRef" value="'+(lastRef?'SM-'+(1000+lastRef.id):'')+'"></div><div class="field"><label for="cpText">'+T('ລາຍລະອຽດ')+'</label><textarea id="cpText" placeholder="'+T('ເລົ່າສິ່ງທີ່ເກີດຂຶ້ນ')+'"></textarea></div><button class="primary" data-act="sendCp">'+T('ສົ່ງຄຳຮ້ອງຮຽນ')+'</button></div>';
+    if(S.complaints.length)h+='<div class="card"><h3>'+T('ຄຳຮ້ອງຮຽນຂອງຂ້ອຍ')+'</h3>'+S.complaints.map(function(c){return '<div class="kv"><span>'+c.id+' · '+c.t+'</span><b>'+T(c.state)+'</b></div>'}).join('')+'</div>';
+    h+='<p class="label">'+T('ເຮົາຕອບຄຳຮ້ອງຮຽນ ແລະ ແຈ້ງຄວາມຄືບໜ້າໃນແອັບ. ຖ້າບໍ່ພໍໃຈຜົນ, ທ່ານຮ້ອງຮຽນຕໍ່ທະນາຄານ partner ຫຼື ໜ່ວຍງານປົກປ້ອງຜູ້ບໍລິໂພກດ້ານການເງິນ ຕາມລະບຽບຂອງທະນາຄານແຫ່ງ ສປປ ລາວ ໄດ້.')+'</p>';
+    return h;
+  }
+
+  // ---------- ACCOUNT ----------
+  function secChecks(){
+    return [
+      {k:'ver',ok:!S.update.avail,t:'ເວີຊັນແອັບລ່າສຸດ',fix:'goVersion'},
+      {k:'pin',ok:true,t:'ລັອກແອັບດ້ວຍ PIN'},
+      {k:'bio',ok:S.sec.bio,t:'ລາຍນິ້ວມື / ສະແກນໃບໜ້າ',fix:'sw:bio'},
+      {k:'twofa',ok:S.sec.twofa,t:'ຢືນຢັນ 2 ຂັ້ນ ສຳລັບການເງິນ',fix:'sw:twofa'},
+      {k:'lock',ok:S.sec.autolock,t:'ລັອກອັດຕະໂນມັດ ຫຼັງ 2 ນາທີ',fix:'sw:autolock'},
+      {k:'alert',ok:S.sec.alert,t:'ແຈ້ງເຕືອນເມື່ອເຂົ້າລະບົບໃໝ່',fix:'sw:alert'},
+      {k:'dev',ok:S.devices.length===1,t:'ບໍ່ມີເຄື່ອງທີ່ບໍ່ຮູ້ຈັກ',fix:'kick'},
+      {k:'root',ok:true,t:'ໂທລະສັບບໍ່ຖືກດັດແປງ (root)'}
+    ];
+  }
+  function secScore(){var c=secChecks(),ok=c.filter(function(x){return x.ok}).length;return {ok:ok,n:c.length,checks:c,level:ok>=7?'g':ok>=5?'a':'r'}}
+  function viewAccount(){
+    var sc=secScore();
+    var h='<div class="card profile"><div class="avatar">'+esc(S.profile.name.replace(/^ນາງ |^ທ້າວ /,'').charAt(0))+'</div><div style="min-width:0"><h3>'+esc(S.profile.name)+'</h3><div class="label">'+esc(S.profile.shop)+'</div><span class="pill ok" style="margin:2px 0 0">'+T('ຢືນຢັນຕົວຕົນໂດຍທະນາຄານ')+'</span></div></div>';
+    h+='<div class="card"><div class="opt"><div><h3>'+T('ໂໝດຜູ້ໃຊ້')+'</h3><div class="label">'+(S.role==='owner'?T('ເຈົ້າຂອງ: ລາຍງານ, ຄືນເງິນ, ຈ່າຍບິນ ແລະ ຕັ້ງຄ່າ'):T('ພະນັກງານ: ຂາຍ ແລະ ເບິ່ງລາຍການ'))+'</div></div>'+(S.role==='owner'?'<button class="ghost small" data-act="toCashier">'+T('ກັບໄປພະນັກງານ')+'</button>':'<button class="ghost small" data-act="askOwner">'+T('ເຈົ້າຂອງ')+'</button>')+'</div>'+pinBox()+'</div>';
+    var lvl={g:T('ສູງ'),a:T('ກາງ'),r:T('ຕ່ຳ')}[sc.level];
+    h+='<div class="menu">';
+    h+=menuItem('goProfile','user',T('ຂໍ້ມູນສ່ວນຕົວ'),T('ຊື່, ເບີໂທ, ຮ້ານ, ການຍິນຍອມ'));
+    h+=menuItem('goSecurity','lock',T('ຄວາມປອດໄພບັນຊີ'),T('PIN, ລາຍນິ້ວມື, 2 ຂັ້ນ, ອຸປະກອນ'),S.devices.length>1?'<span class="dotbadge">!</span>':'');
+    h+=menuItem('goLanguage','globe',T('ພາສາ'),S.lang==='en'?'English':'ລາວ');
+    h+=menuItem('goSound','bell',T('ສຽງກະດິ່ງຂອງຮ້ານ'),T(CHIMES[S.chime].name));
+    h+=menuItem('goShift','check',T('ກວດກ່ອນເປີດຮ້ານ'),T('ສຽງ, ເນັດ, ແບັດເຕີຣີ'));
+    h+=menuItem('goStand','qr',T('ປ້າຍ QR ຂອງຮ້ານ'),T('ກວດປ້າຍປະຈຳອາທິດ'));
+    h+=menuItem('goVersion','shield',T('ເວີຊັນ ແລະ ຄວາມປອດໄພແອັບ'),T('v{0} · ຄວາມປອດໄພ {1} ({2}/{3})',S.version,lvl,sc.ok,sc.n),S.update.avail?'<span class="dotbadge">'+T('ອັບເດດ')+'</span>':'');
     h+='</div>';
-    h+='<div class="card"><h3>ປ້າຍ QR ຂອງຮ້ານ</h3><div class="stand" style="margin-top:8px"><b style="color:var(--ink)">ຮ້ານ ແມ່ຄຳ · ຮ້ານ B-12</b><canvas id="standQR" width="25" height="25" aria-label="QR ຕົວຢ່າງ"></canvas><div class="langs">ສະແກນດ້ວຍແອັບທະນາຄານ · Scan with your bank app<br>สแกนด้วยแอปธนาคาร · Quét bằng ứng dụng ngân hàng · 请用银行App扫码</div><div class="name">ຊື່ທີ່ຕ້ອງເຫັນ: '+SHOP_NAME+'</div></div>';
-    h+='<div class="opt" style="margin-top:10px;flex-wrap:wrap;justify-content:flex-start"><button class="ghost small" id="standOk">ກວດປ້າຍຂອງຮ້ານ</button><button class="ghost small" id="standBad">ຈຳລອງປ້າຍຖືກປ່ຽນ</button></div>';
-    if(S.standCheck==='ok')h+='<div class="result ok">✓ ປ້າຍນີ້ເປັນຂອງ '+SHOP_NAME+'. ກວດອີກຄັ້ງອາທິດໜ້າ.</div>';
-    if(S.standCheck==='bad')h+='<div class="result bad">✗ QR ນີ້ບໍ່ແມ່ນຂອງຮ້ານເຈົ້າ. ເອົາປ້າຍອອກ ແລະ ແຈ້ງທີມຊ່ວຍເຫຼືອ.</div>';
+    return h;
+  }
+  function viewProfile(){
+    var h=subhead(T('ຂໍ້ມູນສ່ວນຕົວ'));
+    if(S.role!=='owner')return h+lockView(T('ຂໍ້ມູນສ່ວນຕົວ ແລະ ບັນຊີຮັບເງິນ ເປີດສະເພາະເຈົ້າຂອງ.'));
+    var p=S.profile;
+    h+='<div class="card form"><div class="field"><label for="pfName">'+T('ຊື່ ແລະ ນາມສະກຸນ')+'</label><input id="pfName" value="'+esc(p.name)+'"></div><div class="field"><label for="pfPhone">'+T('ເບີໂທ')+'</label><input id="pfPhone" value="'+esc(p.phone)+'" inputmode="tel"></div><div class="field"><label for="pfShop">'+T('ຊື່ຮ້ານ')+'</label><input id="pfShop" value="'+esc(p.shop)+'"></div><div class="field"><label for="pfAddr">'+T('ທີ່ຕັ້ງຮ້ານ')+'</label><input id="pfAddr" value="'+esc(p.addr)+'"></div><button class="primary" data-act="saveProfile">'+T('ບັນທຶກ')+'</button></div>';
+    h+='<div class="card"><h3>'+T('ບັນຊີຮັບເງິນ')+'</h3><div class="kv"><span>'+T('ບັນຊີ')+'</span><b>'+T('ບັນຊີທະນາຄານຂອງຮ້ານ ••4521')+'</b></div><div class="kv"><span>'+T('ສະຖານະ')+'</span><b>'+T('ຢືນຢັນໂດຍທະນາຄານ')+'</b></div><p class="label" style="margin-top:6px">'+T('ປ່ຽນບັນຊີຮັບເງິນໄດ້ ໂດຍຢືນຢັນກັບທະນາຄານເທົ່ານັ້ນ ເພື່ອປ້ອງກັນການລັກບັນຊີ.')+'</p></div>';
+    h+='<div class="card"><h3>'+T('ການຍິນຍອມໃຊ້ຂໍ້ມູນ')+'</h3>'+
+      '<div class="row2"><span class="t"><b>'+T('ແບ່ງປັນສະຖິຕິຮວມກັບຜູ້ດູແລຕະຫຼາດ')+'</b><small>'+T('ບໍ່ລະບຸຊື່ຮ້ານ ຫຼື ລູກຄ້າ')+'</small></span>'+sw(S.consent.market,'c-market')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ຮັບຂ່າວ ແລະ ໂປຣໂມຊັນ')+'</b></span>'+sw(S.consent.promo,'c-promo')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ໃຊ້ປະຫວັດການຂາຍ ເພື່ອຂໍສິນເຊື່ອ')+'</b><small>'+T('ຖາມທ່ານທຸກຄັ້ງ ກ່ອນສົ່ງໃຫ້ທະນາຄານ')+'</small></span>'+sw(S.consent.credit,'c-credit')+'</div></div>';
+    h+='<div class="card"><h3>'+T('ຂໍ້ມູນຂອງຂ້ອຍ')+'</h3><div class="opt" style="flex-wrap:wrap;justify-content:flex-start;margin-top:8px"><button class="ghost small" data-act="exportData">'+T('ຂໍສຳເນົາຂໍ້ມູນ')+'</button><button class="danger small" data-act="askDelete">'+T('ຂໍປິດບັນຊີ')+'</button></div>';
+    if(S.privacyReq)h+='<div class="result ok">'+T('ສົ່ງຄຳຂໍແລ້ວ ({0}). ທ່ານຈະໄດ້ຮັບໄຟລ໌ຜ່ານໂຕະຊ່ວຍເຫຼືອ.',S.privacyReq)+'</div>';
+    if(S.deleteAsk)h+='<div class="result bad">'+T('ປິດບັນຊີແລ້ວ ຈະຮັບເງິນຜ່ານແອັບບໍ່ໄດ້. ປະຫວັດການເງິນຖືກເກັບຕາມກົດໝາຍ.')+'<div style="display:flex;gap:6px;margin-top:6px"><button class="danger small" data-act="confirmDelete">'+T('ຢືນຢັນ')+'</button><button class="ghost small" data-act="cancelDelete">'+T('ຍົກເລີກ')+'</button></div></div>';
     h+='</div>';
+    return h;
+  }
+  function viewSecurity(){
+    var h=subhead(T('ຄວາມປອດໄພບັນຊີ'));
+    if(S.role!=='owner')return h+lockView(T('ການຕັ້ງຄ່າຄວາມປອດໄພ ເປີດສະເພາະເຈົ້າຂອງ.'));
+    h+='<div class="card">'+
+      '<div class="row2"><span class="t"><b>'+T('ລັອກແອັບດ້ວຍ PIN')+'</b><small>'+T('ເປີດຕະຫຼອດ')+'</small></span>'+sw(true,'pin',true)+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ລາຍນິ້ວມື / ສະແກນໃບໜ້າ')+'</b><small>'+T('ເປີດແອັບ ແລະ ຢືນຢັນໄວຂຶ້ນ')+'</small></span>'+sw(S.sec.bio,'bio')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ຢືນຢັນ 2 ຂັ້ນ (OTP)')+'</b><small>'+T('ສຳລັບຄືນເງິນ, ຈ່າຍບິນ ແລະ ເຄື່ອງໃໝ່')+'</small></span>'+sw(S.sec.twofa,'twofa')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ລັອກອັດຕະໂນມັດ ຫຼັງ 2 ນາທີ')+'</b></span>'+sw(S.sec.autolock,'autolock')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ແຈ້ງເຕືອນເມື່ອເຂົ້າລະບົບໃໝ່')+'</b><small>'+T('ໃນແອັບ ແລະ SMS')+'</small></span>'+sw(S.sec.alert,'alert')+'</div>'+
+      '<div class="row2"><span class="t"><b>'+T('ເຊື່ອງຍອດເງິນໃນໜ້າຂາຍ')+'</b><small>'+T('ເມື່ອມີຄົນອື່ນເບິ່ງໜ້າຈໍ')+'</small></span>'+sw(S.sec.hide,'hide')+'</div>'+
+      '</div>';
+    h+='<div class="card"><h3>'+T('ອຸປະກອນທີ່ເຂົ້າລະບົບ')+'</h3>'+S.devices.map(function(d){return '<div class="row2"><span class="t"><b>'+T(d.name)+'</b><small>'+T(d.where)+' · '+T(d.when)+'</small></span>'+(d.me?'<span class="pill ok">'+T('ເຄື່ອງນີ້')+'</span>':'<button class="danger small" data-act="kick">'+T('ອອກຈາກລະບົບ')+'</button>')+'</div>'}).join('')+'</div>';
+    h+='<button class="ghost" data-act="changePin">'+T('ປ່ຽນ PIN')+'</button>';
+    if(S.pinChanged)h+='<div class="result ok">'+T('ປ່ຽນ PIN ແລ້ວ (ຈຳລອງ). ໃນລະບົບຈິງຕ້ອງໃສ່ PIN ເກົ່າ ແລະ OTP.')+'</div>';
+    return h;
+  }
+  function viewLanguage(){
+    var h=subhead(T('ພາສາ'));
+    var langs=[['lo','ລາວ','Lao'],['en','English','ອັງກິດ'],['th','ไทย','ໄວໆນີ້'],['vi','Tiếng Việt','ໄວໆນີ້'],['zh','中文','ໄວໆນີ້']];
+    h+='<div class="menu langs-list">'+langs.map(function(l){var on=S.lang===l[0],soon=l[0]!=='lo'&&l[0]!=='en';return '<button data-lang="'+l[0]+'"'+(soon?' disabled style="opacity:.55;cursor:not-allowed"':'')+' aria-pressed="'+on+'"><span class="tx2"><b>'+l[1]+'</b><small>'+(soon?T('ໄວໆນີ້'):l[2])+'</small></span>'+(on?'<span class="pill ok">✓</span>':'')+'</button>'}).join('')+'</div>';
+    h+='<p class="label">'+T('ພາສາຂອງແອັບຝ່າຍຮ້ານ. ປ້າຍ QR ສຳລັບນັກທ່ອງທ່ຽວ ມີ 5 ພາສາຢູ່ແລ້ວ. ສຽງແຈ້ງການຈ່າຍ ໃຊ້ພາສາທີ່ເລືອກ.')+'</p>';
+    return h;
+  }
+  function viewSound(){
+    return subhead(T('ສຽງກະດິ່ງຂອງຮ້ານ'))+'<div class="card"><div class="label">'+T('ເລືອກສຽງທີ່ຮ້ານຈື່ໄດ້. ສຽງປອມທົ່ວໄປຈະບໍ່ຄືກັບສຽງນີ້.')+'</div><div class="chimes">'+CHIMES.map(function(c,i){return '<button data-chime="'+i+'" aria-pressed="'+(S.chime===i)+'">'+T(c.name)+'</button>'}).join('')+'</div></div>';
+  }
+  function viewShift(){
+    var h=subhead(T('ກວດກ່ອນເປີດຮ້ານ'))+'<div class="card"><div class="opt"><h3>'+T('ກວດສຽງ, ເນັດ ແລະ ແບັດເຕີຣີ')+'</h3><button class="ghost small" data-act="shift">'+T('ກວດດຽວນີ້')+'</button></div>';
+    if(S.shift)h+='<ul class="checks"><li>'+T('ສຽງເປີດ · ໄດ້ຍິນສຽງ "{0}"',T(CHIMES[S.chime].name))+'</li><li class="'+(S.online?'':'bad')+'">'+(S.online?T('ເຊື່ອມເນັດແລ້ວ'):T('ຂາດເນັດ: ກວດຂໍ້ມູນມືຖື'))+'</li><li>'+T('ອະນຸຍາດໃຫ້ແອັບເຮັດວຽກເບື້ອງຫຼັງ (ແບັດເຕີຣີ)')+'</li><li>'+T('ປ້າຍ QR ຕັ້ງຢູ່ໜ້າຮ້ານ')+'</li></ul>';
+    else h+='<div class="label">'+T('ກວດກ່ອນຂາຍ ເພື່ອບໍ່ໃຫ້ພາດການແຈ້ງເຕືອນ. +5 ຄະແນນ.')+'</div>';
+    return h+'</div>';
+  }
+  function viewStand(){
+    var h=subhead(T('ປ້າຍ QR ຂອງຮ້ານ'))+'<div class="card"><div class="stand"><b style="color:var(--ink)">'+T('ຮ້ານ ແມ່ຄຳ · ຮ້ານ B-12')+'</b><canvas id="standQR" width="25" height="25" aria-label="QR"></canvas><div class="langs">ສະແກນດ້ວຍແອັບທະນາຄານ · Scan with your bank app<br>สแกนด้วยแอปธนาคาร · Quét bằng ứng dụng ngân hàng · 请用银行App扫码</div><div class="name">'+T('ຊື່ທີ່ຕ້ອງເຫັນ')+': '+SHOP_NAME+'</div></div>';
+    h+='<div class="opt" style="margin-top:10px;flex-wrap:wrap;justify-content:flex-start"><button class="ghost small" data-act="standOk">'+T('ກວດປ້າຍຂອງຮ້ານ')+'</button><button class="ghost small" data-act="standBad">'+T('ຈຳລອງປ້າຍຖືກປ່ຽນ')+'</button></div>';
+    if(S.standCheck==='ok')h+='<div class="result ok">'+T('✓ ປ້າຍນີ້ເປັນຂອງ {0}. ກວດອີກຄັ້ງອາທິດໜ້າ. +20 ຄະແນນ.',SHOP_NAME)+'</div>';
+    if(S.standCheck==='bad')h+='<div class="result bad">'+T('✗ QR ນີ້ບໍ່ແມ່ນຂອງຮ້ານເຈົ້າ. ເອົາປ້າຍອອກ ແລະ ແຈ້ງທີມຊ່ວຍເຫຼືອ.')+'</div>';
+    return h+'</div>';
+  }
+  function viewVersion(){
+    var sc=secScore(),u=S.update;
+    var col={g:'var(--go)',a:'var(--wait)',r:'var(--stop)'}[sc.level],lvl={g:T('ສູງ'),a:T('ກາງ'),r:T('ຕ່ຳ')}[sc.level],deg=Math.round(sc.ok/sc.n*360);
+    var h=subhead(T('ເວີຊັນ ແລະ ຄວາມປອດໄພແອັບ'));
+    h+='<div class="card"><div class="kv"><span>'+T('ເວີຊັນ')+'</span><b>'+S.version+' · '+T('ຕົ້ນແບບ')+'</b></div><div class="kv"><span>'+T('ກວດຫຼ້າສຸດ')+'</span><b>'+(u.checked||'—')+'</b></div>';
+    if(u.state==='checking')h+='<div class="waiting" style="margin-top:8px"><i></i>'+T('ກຳລັງກວດຫາອັບເດດ...')+'</div>';
+    else if(u.state==='installing')h+='<div style="margin-top:8px"><div class="label">'+T('ກຳລັງຕິດຕັ້ງ 1.0.1...')+'</div><div class="progress"><i style="width:'+u.progress+'%"></i></div></div>';
+    else if(u.avail&&u.state==='found')h+='<div class="result wait"><b>'+T('ມີເວີຊັນ 1.0.1')+'</b><br>'+T('ແກ້ໄຂຄວາມປອດໄພ ແລະ ປັບປຸງການເຊື່ອມຕໍ່. ແນະນຳໃຫ້ອັບເດດດຽວນີ້.')+'<br><button class="primary small" data-act="install" style="margin-top:8px">'+T('ອັບເດດດຽວນີ້')+'</button></div>';
+    else if(u.state==='latest')h+='<div class="result ok">'+T('✓ ທ່ານໃຊ້ເວີຊັນລ່າສຸດແລ້ວ')+'</div>';
+    if(u.state!=='checking'&&u.state!=='installing'&&!(u.avail&&u.state==='found'))h+='<button class="ghost small" data-act="checkUpdate" style="margin-top:8px">'+T('ກວດຫາອັບເດດ')+'</button>';
+    h+='</div>';
+    h+='<div class="card"><div class="score"><div class="gauge" style="background:conic-gradient('+col+' '+deg+'deg,var(--grid) 0)"><b>'+sc.ok+'/'+sc.n+'</b></div><div><div class="label">'+T('ຄະແນນຄວາມປອດໄພຂອງເຄື່ອງນີ້')+'</div><div class="lvl"><i style="background:'+col+'"></i>'+T('ລະດັບ {0}',lvl)+'</div><div class="label">'+(sc.ok===sc.n?T('ຕັ້ງຄ່າຄົບທຸກຂໍ້'):T('ແກ້ {0} ຂໍ້ ເພື່ອປອດໄພຂຶ້ນ',sc.n-sc.ok))+'</div></div></div>';
+    h+='<div style="margin-top:8px">'+sc.checks.map(function(c){return '<div class="checkrow"><span class="mk '+(c.ok?'ok':'no')+'">'+(c.ok?'✓':'!')+'</span><span class="t">'+T(c.t)+'</span>'+(!c.ok&&c.fix?'<button class="ghost small" data-fix="'+c.fix+'">'+T('ແກ້ໄຂ')+'</button>':'')+'</div>'}).join('')+'</div></div>';
+    h+='<div class="card"><h3>'+T('ການປ້ອງກັນໃນລະບົບ')+'</h3><ul class="checks"><li>'+T('ເງິນຢູ່ໃນທະນາຄານ partner, ບໍ່ຢູ່ໃນແອັບ')+'</li><li>'+T('ການເຊື່ອມຕໍ່ທັງໝົດເຂົ້າລະຫັດ')+'</li><li>'+T('ບໍ່ເກັບ PIN ຫຼື OTP ຂອງທະນາຄານ')+'</li><li>'+T('ສີຂຽວມາຈາກຂໍ້ມູນທີ່ທະນາຄານຢືນຢັນເທົ່ານັ້ນ')+'</li><li>'+T('ເວີຊັນເກົ່າທີ່ມີຊ່ອງໂຫວ່ຮ້າຍແຮງ ຈະຖືກບັງຄັບໃຫ້ອັບເດດ')+'</li></ul>';
+    h+='<p class="label" style="margin-top:8px">'+T('ຄະແນນນີ້ກວດການຕັ້ງຄ່າໃນເຄື່ອງ, ບໍ່ແມ່ນການຮັບປະກັນ 100%. ກ່ອນເປີດໃຊ້ຈິງ ລະບົບຈະຖືກທົດສອບຄວາມປອດໄພໂດຍຜູ້ຊ່ຽວຊານພາຍນອກ ແລະ ທະນາຄານ partner.')+'</p></div>';
     return h;
   }
 
   // ---------- render ----------
+  var TABS=[['sell','sell','ຂາຍ'],['history','list','ລາຍການ'],['report','chart','ລາຍງານ'],['services','grid','ບໍລິການ'],['account','user','ບັນຊີ']];
+  var SUBS={rewards:viewRewards,bills:viewBills,support:viewSupport,protect:viewProtect,profile:viewProfile,security:viewSecurity,language:viewLanguage,sound:viewSound,shift:viewShift,stand:viewStand,version:viewVersion};
   var timerInt;
   function render(){
-    $('liveText').textContent=S.online?'ພ້ອມຮັບ':'ຂາດເນັດ';
+    document.documentElement.lang=S.lang;
+    $('liveText').textContent=S.online?T('ພ້ອມຮັບ'):T('ຂາດເນັດ');
     $('live').className='live'+(S.online?'':' off');
-    $('net').textContent=S.online?'4G':'ບໍ່ມີເນັດ';
-    $('roleChip').textContent=S.role==='owner'?'ເຈົ້າຂອງ':'ພະນັກງານ';
+    $('net').textContent=S.online?'4G':T('ບໍ່ມີເນັດ');
+    $('roleChip').textContent=S.role==='owner'?T('ເຈົ້າຂອງ'):T('ພະນັກງານ');
     $('roleChip').className='role'+(S.role==='owner'?' owner':'');
-    var b=$('sumBadge');b.hidden=!S.newCredit;b.textContent=S.newCredit;
-    ['sell','history','summary','settings'].forEach(function(t){$('tab-'+t).setAttribute('aria-selected',String(S.tab===t))});
-    var v={sell:viewSell,history:viewHistory,summary:viewSummary,settings:viewSettings}[S.tab]();
-    $('screen').innerHTML=v;
+    $('shopName').textContent=S.profile.shop;
+    $('shopSub').textContent=T('ຕະຫຼາດມືດ · ຮ້ານ B-12');
+    var badges={report:S.newCredit,services:S.billDue?1:0,account:(S.update.avail||S.devices.length>1)?1:0};
+    $('tabs').innerHTML=TABS.map(function(t){return '<button role="tab" aria-selected="'+(S.tab===t[0])+'" data-tab="'+t[0]+'">'+ICON[t[1]]+T(t[2])+(badges[t[0]]?'<span class="badge">'+badges[t[0]]+'</span>':'')+'</button>'}).join('');
+    var v=S.sub&&SUBS[S.sub]?SUBS[S.sub]():{sell:viewSell,history:viewHistory,report:viewReport,services:viewServices,account:viewAccount}[S.tab]();
+    var scr=$('screen'),keep=scr.scrollTop;
+    scr.innerHTML=v;
+    if(S.keepScroll)scr.scrollTop=keep;S.keepScroll=false;
     if($('qr'))drawQR($('qr'),'order-'+S.active.amount+'-'+S.active.expires);
     if($('standQR'))drawQR($('standQR'),'stand-'+(S.standCheck==='bad'?'fraud':'maekham'));
+    [].forEach.call(scr.querySelectorAll('.switch'),function(b){var r=b.closest('.row2');var t=r&&r.querySelector('b');if(t)b.setAttribute('aria-label',t.textContent)});
+    var cf=$('chatForm');if(cf)cf.onsubmit=function(e){e.preventDefault();var i=$('chatIn');chatSend(i.value);};
     clearInterval(timerInt);
-    if(S.active&&S.tab==='sell')timerInt=setInterval(tick,1000);
+    if(S.active&&S.tab==='sell'&&!S.sub)timerInt=setInterval(tick,1000);
   }
+  function go(tab,sub){S.tab=tab;S.sub=sub||null;S.detail=null;S.pinFor=null;S.pinErr=false;if(tab==='report')S.newCredit=0;render();$('screen').scrollTop=0}
   function tick(){
     if(!S.active){clearInterval(timerInt);return}
     var left=Math.ceil((S.active.expires-Date.now())/1000);
     if(left<=0){
       S.active=null;clearInterval(timerInt);playLow();
-      showOverlay('r','<div class="icon">'+ICON.stop+'</div><div class="t">QR ໝົດເວລາ</div><div class="sub">ສ້າງ QR ໃໝ່ກ່ອນໃຫ້ລູກຄ້າຈ່າຍ. ຖ້າລູກຄ້າບອກວ່າຈ່າຍແລ້ວ, ລໍລະບົບກວດກ່ອນ.</div>');
+      showOverlay('r','<div class="icon">'+ICON.stop+'</div><div class="t">'+T('QR ໝົດເວລາ')+'</div><div class="sub">'+T('ສ້າງ QR ໃໝ່ກ່ອນໃຫ້ລູກຄ້າຈ່າຍ. ຖ້າລູກຄ້າບອກວ່າຈ່າຍແລ້ວ, ລໍລະບົບກວດກ່ອນ.')+'</div>');
       log('<b>QR ໝົດເວລາ:</b> ປິດ QR ເກົ່າ. ຖ້າມີເງິນເຂົ້າຊ້າ ລະບົບຍັງບັນທຶກ ແລະ ແຈ້ງ, ບໍ່ຖິ້ມ.');render();return;
     }
-    var el=$('timer');if(el)el.textContent='QR ໝົດອາຍຸໃນ '+Math.floor(left/60)+':'+pad(left%60);
+    var el=$('timer');if(el)el.textContent=T('QR ໝົດອາຍຸໃນ {0}',Math.floor(left/60)+':'+pad(left%60));
   }
 
   // ---------- events ----------
-  document.querySelector('.tabs').addEventListener('click',function(e){
-    var b=e.target.closest('[data-tab]');if(!b)return;
-    S.tab=b.dataset.tab;if(S.tab==='summary')S.newCredit=0;S.detail=null;render();
-  });
+  $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-tab]');if(b)go(b.dataset.tab)});
+  function setSw(id){
+    var keep=function(){S.keepScroll=true};
+    if(id.indexOf('remind-')===0){var k=id.slice(7);S.remind[k]=!S.remind[k];keep();return}
+    if(id.indexOf('c-')===0){var c=id.slice(2);S.consent[c]=!S.consent[c];keep();return}
+    if(id in S.sec){S.sec[id]=!S.sec[id];keep();log('<b>ຄວາມປອດໄພ:</b> '+(S.sec[id]?'ເປີດ':'ປິດ')+' "'+{bio:'ລາຍນິ້ວມື/ໃບໜ້າ',twofa:'ຢືນຢັນ 2 ຂັ້ນ',autolock:'ລັອກອັດຕະໂນມັດ',alert:'ແຈ້ງເຕືອນເຂົ້າລະບົບ',hide:'ເຊື່ອງຍອດເງິນ'}[id]+'". ຄະແນນຄວາມປອດໄພ '+secScore().ok+'/8.')}
+  }
+  function grantPoints(p,d){addPoints(p,d);toast('+'+p+' '+T('ຄະແນນ'))}
   $('screen').addEventListener('click',function(e){
-    var el=e.target.closest('button');if(!el)return;audio();
-    if(el.dataset.mode){S.mode=el.dataset.mode;S.open=null;render();return}
-    if(el.dataset.exp!==undefined){S.expected=parseInt(el.dataset.exp,10)||null;S.open=null;render();return}
-    if(el.dataset.key){
-      var k=el.dataset.key;
+    var el=e.target.closest('button,[data-bar]');if(!el)return;audio();
+    var d=el.dataset,a=d.act;
+    if(d.bar!==undefined){var data=series(),ro=$('readout');if(ro)ro.textContent=barText(data[+d.bar]);return}
+    if(d.mode){S.mode=d.mode;S.open=null;render();return}
+    if(d.exp!==undefined){S.expected=parseInt(d.exp,10)||null;S.open=null;render();return}
+    if(d.key){
+      var k=d.key;
       if(k==='⌫')S.order=S.order.slice(0,-1);
       else if((S.order+k).replace(/^0+/,'').length<=9)S.order=(S.order+k).replace(/^0+/,'');
       render();return;
     }
-    if(el.id==='showQR'){var a=parseInt(S.order,10);if(!a)return;S.active={amount:a,expires:Date.now()+QR_SECONDS*1000};S.order='';speak(laoNumber(a)+' ກີບ');log('<b>Order mode:</b> ສ້າງ QR ສຳລັບ '+fmt(a)+' ກີບ ພ້ອມເລກອ້າງອີງ. ລູກຄ້າບໍ່ຕ້ອງພິມຍອດເອງ.');render();return}
-    if(el.id==='cancelQR'){S.active=null;render();return}
-    if(el.dataset.tx){S.detail=parseInt(el.dataset.tx,10);render();var d=$('detail');if(d)d.scrollIntoView({block:'nearest',behavior:'smooth'});return}
-    if(el.id==='refund'){
-      var t=S.tx.filter(function(x){return x.id===S.detail})[0];t.refund='requested';render();
-      log('<b>ຄືນເງິນ:</b> ເຈົ້າຂອງສົ່ງຄຳຂໍ. ສະຖານະ "ຂໍແລ້ວ" ບໍ່ເທົ່າກັບ "ຄືນແລ້ວ" ຈົນກວ່າທະນາຄານຢືນຢັນ.');
-      setTimeout(function(){t.refund='processing';render()},1500);
-      setTimeout(function(){t.refund='refunded';render();log('ທະນາຄານຢືນຢັນການຄືນເງິນ. ປະຫວັດການຈ່າຍເດີມຍັງຢູ່ຄົບ.')},4200);
-      return;
+    if(d.tx){S.detail=parseInt(d.tx,10);render();var dd=$('detail');if(dd)dd.scrollIntoView({block:'nearest',behavior:'smooth'});return}
+    if(d.sw){setSw(d.sw);render();return}
+    if(d.fix){var f=d.fix;if(f==='goVersion'){S.update.state='found';render();return}if(f==='kick'){kickDevice();return}if(f.indexOf('sw:')===0){setSw(f.slice(3));render()}return}
+    if(d.lang){S.lang=d.lang;try{localStorage.setItem('sm-lang',S.lang)}catch(err){}log('ປ່ຽນພາສາແອັບເປັນ '+(S.lang==='en'?'English':'ລາວ')+'.');render();return}
+    if(d.chime!==undefined){S.chime=parseInt(d.chime,10);playChime(S.chime);render();return}
+    if(d.ask){S.confirmReward=d.ask;S.keepScroll=true;render();return}
+    if(d.redeem){
+      var rw=REWARDS.filter(function(x){return x.id===d.redeem})[0];
+      if(rw&&S.points>=rw.cost){S.points-=rw.cost;S.pointsLog.unshift({t:nowTime(),d:'ແລກ: {0}',a:rw.name,ak:true,p:-rw.cost});var until=new Date();until.setMonth(until.getMonth()+3);
+        S.vouchers.unshift({name:rw.name,code:'SM-'+rw.id.toUpperCase()+'-'+(1000+Math.floor(Math.random()*9000)),until:until.getDate()+'/'+(until.getMonth()+1)+'/'+until.getFullYear()});
+        toast(T('ແລກສຳເລັດ: {0}',T(rw.name)));log('<b>ແລກລາງວັນ:</b> "'+rw.name+'" ໃຊ້ '+rw.cost+' ຄະແນນ. ໄດ້ລະຫັດ voucher. ຄະແນນເປັນສິດທິປະໂຫຍດ, ບໍ່ແມ່ນເງິນ: ແລກເປັນເງິນສົດ ຫຼື ໂອນບໍ່ໄດ້.')}
+      S.confirmReward=null;render();$('screen').scrollTop=0;return;
     }
-    if(el.id==='goOwner'||el.id==='toOwner'){S.tab='settings';S.pinOpen=true;S.pinErr=false;render();var p=$('pin');if(p)p.focus();return}
-    if(el.id==='pinOk'){if($('pin').value==='1234'){S.role='owner';S.pinOpen=false;S.pinErr=false;log('ເຂົ້າໂໝດເຈົ້າຂອງ: ເບິ່ງສະຫຼຸບ ແລະ ຄືນເງິນໄດ້.')}else S.pinErr=true;render();return}
-    if(el.id==='toCashier'){S.role='cashier';render();return}
-    if(el.dataset.chime!==undefined){S.chime=parseInt(el.dataset.chime,10);playChime(S.chime);render();return}
-    if(el.id==='shift'){S.shift=true;playChime(S.chime);render();return}
-    if(el.id==='standOk'){S.standCheck='ok';render();return}
-    if(el.id==='standBad'){S.standCheck='bad';playLow();log('<b>ປ້າຍຖືກປ່ຽນ:</b> ການກວດປ້າຍປະຈຳອາທິດ ພົບວ່າ QR ບໍ່ແມ່ນຂອງຮ້ານ. ລູກຄ້າກໍຈະເຫັນຊື່ຜູ້ຮັບທີ່ບໍ່ແມ່ນ '+SHOP_NAME+' ໃນແອັບຂອງຕົນ.');render();return}
+    if(d.bill){S.bill={step:'acct',cat:d.bill,acct:'',err:null};render();return}
+    if(d.q){chatSend(T(d.q));return}
+    if(d.cp){S.cpCat=d.cp;S.keepScroll=true;render();return}
+    switch(a){
+      case 'back':S.sub=null;S.pinFor=null;render();return;
+      case 'showQR':var am=parseInt(S.order,10);if(!am)return;S.active={amount:am,expires:Date.now()+QR_SECONDS*1000};S.order='';speak(sayNumber(am));log('<b>Order mode:</b> ສ້າງ QR ສຳລັບ '+fmt(am)+' ກີບ ພ້ອມເລກອ້າງອີງ. ລູກຄ້າບໍ່ຕ້ອງພິມຍອດເອງ.');render();return;
+      case 'cancelQR':S.active=null;render();return;
+      case 'refund':
+        var t=S.tx.filter(function(x){return x.id===S.detail})[0];t.refund='requested';render();
+        log('<b>ຄືນເງິນ:</b> ເຈົ້າຂອງສົ່ງຄຳຂໍ. ສະຖານະ "ຂໍແລ້ວ" ບໍ່ເທົ່າກັບ "ຄືນແລ້ວ" ຈົນກວ່າທະນາຄານຢືນຢັນ.');
+        setTimeout(function(){t.refund='processing';render()},1500);
+        setTimeout(function(){t.refund='refunded';var p=ptsFor(t.amount);if(p){S.points-=p;S.pointsLog.unshift({t:nowTime(),d:'ຄືນເງິນ {0} ₭',a:fmt(t.amount),p:-p})}render();log('ທະນາຄານຢືນຢັນການຄືນເງິນ. ປະຫວັດການຈ່າຍເດີມຍັງຢູ່ຄົບ; ຄະແນນຂອງລາຍການນີ້ຖືກຫັກຄືນ.')},4200);
+        return;
+      case 'askHelp':var tt=S.tx.filter(function(x){return x.id===S.detail})[0];go('services','support');chatSend(T('ສອບຖາມລາຍການ {0} ({1} ₭)','SM-'+(1000+tt.id),fmt(tt.amount)));return;
+      case 'askOwner':S.pinFor=S.sub||S.tab;S.pinErr=false;render();var pi=$('pin');if(pi)pi.focus();return;
+      case 'pinOk':if($('pin').value===OWNER_PIN){S.role='owner';S.pinFor=null;S.pinErr=false;log('ເຂົ້າໂໝດເຈົ້າຂອງ: ລາຍງານ, ຄືນເງິນ, ຈ່າຍບິນ ແລະ ຕັ້ງຄ່າຄວາມປອດໄພ.')}else S.pinErr=true;render();return;
+      case 'toCashier':S.role='cashier';render();return;
+      case 'openRewards':go('services','rewards');return;
+      case 'openBills':go('services','bills');return;
+      case 'openSupport':go('services','support');scrollChat();return;
+      case 'openProtect':go('services','protect');return;
+      case 'goProfile':go('account','profile');return;
+      case 'goSecurity':go('account','security');return;
+      case 'goLanguage':go('account','language');return;
+      case 'goSound':go('account','sound');return;
+      case 'goShift':go('account','shift');return;
+      case 'goStand':go('account','stand');return;
+      case 'goVersion':go('account','version');return;
+      case 'cancelRedeem':S.confirmReward=null;S.keepScroll=true;render();return;
+      case 'useSaved':S.bill.acct=BILLERS[S.bill.cat].acct;S.bill.err=null;render();return;
+      case 'fetchBill':var v=($('acct').value||'').trim();if(v.length<4){S.bill.acct=v;S.bill.err=T('ໃສ່ເລກບັນຊີໃຫ້ຄົບ (ຢ່າງໜ້ອຍ 4 ຕົວ).');render();return}S.bill.acct=v;S.bill.err=null;S.bill.step='bill';render();return;
+      case 'payBill':S.bill.step='confirm';S.bill.err=null;render();var bp=$('billpin');if(bp)bp.focus();return;
+      case 'billPinOk':
+        if($('billpin').value!==OWNER_PIN){S.bill.err=T('PIN ບໍ່ຖືກ');render();return}
+        S.bill.step='processing';S.bill.err=null;render();
+        setTimeout(function(){var b=S.bill,x=BILLERS[b.cat];b.ref='BP-'+(30000+Math.floor(Math.random()*69999));b.step='done';var dt=new Date();S.bills.unshift({t:pad(dt.getDate())+'/'+pad(dt.getMonth()+1),cat:b.cat,amount:x.amount,ref:b.ref});addPoints(10,'ຈ່າຍບິນ: {0}',x.name,true);if(b.cat==='power')S.billDue=false;render();
+          log('<b>ຈ່າຍບິນ:</b> '+x.name+' '+fmt(x.amount)+' ກີບ. ທະນາຄານ partner ຕັດເງິນຈາກບັນຊີຮ້ານ ແລະ ຢືນຢັນ (ເລກ '+b.ref+'). ແອັບບໍ່ຖືເງິນ; ພຽງສົ່ງຄຳສັ່ງ ແລະ ສະແດງຜົນ.')},1600);
+        return;
+      case 'billBack':S.bill={step:'cat',cat:null,acct:'',err:null};render();return;
+      case 'sendCp':
+        var txt=($('cpText').value||'').trim();if(!txt){$('cpText').focus();$('cpText').placeholder=T('ກະລຸນາຂຽນລາຍລະອຽດ');return}
+        var id='CP-'+(2000+S.complaints.length+1),c={id:id,t:nowTime(),state:'ໄດ້ຮັບແລ້ວ'};S.complaints.unshift(c);render();
+        toast(T('ສົ່ງແລ້ວ: {0}',id));log('<b>ຮ້ອງຮຽນ:</b> ໄດ້ເລກ '+id+' ພ້ອມສະຖານະໃນແອັບ (ໄດ້ຮັບ → ກຳລັງກວດ → ຕອບກັບ). ຖ້າບໍ່ພໍໃຈ, ຍົກລະດັບໄປທະນາຄານ partner ຫຼື ໜ່ວຍງານປົກປ້ອງຜູ້ບໍລິໂພກຂອງ BOL.');
+        setTimeout(function(){c.state='ກຳລັງກວດ';render()},2500);return;
+      case 'saveProfile':S.profile={name:$('pfName').value.trim()||S.profile.name,phone:$('pfPhone').value.trim(),shop:$('pfShop').value.trim()||S.profile.shop,addr:$('pfAddr').value.trim()};toast(T('ບັນທຶກແລ້ວ'));render();return;
+      case 'exportData':S.privacyReq='PD-'+(500+Math.floor(Math.random()*400));S.keepScroll=true;render();return;
+      case 'askDelete':S.deleteAsk=true;S.keepScroll=true;render();return;
+      case 'cancelDelete':S.deleteAsk=false;S.keepScroll=true;render();return;
+      case 'confirmDelete':S.deleteAsk=false;toast(T('ສົ່ງຄຳຂໍປິດບັນຊີແລ້ວ (ຈຳລອງ). ພະນັກງານຈະໂທຢືນຢັນ.'));render();return;
+      case 'kick':kickDevice();return;
+      case 'changePin':S.pinChanged=true;S.keepScroll=true;render();return;
+      case 'shift':if(!S.shift)grantPoints(5,'ກວດກ່ອນເປີດຮ້ານ');S.shift=true;playChime(S.chime);render();return;
+      case 'standOk':if(S.standCheck!=='ok')grantPoints(20,'ກວດປ້າຍ QR ປະຈຳອາທິດ');S.standCheck='ok';render();return;
+      case 'standBad':S.standCheck='bad';playLow();log('<b>ປ້າຍຖືກປ່ຽນ:</b> ການກວດປ້າຍປະຈຳອາທິດ ພົບວ່າ QR ບໍ່ແມ່ນຂອງຮ້ານ. ລູກຄ້າກໍຈະເຫັນຊື່ຜູ້ຮັບທີ່ບໍ່ແມ່ນ '+SHOP_NAME+' ໃນແອັບຂອງຕົນ.');render();return;
+      case 'checkUpdate':
+        S.update.state='checking';render();
+        setTimeout(function(){S.update.checked=nowTime();S.update.state=S.update.avail?'found':'latest';render()},1200);return;
+      case 'install':
+        S.update.state='installing';S.update.progress=0;render();
+        var iv=setInterval(function(){S.update.progress+=20;if(S.update.progress>=100){clearInterval(iv);S.update.avail=false;S.update.state='latest';S.version='1.0.1';S.update.checked=nowTime();toast(T('ອັບເດດເປັນ 1.0.1 ແລ້ວ'));log('<b>ອັບເດດແລ້ວ:</b> ເວີຊັນ 1.0.1. ຄະແນນຄວາມປອດໄພກັບຄືນ '+secScore().ok+'/8.')}render()},350);return;
+    }
   });
-  $('screen').addEventListener('keydown',function(e){if(e.target.id==='pin'&&e.key==='Enter'){e.preventDefault();$('pinOk').click()}});
-  document.querySelector('.panel').addEventListener('click',function(e){var b=e.target.closest('[data-ev]');if(b){S.tab='sell';S.detail=null;closeOverlay();render();incoming(b.dataset.ev)}});
+  $('screen').addEventListener('pointerover',function(e){var b=e.target.closest('[data-bar]');if(!b)return;var ro=$('readout');if(ro)ro.textContent=barText(series()[+b.dataset.bar])});
+  $('screen').addEventListener('focusin',function(e){var b=e.target.closest('[data-bar]');if(!b)return;var ro=$('readout');if(ro)ro.textContent=barText(series()[+b.dataset.bar])});
+  $('screen').addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    if(e.target.id==='pin'){e.preventDefault();e.target.parentNode.querySelector('[data-act="pinOk"]').click()}
+    if(e.target.id==='billpin'){e.preventDefault();e.target.parentNode.querySelector('[data-act="billPinOk"]').click()}
+    if(e.target.id==='acct'){e.preventDefault();$('screen').querySelector('[data-act="fetchBill"]').click()}
+  });
+  document.querySelector('.panel').addEventListener('click',function(e){
+    var b=e.target.closest('[data-ev]');if(!b)return;
+    var ev=b.dataset.ev,stay=['login','update','billdue','fake','dup','credit'].indexOf(ev)>-1;
+    if(!stay){S.tab='sell';S.sub=null;S.detail=null}
+    closeOverlay();render();incoming(ev);
+  });
   $('reset').addEventListener('click',function(){seed();closeOverlay();$('evOffline').setAttribute('aria-pressed','false');$('log').innerHTML='';intro();render()});
   addEventListener('keydown',function(e){if(e.key==='Escape')closeOverlay()});
   setInterval(function(){$('clock').textContent=nowTime()},15000);$('clock').textContent=nowTime();
 
-  function intro(){log('ເລີ່ມຕົ້ນ: ພະນັກງານເປີດແອັບໃນ <b>Quick mode</b>, ລາຄາທີ່ບອກລູກຄ້າ 40,000 ກີບ. ລາຍການກ່ອນໜ້ານີ້ເປັນຕົວຢ່າງ.')}
+  function intro(){log('ເລີ່ມຕົ້ນ: ພະນັກງານເປີດແອັບໃນ <b>Quick mode</b>, ລາຄາທີ່ບອກລູກຄ້າ 40,000 ກີບ. ເຈົ້າຂອງເຂົ້າໂໝດເຈົ້າຂອງດ້ວຍ PIN 1234 ເພື່ອເບິ່ງລາຍງານ, ຈ່າຍບິນ ແລະ ຕັ້ງຄ່າ. ລາຍການກ່ອນໜ້ານີ້ເປັນຕົວຢ່າງ.')}
   intro();render();
 })();
 </script>
 <!--
 Version Log
-2026-10-12 (Asia/Bangkok) · v1.0 · Claude Code · Clickable merchant-app prototype for the pitch demo: Quick mode and Order mode, traffic-light result screens with merchant chime and 2-digit code, Lao number read-back, shortfall/top-up, overpayment, late confirmation, failure, fake sound, duplicate event, offline queue, bank-credit summary, owner/cashier roles, owner-only refunds, pre-shift check and QR stand self-check. Simulation only; no bank connection.
+2026-10-12 (Asia/Bangkok) · v1.0 · Claude Code · Clickable merchant-app prototype for the pitch demo: Quick/Order mode, traffic-light result screens with merchant chime and 2-digit code, Lao read-back, shortfall/top-up, overpayment, late confirmation, failure, fake sound, duplicate event, offline queue, bank-credit summary, owner/cashier roles, owner-only refunds, pre-shift and QR stand checks.
+2026-10-12 (Asia/Bangkok) · v2.0 · Claude Code · Added 5-tab structure: Report (income received, 7-day actual + 7-day forecast chart with range, busy hours, payer origin, marketing tips), Services (points & rewards with non-cash rules, bill payment via the partner bank for power/water/phone/insurance/stall rent, support chat + FAQ, consumer protection with fee table and complaints), Account (profile & consent, account security & devices, language Lao/English, app version + update check + device security score). New demo events: new-device login, security update, bill due.
 -->
 </body>
 </html>
