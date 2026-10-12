@@ -127,6 +127,76 @@ The bank/network credit feed is a **capability requirement**, not a confirmed pu
 
 Sources describe supplier offerings; this is not a hands-on competitor audit. Merchant distrust and difficult UX remain hypotheses unless supported by interviews or usability evidence.
 
+### 4.2 Competitor landscape (proposal, not in the consensus ledger)
+
+Evidence grades: **O** = the supplier's own page or store listing; **N** = news or press; **R** = user review or aggregator (anecdotal, often older app versions); **I** = our inference; **—** = not established. No row below comes from a hands-on test.
+
+| Player | Type | Tourist side | Merchant side | Public fee | Settlement | Evidence |
+|---|---|---|---|---|---|---|
+| **LOCA PAY** [S1][S9] | Payer-side app inside the LOCA super-app | Tourist downloads LOCA, completes KYC, links an international card or wallet, then pays any LaoQR | Uses the merchant's existing bank LaoQR; no LOCA merchant tool found | 3% + 5,000 LAK per transaction on LOCA's page; a Play listing says 1.5% + 5,000 [S11] | Merchant's own bank; JDB named as launch partner; merchant timing not found | O, R |
+| **NewPay** [S2][S3][S12] | Acquirer/PSP plus merchant app ("NewPay For Business") | Existing wallets: Alipay+/WeChat, UnionPay QR and LAPNet banks [S14] | Merchant console (collection, settlement, refunds, branch permissions), API/SDK, dual-QR stand, voice broadcast in version notes [S13][S15] | Agreement-specific [S3]; the app listing claims zero fees for account setup, collection and transfers | T+1/T+2 or other schedules per agreement [S3] | O |
+| **BCEL OnePay / EZyKip** [S18] | Bank merchant QR plus a bank app for visitors | EZyKip, for payments at OnePay agencies and LaoQR member stores | Bank QR sticker and bank notification | Basic acceptance commonly described as free or low-cost (G7, medium confidence, verify) | Own bank | N, I |
+| **M moneyX** [S17] | Wallet and LAPNet member | Lao wallet; Visa card aimed at travellers | Static and dynamic QR per store listing; merchant tools not verified | Not found | Not found | N, O |
+| **LFPay** [S19] | Lao wallet | — | Listing says it serves individuals, merchants and agents in one app | Not found | Not found | O |
+| **Other Lao banks** (LDB, APB, JDB, Lao-Viet) [S20][S21] | Bank LaoQR acceptance | Reached through LAPNet links with Thailand, Vietnam and China | Bank-specific | Not found | Own bank | N |
+| **Cash** | Status quo | — | — | None | Immediate | I |
+
+Alipay, WeChat Pay and UnionPay are payer-side brands that reach Lao merchants through LAPNet and acquirers such as NewPay. Treat them as ecosystem players, not as separate competitors.
+
+### 4.3 Weaknesses in LOCA PAY and NewPay worth solving
+
+Selection rule: a weakness is listed only if it plausibly hurts a small market vendor or a tourist at the point of sale. "Our response" names a proposed mechanism; none of it is built or validated. Where a weakness depends on the partner or the payer's own app, that is stated rather than promised away.
+
+**A. LOCA PAY**
+
+| # | Weakness | Evidence | Worth solving | Our response |
+|---|---|---|---|---|
+| L1 | The fixed 5,000 LAK part of the fee punishes small tickets. On the published 3% + 5,000 LAK, a 20,000 LAK sale costs 5,600 (28%), 50,000 costs 6,500 (13%), 100,000 costs 8,000 (8%). This assumes the fee applies to the payer's amount, as LOCA says it is shown before approval. | O, I | **High**: small tickets are our segment | We cannot set the payer's cost. Show the merchant fee and net LAK before activation (F04), keep the payer cost field "unknown" where it is unknown, and avoid a fixed per-transaction charge to the merchant. |
+| L2 | Fee statements conflict (3% vs 1.5% + 5,000), and one reviewer saw no fee notice [S11] | O, R | Medium | One versioned quote per order with expiry, rounding and terms version (F04). |
+| L3 | Tourist friction: separate download, KYC, and OTP or ID-verification trouble in reviews | R | High for conversion | No tourist account in our app (C01). This is a baseline, not a unique feature (§4.1). |
+| L4 | Reported reliability issues: slow scanner, QR not recognised, sudden declines, battery drain (older versions 3.2.7–3.3.1) [S10] | R | Medium | We cannot fix their scanner. Show a large, high-contrast per-order QR with a validity time, and clear waiting / expired / declined states with next-step guidance (F02, F05, F07). |
+| L5 | Foreign card charged in USD with a fee and a poor rate (one review) | R | Medium | FX stays with authorised institutions and no platform markup in the base case (C12). The merchant sees the LAK price; the payer sees the final amount in their own app. |
+| L6 | Inconsistent customer support (reviews) | R | Medium | Shared receipt and support case, one reference visible to both sides (F08), with local Lao support through market operators. |
+| L7 | The merchant gets no tourist-specific confirmation and relies on a bank SMS or notification | I (no LOCA merchant tool found) | **High if true; validate** | Evidence-backed payment status plus Lao audio (F05, F06). Check with vendor interviews before claiming it. |
+| L8 | Price and currency confusion at the stall ("easy for small merchants to rip you off", one review) | R | Low–Medium | LAK price on the receipt shared with the payer (F08); LAK-only signage is pending (G-REG-02). |
+
+**B. NewPay**
+
+| # | Weakness | Evidence | Worth solving | Our response |
+|---|---|---|---|---|
+| N1 | Fees and settlement are agreement-specific, so a vendor cannot compare before signing [S3] | O | **High** | Cost and compatibility card with fee, net LAK and payout terms before application (F04). Values come from the partner; if the partner will not give them, show "not available". |
+| N2 | Console built for broader businesses: multi-currency accounts, API/SDK, payroll, branch permissions [S12] | O, I | Medium–High for micro-vendors | A minimal cashier screen (amount → QR → large status) and a separate owner view (G-UX cashier/owner modes, pending). |
+| N3 | Voice notification is advertised, but I found only a version-history mention: no documented Lao phrasing, amount rules, de-duplication, or split between acceptance and bank credit | — | Medium | Audio policy in §6.2 (distinct phrases, actual-credit amount, dedupe). Test their app hands-on before claiming a difference. |
+| N4 | Settlement on T+1/T+2 or per agreement, not instant [S3] | O | **High, but only partly solvable** | Not solvable by us alone. Show the expected payout date, offer advance payout only through an authorised funder (C13), and use the wording "LAK straight to your own bank account" (pending). |
+| N5 | Dual-QR stand (LAPNet on one side, Alipay/WeChat on the other) means the payer must pick the right code [S15] | N, I | Medium | One merchant interface that shows which QR to present for the payer's app (§2.2); signage items are pending (G-UX). |
+| N6 | Refund rules and timing are not public | — | Medium | Refund requests by original reference; "requested" never shown as "refunded" (F09, §5.4). |
+| N7 | Onboarding time and review steps are not stated | — | Medium | Three-minute application target, shown separately from partner activation (F03). |
+| N8 | Consumer app: reviewers cite limited shop acceptance and SMS OTP registration trouble [S16] | R (consumer app only) | Low for us | Not our fight, but it shows acceptance coverage is a real risk for any entrant, including us. |
+
+**C. Gaps neither app is shown to address (our hypotheses, unvalidated)**
+
+| # | Gap | How to validate |
+|---|---|---|
+| H1 | Handover clarity in a crowded stall: a simple green / amber / red signal (G-UX-01, pending) | Usability test with 5–10 vendors |
+| H2 | Static-QR payments that arrive with no order reference (§5.3) | Interview vendors who use a printed QR today |
+| H3 | A distinct device state for "my phone lost signal" so the app never shows a stale success | Field test in a market with weak signal |
+| H4 | Separate "payment confirmed" and "bank credited" states | Confirm the partner can provide both kinds of evidence (D-list) |
+| H5 | Lao-first wording, including spoken amounts | Native-speaker audio review |
+
+### 4.4 What is worth building first, and what is not ours to fix
+
+| Rank | Opportunity | Addresses | Features | Depends on |
+|---|---|---|---|---|
+| 1 | Merchant sees net LAK and payout timing before signing | N1, L2, L1 | F04 | Partner supplies fee and timing data |
+| 2 | Trustworthy status at handover: confirmed vs pending vs credited | L7, N3, H1, H4 | F05, F06 | Partner evidence feeds (D-list) |
+| 3 | Minimal micro-vendor screens, with an owner view kept separate | N2 | F02, F03 | Usability test |
+| 4 | One shared reference for receipts, support and refunds | L6, N6 | F08, F09 | Partner refund API |
+| 5 | Clear QR guidance and failure states | N5, L4 | F02, F07 | Partner QR formats |
+
+Not solvable by us alone: the payer's FX rate and card fees (L1, L5), the payer's own app and KYC (L3), settlement speed (N4), acceptance coverage (N8), and direct access to LAPNet (C03).
+
+Caveats: the supplier pages are promotional; reviews are anecdotal and some refer to older app versions or to NewPay's consumer app; there are only one or two store ratings for NewPay's business app. Before a pitch states any of the "—" items as a competitor gap, test the apps hands-on and interview vendors.
+
 ## 5. End-to-end flows
 
 ### 5.1 Merchant onboarding
@@ -376,6 +446,21 @@ Research provenance is carried forward from the team brief prepared on 2026-10-1
 - [S6 — BOL Notice No. 05, 4 January 2024, original PDF](https://www.bol.gov.la/fileupload/08-01-2024_1704679490.pdf)
 - [S7 — BOL-hosted English translation of amended Payment System Law](https://www.bol.gov.la/en/fileupload/18-12-2025_1766051569.pdf)
 - [S8 — LOCA user KYC process](https://loca.la/blog/locapay-introduces-a-simple-kyc-process-for-secure-payments/)
+- [S9 — LOCA app, App Store listing](https://apps.apple.com/us/app/loca-laos-e-mobility-payment/id1374380531)
+- [S10 — LOCA app review aggregator](https://mwm.ai/fr/apps/loca-laos-e-mobility-payment/1374380531)
+- [S11 — LOCA app, Google Play listing and reviews](https://play.google.com/store/apps/details?id=com.loca.passenger&hl=en_IN)
+- [S12 — NewPay For Business, App Store listing](https://apps.apple.com/us/app/newpay-for-business/id1591563190)
+- [S13 — NewPay For Business, Google Play listing](https://play.google.com/store/apps/details?id=com.newpay.merchant&hl=en)
+- [S14 — NewPay supported wallets](https://www.newpay.la/en/wallets.html)
+- [S15 — NewPay post on Alipay+ acquiring and dual-QR stand](https://x.com/NewPay_Laos/status/1870144053008093246)
+- [S16 — NewPay consumer app tracker](https://chrome-stats.com/d/com.mdl.newpay?hl=en)
+- [S17 — M moneyX joins LAPNet](https://kpl.gov.la/en/detail.aspx?id=92282) and [Lao Mobile Money / Visa](https://thepaypers.com/payments/news/lao-mobile-money-partners-with-visa-to-scale-financial-inclusion-in-laos)
+- [S18 — BCEL tourist app (EZyKip)](https://www.tourismlaos.org/2024/02/16/bcel-launches-new-payment-app-for-tourists-during-visit-laos-year-2024/)
+- [S19 — LFPay, App Store listing](https://apps.apple.com/app/id6753140708)
+- [S20 — UnionPay International and LAPNet QR interconnection](https://www.unionpayintl.com/lao/mediaCenter/newsCenter/companyNews/3015950.shtml)
+- [S21 — NAPAS and LAPNet Vietnam–Laos QR service](https://en.napas.com.vn/ceremony-to-announce-the-bilateral-retail-payment-service-using-qr-codes-between-vietnam-and-laos-184250115085042165.htm)
+
+S9–S21 were gathered through web search snippets on 2026-10-12/13. The sandbox could not open these pages directly, so each should be re-read at source before it is quoted in a pitch.
 
 # Version Log
 
@@ -383,3 +468,4 @@ Research provenance is carried forward from the team brief prepared on 2026-10-1
 |---|---|---|---|
 | 2026-10-11 23:52:27 +07:00 (Asia/Bangkok) | 0.1 | Codex | Created provisional architecture and matrices from the accepted brief; recorded missing context/audit inputs, partner dependencies, financial-state rules and future validation plan. Companion: `exports/system_flowchart.html`. |
 | 2026-10-12 00:03:27 +07:00 (Asia/Bangkok) | 0.1 | Codex | Finalized companion visual; verified six interactive scenarios, calculator validation, responsive layouts at 320/390/768/1440 px, embedded Lao font and zero external requests or script errors. These are document checks, not payment-integration tests. |
+| 2026-10-13 00:41 +07:00 (Asia/Bangkok) | 0.2 | Claude | Added §4.2 competitor landscape, §4.3 weaknesses of LOCA PAY and NewPay with proposed responses, §4.4 priorities, and sources S9–S21. Evidence is from search snippets, store listings and reviews; no hands-on test. All content is proposal, not consensus. |
