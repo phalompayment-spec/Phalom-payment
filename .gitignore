@@ -13,3 +13,4 @@ Thumbs.db
 
 # Version Log
 # 2026-10-12 23:09:45 +07:00 (Asia/Bangkok) | 1.0 | Codex | Excluded local environments, temporary builds and secrets from the repository.
+prototype/phalom_artifact.html

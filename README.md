@@ -5,8 +5,9 @@ Project files for Team ພັດລົມ (Phalom), Innovative Business Challeng
 ## Pitch materials (start here)
 
 - [`exports/Phalom-Pitch-Deck.pdf`](exports/Phalom-Pitch-Deck.pdf): final 13-slide deck in Lao, for submission. Generated from [`exports/pitch_deck_slide.html`](exports/pitch_deck_slide.html) (open in a browser to present; the PDF button saves a new PDF after edits).
-- [`blueprint_phalom_prototype.md`](blueprint_phalom_prototype.md): research-based list of every feature the prototype needs (P0–P2), competitor check, research plan and open design decisions. **Design is not decided yet**; this replaces the earlier prototype as the reference.
-- [`ui_design_brainstorm.md`](ui_design_brainstorm.md): UI research on LOCA and NewPay, lessons, and three design directions for the new Phalom prototype (not decided).
+- [`exports/phalom_prototype.html`](exports/phalom_prototype.html): clickable Phalom prototype (Mekong design, light theme by default). Open it in any browser; it works offline. Online copy: https://claude.ai/artifact/2miJ6xArT31gXvaqn1WvXF. It includes a presenter demo panel for bank results, offline mode, a fake-screenshot test, the market-operator view and the tourist sign. Source and build script: [`prototype/`](prototype/).
+- [`blueprint_phalom_prototype.md`](blueprint_phalom_prototype.md): research-based list of every feature the prototype needs (P0–P2), competitor check and research plan.
+- [`ui_design_brainstorm.md`](ui_design_brainstorm.md): UI research, seven design directions, logo ideas and the chosen design (D · Mekong, P-QR logo) with its colour tokens.
 - [`04_PITCH_SCRIPT.md`](04_PITCH_SCRIPT.md): speaker script, demo steps, short version and judge Q&A for practice.
 - [`00_CONTEXT.md`](00_CONTEXT.md): deadlines and owner decisions. Read this first before changing anything.
 
@@ -38,3 +39,4 @@ Before using the Discord script, read its `output/discord/README.md`. It can cre
 | 2026-10-12 (Asia/Bangkok) | 1.2 | Claude Code | Described prototype v2.0 features. |
 | 2026-10-12 (Asia/Bangkok) | 1.3 | Claude Code | Added the prototype blueprint; marked the earlier prototype as history. |
 | 2026-10-12 (Asia/Bangkok) | 1.4 | Claude Code | Renamed project to Phalom; deleted the old prototype; added the UI design brainstorm; deck PDF renamed to Phalom-Pitch-Deck.pdf. |
+| 2026-10-12 (Asia/Bangkok) | 1.5 | Claude Code | Added the new Mekong-design prototype (`exports/phalom_prototype.html`, source in `prototype/`); updated the design brainstorm entry. |
