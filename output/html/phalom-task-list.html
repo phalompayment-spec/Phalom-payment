@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="lo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ລາຍການວຽກ Phalom</title>
+<style>
+/* Layout: one reading column; each phase is a row of (phase label | task list) that stacks below 760px. */
+/* System faces only: like the other project HTML files, this page opens offline with no external requests. */
+:root{
+  --bg:#f3f6f5;
+  --surface:#ffffff;
+  --ink:#13201e;
+  --muted:#55655f;
+  --line:#d4dedb;
+  --accent:#0d6e66;
+  --accent-ink:#ffffff;
+  --accent-soft:#dbeeea;
+  --block:#b42318;
+  --block-soft:#fbe6e3;
+  --soon:#8f5506;
+  --soon-soft:#fbeed6;
+  --later:#355789;
+  --later-soft:#e2e9f4;
+  --opt:#55655f;
+  --opt-soft:#e8edeb;
+  --lao:"Noto Sans Lao","Noto Sans Lao UI","Leelawadee UI","Lao Sangam MN","Phetsarath OT","Lao UI";
+  --font-display:"Segoe UI Variable Display","SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",var(--lao),sans-serif;
+  --font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",var(--lao),sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1513;
+    --surface:#141f1c;
+    --ink:#e2ebe8;
+    --muted:#97a8a3;
+    --line:#26352f;
+    --accent:#4cc2b2;
+    --accent-ink:#06211d;
+    --accent-soft:#12312c;
+    --block:#f2a197;
+    --block-soft:#3a1915;
+    --soon:#e8b664;
+    --soon-soft:#33260f;
+    --later:#a3bde8;
+    --later-soft:#1a2536;
+    --opt:#a6b4b0;
+    --opt-soft:#1d2925;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1513;
+  --surface:#141f1c;
+  --ink:#e2ebe8;
+  --muted:#97a8a3;
+  --line:#26352f;
+  --accent:#4cc2b2;
+  --accent-ink:#06211d;
+  --accent-soft:#12312c;
+  --block:#f2a197;
+  --block-soft:#3a1915;
+  --soon:#e8b664;
+  --soon-soft:#33260f;
+  --later:#a3bde8;
+  --later-soft:#1a2536;
+  --opt:#a6b4b0;
+  --opt-soft:#1d2925;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1rem;
+  line-height:1.7;
+  overflow-wrap:break-word;
+  -webkit-text-size-adjust:100%;
+}
+.page{
+  max-width:62rem;
+  margin:0 auto;
+  padding-inline:clamp(16px,4vw,40px);
+  padding-block:clamp(28px,5vw,56px) 64px;
+  display:grid;
+  gap:clamp(28px,4vw,44px);
+}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;color:var(--ink)}
+p{margin:0}
+code,.mono{font-family:var(--font-mono);font-size:.875em}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* Masthead */
+.masthead{display:grid;gap:14px}
+.eyebrow{
+  font-size:.75rem;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);
+}
+.masthead h1{
+  font-size:clamp(2rem,5.2vw,3rem);font-weight:760;letter-spacing:-.01em;line-height:1.25;
+}
+.lead{max-width:62ch;font-size:1.0625rem;color:var(--muted)}
+.facts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+  gap:0;margin:6px 0 0;border-top:1px solid var(--line);
+}
+.facts div{padding:12px 16px 12px 0;border-bottom:1px solid var(--line);min-width:0}
+.facts dt{font-size:.8125rem;font-weight:700;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-size:.9375rem}
+
+/* Toolbar */
+.toolbar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
+  background:var(--bg);
+  padding-block:12px;
+  border-bottom:1px solid var(--line);
+  display:grid;gap:10px;
+}
+.progress-row{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+.progress-text{font-family:var(--font-display);font-weight:700;font-size:1.125rem;font-variant-numeric:tabular-nums}
+.blocker-text{font-size:.875rem;color:var(--block);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filter,.copy{
+  font:inherit;font-size:.875rem;line-height:1.4;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:6px 12px;border-radius:999px;cursor:pointer;
+}
+.filter:hover,.copy:hover{border-color:var(--accent)}
+.filter[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:.875rem;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.copy{margin-left:auto;border-radius:6px;font-weight:600}
+.copy-status{font-size:.8125rem;color:var(--muted);min-height:1.2em}
+.copy-status:empty{display:none}
+.copy-fallback{
+  width:100%;min-height:9rem;font:inherit;font-size:.8125rem;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;
+}
+
+/* Already done */
+.done-box{display:grid;gap:12px}
+.section-label{font-size:.875rem;font-weight:700;color:var(--muted)}
+.done-list{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:6px 28px;
+}
+.done-list li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:.9375rem;min-width:0}
+.done-list li::before{content:"✓";color:var(--accent);font-weight:700}
+
+/* Phases */
+.phase{
+  display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:24px;
+  padding-top:22px;border-top:2px solid var(--ink);
+}
+.phase-head{display:grid;gap:6px;align-content:start;position:relative}
+.phase-letter{
+  font-family:var(--font-display);font-weight:800;font-size:2.5rem;line-height:1;color:var(--accent);
+  letter-spacing:-.03em;
+}
+.phase-head h2{font-size:1.375rem;font-weight:720;line-height:1.35}
+.phase-when{font-size:.875rem;font-weight:700;color:var(--muted)}
+.phase-note{font-size:.875rem;color:var(--muted)}
+.phase-count{font-size:.8125rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.gate{
+  margin-top:4px;font-size:.8125rem;padding:8px 10px;border-radius:6px;
+  background:var(--later-soft);color:var(--ink);
+}
+.gate strong{color:var(--later)}
+
+.tasks{list-style:none;margin:0;padding:0;display:grid}
+.task{
+  display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.task:first-child{padding-top:2px}
+.task input{width:18px;height:18px;margin:5px 0 0;accent-color:var(--accent);cursor:pointer}
+.task-body{display:grid;gap:5px;min-width:0}
+.task-title{font-weight:640;font-size:1.0625rem;line-height:1.5;cursor:pointer}
+.tid{
+  font-family:var(--font-mono);font-size:.8125rem;font-weight:600;color:var(--accent);
+  margin-right:6px;font-variant-numeric:tabular-nums;
+}
+.task-detail{font-size:.9375rem;color:var(--muted);max-width:68ch}
+.task-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:2px}
+.pill{
+  font-size:.75rem;font-weight:650;padding:1px 8px;border-radius:999px;white-space:nowrap;
+}
+.pill-block{background:var(--block-soft);color:var(--block)}
+.pill-soon{background:var(--soon-soft);color:var(--soon)}
+.pill-opt{background:var(--opt-soft);color:var(--opt)}
+.pill-later{background:var(--later-soft);color:var(--later)}
+.area{font-size:.8125rem;font-weight:600;color:var(--ink)}
+.src{font-size:.75rem;color:var(--muted)}
+.task.is-done .task-title{text-decoration:line-through;text-decoration-thickness:1px;color:var(--muted)}
+.task.is-done .task-detail{opacity:.7}
+
+/* Guardrails */
+.never{
+  display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:24px;
+  padding-top:22px;border-top:2px solid var(--block);
+}
+.never h2{font-size:1.375rem;font-weight:720;color:var(--block)}
+.never .phase-note{margin-top:6px}
+.never ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.never li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;font-size:.9375rem}
+.never li::before{content:"✕";color:var(--block);font-weight:700;text-align:center}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding-top:18px;display:grid;gap:8px;font-size:.8125rem;color:var(--muted)}
+.foot p{max-width:80ch}
+
+@media (max-width:760px){
+  .toolbar{position:static}
+  .phase,.never{grid-template-columns:minmax(0,1fr);gap:14px}
+  .phase-head{grid-template-columns:auto minmax(0,1fr);column-gap:14px;align-items:baseline}
+  .phase-head > :not(.phase-letter){grid-column:2}
+  .phase-letter{grid-row:1 / span 2;font-size:2.25rem}
+  .copy{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){
+  .bar span{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="masthead">
+  <p class="eyebrow" lang="en">Phalom · Innovative Business Challenge · MSME</p>
+  <h1>ລາຍການວຽກ Phalom</h1>
+  <p class="lead">ວຽກທັງໝົດທີ່ຍັງຕ້ອງເຮັດ: ຈາກເອກະສານຂັ້ນ pitch ໃນປັດຈຸບັນ ຈົນເຖິງມື້ນຳສະເໜີ pitch, ແລະ ວຽກຫຼັງການແຂ່ງຂັນ ຄື ການກວດຄວາມເປັນໄປໄດ້, ການທົດສອບໃນລະບົບຈຳລອງ (sandbox) ແລະ ການທົດລອງຕົວຈິງ. ລວບລວມຈາກ repository ນີ້ ວັນທີ 13 ຕຸລາ 2026.</p>
+  <dl class="facts">
+    <div><dt>ໂຈດ</dt><dd>#10 ຮັບເງິນຕ່າງປະເທດຍຸ້ງຍາກ (Cross-Border Payment ສຳລັບຮ້ານຄ້າ)</dd></div>
+    <div><dt>ສິ່ງທີ່ໂຈດຕ້ອງການ</dt><dd>ວິທີຮັບຊຳລະເງິນຈາກນັກທ່ອງທ່ຽວຕ່າງປະເທດ ທີ່ງ່າຍ, ປອດໄພ ແລະ ເຮັດໄດ້ຈິງ ສຳລັບຮ້ານຄ້າຂະໜາດນ້ອຍ ໂດຍບໍ່ຖືກຫັກຄ່າທຳນຽມສູງ</dd></div>
+    <div><dt>ຂັ້ນປັດຈຸບັນ</dt><dd>ແນວຄິດສຳລັບ pitch. ຍັງບໍ່ມີຂໍ້ຕົກລົງກັບ partner, ໃບອະນຸຍາດ, ໃບສະເໜີລາຄາຄ່າທຳນຽມ ຫຼື ຜົນການທົດລອງ</dd></div>
+  </dl>
+</header>
+
+<div class="toolbar" role="region" aria-label="ຄວາມຄືບໜ້າ ແລະ ຕົວກອງ">
+  <div class="progress-row">
+    <p id="progress-text" class="progress-text">ສຳເລັດ 0 ຈາກ 53 ວຽກ</p>
+    <p id="blocker-text" class="blocker-text">ວຽກທີ່ຕ້ອງເຮັດກ່ອນ pitch ຍັງຄ້າງ 20 ຈາກ 20</p>
+  </div>
+  <div class="bar" aria-hidden="true"><span id="bar-fill"></span></div>
+  <div class="controls">
+    <div class="filters" role="group" aria-label="ສະແດງວຽກ">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">ທັງໝົດ</button>
+      <button type="button" class="filter" data-filter="pitch" aria-pressed="false">ກ່ອນ pitch</button>
+      <button type="button" class="filter" data-filter="block" aria-pressed="false">ຕ້ອງເຮັດກ່ອນ pitch</button>
+      <button type="button" class="filter" data-filter="later" aria-pressed="false">ຫຼັງການແຂ່ງຂັນ</button>
+    </div>
+    <label class="toggle" for="hide-done"><input type="checkbox" id="hide-done"> ເຊື່ອງວຽກທີ່ສຳເລັດແລ້ວ</label>
+    <button type="button" id="copy-open" class="copy">ສຳເນົາວຽກທີ່ຍັງຄ້າງ</button>
+  </div>
+  <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+  <textarea id="copy-fallback" class="copy-fallback" readonly hidden aria-label="ວຽກທີ່ຍັງຄ້າງ ເປັນຂໍ້ຄວາມ"></textarea>
+</div>
+
+<section class="done-box" aria-labelledby="done-h">
+  <h2 id="done-h" class="section-label">ສິ່ງທີ່ມີໃນ repository ແລ້ວ</h2>
+  <ul class="done-list">
+    <li><span><code>01_CODEX_ARCH.md</code> v0.1: ສະຖາປັດຕະຍະກຳລະບົບ, ຟີເຈີ F01–F12, ຂໍ້ພຶ່ງພາ D01–D10</span></li>
+    <li><span><code>02_GEMINI_AUDIT.md</code> v0.1: 46 ຂໍ້ສັງເກດ, ການທົດສອບແບບລາຍຮັບ, ງົບປະມານທົດລອງ</span></li>
+    <li><span><code>03_FINAL_SPEC.md</code> v0.1: 15 ລາຍການທີ່ຕົກລົງແລ້ວ (C01–C15)</span></li>
+    <li><span>Brief ພາສາລາວສຳລັບທີມ v2.0 (HTML)</span></li>
+    <li><span>System flowchart ແບບໂຕ້ຕອບໄດ້ ພ້ອມ 6 ສະຖານະການ</span></li>
+    <li><span>ຮ່າງ pitch deck 12 ສະໄລດ໌</span></li>
+    <li><span>README ສາລະບານໂຄງການ</span></li>
+  </ul>
+</section>
+
+<section class="phase" id="phase-a" aria-labelledby="pa-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">A</p>
+    <h2 id="pa-h">ການຕັດສິນໃຈຂອງທີມ</h2>
+    <p class="phase-when">ກ່ອນ pitch</p>
+    <p class="phase-note">ວຽກເຫຼົ່ານີ້ປົດລັອກການເຮັດ deck. ບັນທຶກທຸກຄຳຕອບໄວ້ໃນ <code>00_CONTEXT.md</code>.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 9</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a1">
+      <div class="task-body">
+        <label for="t-a1" class="task-title"><span class="tid">A1</span>ຢືນຢັນລາຍລະອຽດການແຂ່ງຂັນ</label>
+        <p class="task-detail">ວັນ ແລະ ເວລາ pitch, ກຳນົດສົ່ງຜົນງານ, ຮູບແບບໄຟລ໌, ເວລານຳສະເໜີ, ພາສາ ແລະ ເກນການໃຫ້ຄະແນນ. ຂໍ້ມູນເຫຼົ່ານີ້ຍັງບໍ່ມີໃນ repository, ແລະ ແຜນກຽມຕົວ 7 ມື້ໃນ brief ຕ້ອງປັບວັນທີໃຫ້ກົງກັບມື້ pitch ຕົວຈິງ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a2">
+      <div class="task-body">
+        <label for="t-a2" class="task-title"><span class="tid">A2</span>ຕັດສິນໃຈສະຖານະທາງກົດໝາຍ</label>
+        <p class="task-detail">ຈະນຳສະເໜີເປັນຜູ້ສະໜອງເທັກໂນໂລຊີໃຫ້ທະນາຄານທີ່ມີໃບອະນຸຍາດ 1 ແຫ່ງ (Path A), ຫຼື ເປັນບໍລິສັດຊຳລະເງິນດ້ວຍຕົນເອງ? ຮ່າງ deck ປັດຈຸບັນສົມມຸດວ່າເປັນ Path A.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Audit Q3 · G-REG-01</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a3">
+      <div class="task-body">
+        <label for="t-a3" class="task-title"><span class="tid">A3</span>ເລືອກຕະຫຼາດທົດລອງ ແລະ ກຸ່ມຮ້ານຫຼັກ</label>
+        <p class="task-detail">ຕະຫຼາດກາງຄືນຫຼວງພະບາງ (ຂອງທີ່ລະນຶກ, ເລີ່ມດ້ວຍ Order mode) ຫຼື ແຄມຂອງວຽງຈັນ (Street Food, ເລີ່ມດ້ວຍ Quick mode). ການເລືອກນີ້ກຳນົດໂໝດເລີ່ມຕົ້ນ, ໂຄງສ້າງຄ່າທຳນຽມ ແລະ ເລື່ອງທີ່ໃຊ້ໃນ demo.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Audit Q4</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-a4">
+      <div class="task-body">
+        <label for="t-a4" class="task-title"><span class="tid">A4</span>ເລືອກຮູບແບບ QR ທຳອິດ</label>
+        <p class="task-detail">ຈະໃຫ້ປ້າຍ QR ຄົງທີ່ (Quick mode) ເປັນໂໝດຫຼັກຄຽງຄູ່ກັບ QR ສະເພາະແຕ່ລະການຂາຍ, ຫຼື ໃຫ້ QR ແຕ່ລະການຂາຍເປັນຫຼັກ ແລະ ປ້າຍຄົງທີ່ເປັນທາງສຳຮອງ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">G-UX-02 · 01 §5.3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-a5">
+      <div class="task-body">
+        <label for="t-a5" class="task-title"><span class="tid">A5</span>ຕົກລົງວ່າໃຜຈະຈ່າຍຄ່າບໍລິການ</label>
+        <p class="task-detail">ຈະໃຊ້ແບບລາຍຮັບປະສົມທີ່ audit ແນະນຳ (ທະນາຄານຈ່າຍຕໍ່ຮ້ານທີ່ໃຊ້ງານ, ແພັກເກດສຳລັບຜູ້ດູແລຕະຫຼາດ, Pro tier ແລະ margin ບາງໆ), ຫຼື ໃຫ້ຄ່າທຳນຽມຈາກຮ້ານເປັນລາຍຮັບຫຼັກ. ຕາມຕົວເລກຂອງ audit, ຖ້າເກັບແຕ່ຄ່າທຳນຽມ ຮ້ານ Street Food 1 ຮ້ານ ຈະຂາດທຶນປະມານ 92,000 ກີບ/ເດືອນ ທຽບກັບຕົ້ນທຶນການດູແລ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ທຸລະກິດ</span><span class="src">G-FIN-01 · G-FIN-02</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a6">
+      <div class="task-body">
+        <label for="t-a6" class="task-title"><span class="tid">A6</span>ກຳນົດຕົວຊີ້ວັດຄວາມສຳເລັດ ແລະ ເປົ້າໝາຍເປັນຕົວເລກ</label>
+        <p class="task-detail">ການກັບມາໃຊ້ຊ້ຳ, ເວລາກວດຜົນການຈ່າຍ, ຄວາມເຂົ້າໃຈຄ່າທຳນຽມ, ລາຍການຄ້າງ, ບັນຫາຕໍ່ຈຳນວນການຈ່າຍ ແລະ ຕົ້ນທຶນດູແລຕໍ່ຮ້ານ. Brief ລະບຸວ່າຕ້ອງຕົກລົງເປົ້າໝາຍກ່ອນການທົດລອງໃດໆ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Brief §09</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a7">
+      <div class="task-body">
+        <label for="t-a7" class="task-title"><span class="tid">A7</span>ຢືນຢັນຊື່ທີມ ແລະ ຂໍ້ມູນສະມາຊິກ</label>
+        <p class="task-detail">ຊື່ທີມ; ຊື່-ນາມສະກຸນ, ສາຂາວິຊາ, ຄະນະ ແລະ ມະຫາວິທະຍາໄລ ຂອງແຕ່ລະຄົນ; ຄຳຂວັນ 1 ປະໂຫຍກ. ສະໄລດ໌ທຳອິດຂອງແມ່ແບບ IBC ກຳນົດໃຫ້ມີ, ແລະ deck ຍັງສະແດງ [Member 1–3] ຢູ່.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">ແມ່ແບບ IBC · Audit Q5</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-a8">
+      <div class="task-body">
+        <label for="t-a8" class="task-title"><span class="tid">A8</span>ມອບໝາຍຜູ້ຮັບຜິດຊອບ 4 ບົດບາດ</label>
+        <p class="task-detail">Problem/Research, Product/Design, Business/Partner ແລະ Pitch/Q&amp;A. Brief ກຳນົດບົດບາດໄວ້ແລ້ວ ແຕ່ຍັງບໍ່ມີຊື່ຜູ້ຮັບຜິດຊອບ; ຄົນດຽວຮັບໄດ້ຫຼາຍບົດບາດ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-a9">
+      <div class="task-body">
+        <label for="t-a9" class="task-title"><span class="tid">A9</span>ຂຽນ <code>00_CONTEXT.md</code></label>
+        <p class="task-detail">ບັນທຶກເປົ້າໝາຍ ແລະ ຄຳຕອບຂອງ A1–A8. ເອກະສານສະຖາປັດຕະຍະກຳ, audit ແລະ brief ລ້ວນແຕ່ລະບຸວ່າຍັງບໍ່ມີໄຟລ໌ນີ້, ສະນັ້ນພື້ນຖານຂອງເອກະສານເຫຼົ່ານັ້ນຍັງເປັນການຊົ່ວຄາວ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">01 §1</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-b" aria-labelledby="pb-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">B</p>
+    <h2 id="pb-h">ປິດວົງຈອນ spec</h2>
+    <p class="phase-when">ກ່ອນ pitch</p>
+    <p class="phase-note">ປ່ຽນຂໍ້ສະເໜີຂອງ audit ໃຫ້ເປັນ spec ທີ່ຕົກລົງແລ້ວ, ເພື່ອໃຫ້ deck ເວົ້າສະເພາະສິ່ງທີ່ທີມຕົກລົງກັນແລ້ວ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 9</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b1">
+      <div class="task-body">
+        <label for="t-b1" class="task-title"><span class="tid">B1</span>ຕອບທຸກຂໍ້ສັງເກດຂອງ audit ທີ່ຍັງຄ້າງ</label>
+        <p class="task-detail">ຮັບ, ປັບ ຫຼື ປະຕິເສດແຕ່ລະຂໍ້ ພ້ອມເຫດຜົນ: G-UX-01…10, G-REG-01…08, G-EC-01…22, G-FIN-01…04 ແລະ ຖ້ອຍຄຳ pitch ທີ່ສະເໜີ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">03 §3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b2">
+      <div class="task-body">
+        <label for="t-b2" class="task-title"><span class="tid">B2</span>ຕອບ 2 ຄຳຖາມດ້ານການອອກແບບ</label>
+        <p class="task-detail">Q1: ໄຟສັນຍານ ຂຽວ/ເຫຼືອງ/ແດງ ສຳລັບການມອບເຄື່ອງ ເປັນພຽງມຸມມອງທີ່ຄິດໄລ່ຈາກສະຖານະເດີມ ໂດຍບໍ່ຕ້ອງເພີ່ມສະຖານະໃໝ່ແມ່ນບໍ? Q2: "ໄດ້ຮັບເງິນແຕ່ຍັງບໍ່ຈັບຄູ່ກັບ order" ຄວນເປັນສະຖານະທາງບັນຊີຂອງມັນເອງ ຫຼື ເປັນ flag ໃນ <code>ProviderEvent</code>?</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">Audit §8</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b3">
+      <div class="task-body">
+        <label for="t-b3" class="task-title"><span class="tid">B3</span>ອັບເດດ consensus ledger</label>
+        <p class="task-detail">ຍ້າຍລາຍການທີ່ຮັບແລ້ວເຂົ້າ <code>03_FINAL_SPEC.md</code> ແລະ ຕົກລົງຖ້ອຍຄຳສຸດທ້າຍເລື່ອງຄ່າທຳນຽມ, ຄວາມໄວເງິນເຂົ້າ ແລະ ສຽງແຈ້ງເຕືອນ ທີ່ §2 ຍັງລະບຸວ່າ pending.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">03 §2</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b4">
+      <div class="task-body">
+        <label for="t-b4" class="task-title"><span class="tid">B4</span>ປັບປຸງເອກະສານສະຖາປັດຕະຍະກຳເປັນ v0.2</label>
+        <p class="task-detail">ເພີ່ມຜົນການພິຈາລະນາ audit ໃນ §12, ເພີ່ມກໍລະນີພິເສດທີ່ຮັບແລ້ວໃນຕາຕະລາງຄວາມລົ້ມເຫຼວ §10, ແລະ ເພີ່ມຂໍ້ພຶ່ງພາໃໝ່ (D06 event ຕໍ່ການຈ່າຍແຕ່ລະຄັ້ງສຳລັບ QR ຄົງທີ່, D05 ຄວາມສົນໃຈຂອງທະນາຄານທີ່ຈະຈ່າຍຄ່າບໍລິການ). ລຶບໝາຍເຫດ "ບໍ່ພົບ 02" ອອກ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">01 §12</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-b5">
+      <div class="task-body">
+        <label for="t-b5" class="task-title"><span class="tid">B5</span>ອັບເດດ system flowchart</label>
+        <p class="task-detail">ເອກະສານສະຖາປັດຕະຍະກຳກຳນົດໃຫ້ປັບ HTML ໃນ revision ດຽວກັນກັບການປ່ຽນພຶດຕິກຳ: ໄຟສັນຍານມອບເຄື່ອງ, Quick mode ແລະ ການສະແດງຍອດທີ່ຍັງຂາດເມື່ອຈ່າຍບໍ່ຄົບ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">01 §12 · exports/system_flowchart.html</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b6">
+      <div class="task-body">
+        <label for="t-b6" class="task-title"><span class="tid">B6</span>ປັບປຸງ brief ຂອງທີມ</label>
+        <p class="task-detail">ແທນລາຍການສິ່ງທີ່ຕ້ອງຕັດສິນໃຈໃນ §09 ດ້ວຍຄຳຕອບຈາກໄລຍະ A, ໃສ່ຊື່ຜູ້ຮັບຜິດຊອບແຕ່ລະບົດບາດໃນ §10 ແລະ ອັບເດດສະຖານະຂອງແບບລາຍຮັບ. ເພີ່ມເລກ version ແລະ ບັນທຶກໃນ version log.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">Brief §09–10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-b7">
+      <div class="task-body">
+        <label for="t-b7" class="task-title"><span class="tid">B7</span>ສ້າງຄຳສັບພາສາລາວສຳລັບແອັບຮ້ານຄ້າ</label>
+        <p class="task-detail">ໃຊ້ຄຳລາວເປັນຫຼັກໃນໜ້າຈໍຂອງຮ້ານ, ໃຫ້ກົງກັບຄຳລາວທີ່ທະນາຄານ partner ໃຊ້. ຕັດຄຳສັບອັງກິດ ເຊັ່ນ payout, pending ແລະ credit ອອກຈາກທຸກສິ່ງທີ່ແມ່ຄ້າເຫັນ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">G-UX-10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-b8">
+      <div class="task-body">
+        <label for="t-b8" class="task-title"><span class="tid">B8</span>ໃຫ້ຄົນລາວກວດແກ້ຂໍ້ຄວາມພາສາລາວທັງໝົດ</label>
+        <p class="task-detail">ປ້າຍໄຟສັນຍານ, ປະໂຫຍກສຽງແຈ້ງເຕືອນ ແລະ ຂໍ້ຄວາມລາວໃນສະໄລດ໌ ລ້ວນແຕ່ຖືກໝາຍວ່າເປັນຮ່າງທີ່ລໍຖ້າຄົນລາວກວດ. ລວມທັງໜ້ານີ້ນຳ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">Deck ສະໄລດ໌ 6 · G-UX-01</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ເອກະສານ">
+      <input type="checkbox" id="t-b9">
+      <div class="task-body">
+        <label for="t-b9" class="task-title"><span class="tid">B9</span>ປ່ຽນຊື່ໂຄງການເປັນ Phalom ໃນທຸກເອກະສານ</label>
+        <p class="task-detail">Deck, brief, flowchart ແລະ ເອກະສານ 01–03 ຍັງໃຊ້ຊື່ເກົ່າ "Sabaidee Merchant". ປ່ຽນໃຫ້ເປັນ Phalom ແລະ ກວດປະໂຫຍກທີ່ເຄີຍໃຊ້ທັງຊື່ທີມ ແລະ ຊື່ໂຄງການຄູ່ກັນ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ເອກະສານ</span><span class="src">ຊື່ໃໝ່ຂອງໂຄງການ</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-c" aria-labelledby="pc-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">C</p>
+    <h2 id="pc-h">ຫຼັກຖານ ແລະ ການກວດຂໍ້ເທັດຈິງ</h2>
+    <p class="phase-when">ກ່ອນ pitch</p>
+    <p class="phase-note">ແຍກສິ່ງທີ່ຮູ້ຈິງ ອອກຈາກສິ່ງທີ່ເປັນສົມມຸດຖານ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 7</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຄົ້ນຄວ້າ">
+      <input type="checkbox" id="t-c1">
+      <div class="task-body">
+        <label for="t-c1" class="task-title"><span class="tid">C1</span>ສຳພາດແມ່ຄ້າ 8–12 ຮ້ານ ແລະ ສັງເກດຊ່ວງລູກຄ້າຫຼາຍ 5 ຄັ້ງ</label>
+        <p class="task-detail">ທົດສອບບັນຫາ ແລະ persona: ນັກທ່ອງທ່ຽວຂໍຈ່າຍຜ່ານແອັບບໍ່, ເສຍການຂາຍບໍ່, ຮ້ານໃຊ້ປ້າຍ QR ໃດຢູ່ແລ້ວ, ກວດການຈ່າຍແນວໃດ, ແລະ ມີປະຕິກິລິຍາແນວໃດຕໍ່ຄ່າທຳນຽມ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຄົ້ນຄວ້າ</span><span class="src">Audit §2.1 · Deck ຂັ້ນຕໍ່ໄປ 1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຄົ້ນຄວ້າ">
+      <input type="checkbox" id="t-c2">
+      <div class="task-body">
+        <label for="t-c2" class="task-title"><span class="tid">C2</span>ເກັບຕົວຢ່າງຈິງສຳລັບສະໄລດ໌ບັນຫາ</label>
+        <p class="task-detail">ແມ່ແບບ IBC ຕ້ອງການຂໍ້ມູນສະໜັບສະໜູນ ຫຼື ກໍລະນີຕົວຢ່າງຈາກຜູ້ປະກອບການ. ໃຊ້ຄຳເວົ້າ, ຕົວເລກ ຫຼື ຮູບພາບ (ໂດຍໄດ້ຮັບອະນຸຍາດ) ຈາກ C1, ຫຼື ຂໍ້ມູນຄົ້ນຄວ້າທີ່ລະບຸແຫຼ່ງຊັດເຈນ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຄົ້ນຄວ້າ</span><span class="src">ແມ່ແບບ IBC</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຄົ້ນຄວ້າ">
+      <input type="checkbox" id="t-c3">
+      <div class="task-body">
+        <label for="t-c3" class="task-title"><span class="tid">C3</span>ກວດລາຄາຂອງຄູ່ແຂ່ງຄືນໃໝ່</label>
+        <p class="task-detail">LOCA PAY 3% + 5,000 ກີບ (ໃຜເປັນຜູ້ຈ່າຍ ແລະ ຄອບຄຸມບໍລິການຫຍັງ), ຄ່າທຳນຽມ ແລະ ເວລາເງິນເຂົ້າຂອງ NewPay, ຄ່າທຳນຽມ QR ຮ້ານຄ້າຂອງ BCEL OnePay. ຕອນ rebuild brief ບໍ່ໄດ້ກວດອັດຕາຄືນ, ແລະ ຕົວເລກ 15.5% ໃນ deck ອີງໃສ່ຂໍ້ມູນນີ້.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຄົ້ນຄວ້າ</span><span class="src">Brief §13 · G-FIN-04</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-c4">
+      <div class="task-body">
+        <label for="t-c4" class="task-title"><span class="tid">C4</span>ອ່ານເອກະສານກົດໝາຍສະບັບຕົ້ນ</label>
+        <p class="task-detail">ຂໍ້ຕົກລົງ BOL ເລກທີ 511/BOL (ທຶນຈົດທະບຽນ, ໜ້າທີ່ຂອງຜູ້ໃຫ້ບໍລິການ outsourcing), ຂໍ້ຕົກລົງເລກທີ 11/BOL (ການຕັ້ງລາຄາເປັນເງິນກີບ), ແຈ້ງການ "ໃຊ້ແຕ່ເງິນກີບ" ແລະ ກົດໝາຍວ່າດ້ວຍການປົກປ້ອງຂໍ້ມູນເອເລັກໂຕຣນິກ ມາຈາກບົດສະຫຼຸບຂັ້ນສອງ. Audit ກໍບໍ່ໄດ້ອ່ານແຈ້ງການເລກທີ 05 ຄືນ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ທຸລະກິດ</span><span class="src">Audit §3.1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="ຄົ້ນຄວ້າ">
+      <input type="checkbox" id="t-c5">
+      <div class="task-body">
+        <label for="t-c5" class="task-title"><span class="tid">C5</span>ຢືນຢັນວ່າແອັບນັກທ່ອງທ່ຽວໃດໃຊ້ໄດ້ແທ້ໃນປັດຈຸບັນ</label>
+        <p class="task-detail">ແອັບທະນາຄານໄທ ຜ່ານການເຊື່ອມ QR ໄທ–ລາວ ຢືນຢັນແລ້ວ (ເມສາ 2024). ການເຊື່ອມກັບຫວຽດນາມ, ກຳປູເຈຍ ແລະ UnionPay ເປັນພຽງຂ່າວລາຍງານ. ໂຈດກ່າວເຖິງ WeChat Pay ແລະ Alipay, ສະນັ້ນຕ້ອງກຽມຄຳຕອບທີ່ຊັດເຈນສຳລັບນັກທ່ອງທ່ຽວຈີນ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">ຄົ້ນຄວ້າ</span><span class="src">D03 · ໂຈດ #10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-c6">
+      <div class="task-body">
+        <label for="t-c6" class="task-title"><span class="tid">C6</span>ກວດອັດຕາແລກປ່ຽນເງິນກີບໃນມື້ pitch</label>
+        <p class="task-detail">Audit ໃຊ້ອັດຕາສົມມຸດ 21,500 ກີບ ຕໍ່ 1 USD. ອັບເດດຕົວເລກ USD ໃນສະໄລດ໌ງົບປະມານ ແລະ ແບບລາຍຮັບ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ທຸລະກິດ</span><span class="src">Audit §5</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-c7">
+      <div class="task-body">
+        <label for="t-c7" class="task-title"><span class="tid">C7</span>ກວດງົບປະມານທົດລອງກັບລາຄາທ້ອງຖິ່ນ</label>
+        <p class="task-detail">ເງິນເດືອນນັກພັດທະນາ, ຄ່າຈ້າງພະນັກງານພາກສະໜາມ ແລະ ຄ່າທີ່ປຶກສາກົດໝາຍ ໃນງົບ 6 ເດືອນ 224,365,000 ກີບ ເປັນສົມມຸດຖານ, ບໍ່ແມ່ນໃບສະເໜີລາຄາ.</p>
+        <p class="task-meta"><span class="pill pill-opt">ທາງເລືອກ</span><span class="area">ທຸລະກິດ</span><span class="src">Audit §5.6</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-d" aria-labelledby="pd-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">D</p>
+    <h2 id="pd-h">Pitch deck</h2>
+    <p class="phase-when">ກ່ອນ pitch</p>
+    <p class="phase-note">ປັບ <code>exports/pitch_deck_slide.html</code> ໃຫ້ກົງກັບແມ່ແບບ IBC ແລະ ledger.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 8</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d1">
+      <div class="task-body">
+        <label for="t-d1" class="task-title"><span class="tid">D1</span>ເຮັດສະໄລດ໌ໜ້າປົກໃຫ້ຄົບ</label>
+        <p class="task-detail">ເພີ່ມເລກ ແລະ ຫົວຂໍ້ໂຈດ (#10 Cross-Border Payment ສຳລັບຮ້ານຄ້າ), ຊື່ໂຄງການ Phalom, ຊື່ທີມ, ຂໍ້ມູນສະມາຊິກຈາກ A7 ແລະ ຄຳຂວັນ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">ແມ່ແບບ IBC · Deck ສະໄລດ໌ 1</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d2">
+      <div class="task-body">
+        <label for="t-d2" class="task-title"><span class="tid">D2</span>ເພີ່ມສະໄລດ໌ ຜົນກະທົບ ແລະ ຄວາມຍືນຍົງ</label>
+        <p class="task-detail">ແມ່ແບບກຳນົດໃຫ້ມີ ແຕ່ຮ່າງ 12 ສະໄລດ໌ຍັງບໍ່ມີ. ໃຫ້ກວມເອົາຜົນປະໂຫຍດທາງການເງິນຂອງຮ້ານ (ບໍ່ເສຍລູກຄ້ານັກທ່ອງທ່ຽວ, ຄ່າທຳນຽມຕົວຈິງຕ່ຳລົງ), ຜົນກະທົບທາງສັງຄົມ ແລະ ESG, ແລະ ວິທີຂະຫຍາຍຜົນ (ເພີ່ມປະເທດ, ຮ້ານນ້ອຍພາຍໃນປະເທດ).</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">ແມ່ແບບ IBC</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-d3">
+      <div class="task-body">
+        <label for="t-d3" class="task-title"><span class="tid">D3</span>ສະແດງຊີວິດປະຈຳວັນຂອງແມ່ຄ້າ ກ່ອນ ແລະ ຫຼັງ</label>
+        <p class="task-detail">ແມ່ແບບຕ້ອງການການປຽບທຽບ ກ່ອນ ແລະ ຫຼັງ ໃຊ້ solution. ສະໄລດ໌ user journey ອະທິບາຍຂັ້ນຕອນ ແຕ່ຍັງບໍ່ໄດ້ປຽບທຽບ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">ແມ່ແບບ IBC · Deck ສະໄລດ໌ 7</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d4">
+      <div class="task-body">
+        <label for="t-d4" class="task-title"><span class="tid">D4</span>ໃສ່ຂໍ້ມູນຕິດຕໍ່</label>
+        <p class="task-detail">ແທນ [email], [phone] ແລະ [Facebook / LinkedIn] ໃນສະໄລດ໌ສຸດທ້າຍ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">Deck ສະໄລດ໌ 12</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d5">
+      <div class="task-body">
+        <label for="t-d5" class="task-title"><span class="tid">D5</span>ກວດທຸກຄຳອ້າງໃຫ້ກົງກັບ ledger</label>
+        <p class="task-detail">Deck ນຳສະເໜີຂໍ້ສະເໜີທີ່ຍັງ pending ຄືກັບເປັນແຜນແລ້ວ: ໄຟສັນຍານມອບເຄື່ອງ, Quick mode, ແບບລາຍຮັບປະສົມ ແລະ "ເງິນກີບເຂົ້າບັນຊີທະນາຄານຂອງທ່ານເອງ". ຫຼັງ B3, ຮັກສາສິ່ງທີ່ຕົກລົງແລ້ວ ແລະ ໝາຍສ່ວນທີ່ເຫຼືອວ່າເປັນຂໍ້ສະເໜີ. ຢ່າໃຊ້ຄຳວ່າ "ທັນທີ", "ຖືກທີ່ສຸດໃນລາວ" ຫຼື "ຄ່າທຳນຽມ 0%".</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">README · Audit §5.7</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຄົ້ນຄວ້າ">
+      <input type="checkbox" id="t-d6">
+      <div class="task-body">
+        <label for="t-d6" class="task-title"><span class="tid">D6</span>ໃສ່ຫຼັກຖານຈາກການສຳພາດໃນສະໄລດ໌</label>
+        <p class="task-detail">ເພີ່ມຂໍ້ຄົ້ນພົບທີ່ໜັກແໜ້ນທີ່ສຸດຈາກ C1–C2 ໃນສະໄລດ໌ບັນຫາ ແລະ ສາເຫດຮາກເຫງົ້າ ທີ່ຍັງໝາຍວ່າເປັນສົມມຸດຖານ.</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຄົ້ນຄວ້າ</span><span class="src">Deck ສະໄລດ໌ 2–3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="opt" data-when="pitch" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-d7">
+      <div class="task-body">
+        <label for="t-d7" class="task-title"><span class="tid">D7</span>ສ້າງ mockup ພາສາລາວທີ່ກົດໄດ້ສຳລັບ demo</label>
+        <p class="task-detail">ກົດຜ່ານ Order mode, ໜ້າຈໍສີຂຽວ ແລະ ສະຫຼຸບປະຈຳວັນ ໂດຍໃຊ້ wireframe ໃນສະໄລດ໌ 6. ເປົ້າໝາຍມື້ 3–4 ໃນ brief ແມ່ນ mockup ທີ່ຄົນໃໝ່ເບິ່ງແລ້ວອະທິບາຍຄືນໄດ້. QR ໃນ mockup ຕ້ອງຈ່າຍບໍ່ໄດ້ ແລະ ໝາຍວ່າເປັນຕົວຢ່າງ.</p>
+        <p class="task-meta"><span class="pill pill-opt">ທາງເລືອກ</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">Brief §10 · Deck ສະໄລດ໌ 6</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-d8">
+      <div class="task-body">
+        <label for="t-d8" class="task-title"><span class="tid">D8</span>Export ແລະ ທົດສອບໄຟລ໌ສຸດທ້າຍ</label>
+        <p class="task-detail">Export deck ເປັນ PDF ຫຼື ຮູບແບບທີ່ກຳນົດ, ທົດສອບກັບອຸປະກອນຢູ່ສະຖານທີ່ແຂ່ງ, ແລະ ເກັບສຳເນົາ offline ຂອງ deck, flowchart ແລະ brief.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-e" aria-labelledby="pe-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">E</p>
+    <h2 id="pe-h">ການຊ້ອມ</h2>
+    <p class="phase-when">2 ມື້ສຸດທ້າຍກ່ອນ pitch</p>
+    <p class="phase-note">ຄຳຕອບສັ້ນ, ຜູ້ເວົ້າຊັດເຈນ, ບໍ່ອ້າງເກີນຫຼັກຖານ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 3</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-e1">
+      <div class="task-body">
+        <label for="t-e1" class="task-title"><span class="tid">E1</span>ຂຽນບົດເວົ້າ ແລະ ຈັບເວລາ</label>
+        <p class="task-detail">ເລີ່ມຈາກເລື່ອງ 1–2 ນາທີ ໃນ brief §11 ແລະ ປັບ deck ທັງໝົດໃຫ້ພໍດີກັບເວລາທີ່ຢືນຢັນໃນ A1.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">Brief §11</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="block" data-when="pitch" data-area="Pitch">
+      <input type="checkbox" id="t-e2">
+      <div class="task-body">
+        <label for="t-e2" class="task-title"><span class="tid">E2</span>ຈຳລອງການຖາມຂອງກຳມະການ</label>
+        <p class="task-detail">ໃຫ້ສະມາຊິກຄົນໜຶ່ງຖາມແບບກຳມະການ ກ່ຽວກັບ partner, ຄ່າທຳນຽມ, ກົດລະບຽບ, WeChat Pay ແລະ Alipay, ແລະ ສິ່ງທີ່ພິສູດແລ້ວ ທຽບກັບສິ່ງທີ່ເປັນສົມມຸດຖານ.</p>
+        <p class="task-meta"><span class="pill pill-block">ຕ້ອງເຮັດກ່ອນ pitch</span><span class="area">Pitch</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="soon" data-when="pitch" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-e3">
+      <div class="task-body">
+        <label for="t-e3" class="task-title"><span class="tid">E3</span>ໃຫ້ທຸກຄົນຕອບ 5 ຄຳຖາມຫຼັກໄດ້</label>
+        <p class="task-detail">ເຮົາແກ້ບັນຫາໃຫ້ໃຜ? ນັກທ່ອງທ່ຽວໃຊ້ແອັບໃດ? ເງິນເຂົ້າບັນຊີໃຜ ແລະ ຜ່ານໃຜ? ໃຜຈ່າຍໃຫ້ທຸລະກິດເຮົາ? ອັນໃດຕົກລົງແລ້ວ ແລະ ອັນໃດຍັງຕ້ອງພິສູດ?</p>
+        <p class="task-meta"><span class="pill pill-soon">ກ່ອນ pitch</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Brief §10</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-f" aria-labelledby="pf-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">F</p>
+    <h2 id="pf-h">ກວດຄວາມເປັນໄປໄດ້</h2>
+    <p class="phase-when">ເດືອນ 1–3 ຫຼັງການແຂ່ງຂັນ</p>
+    <p class="gate"><strong>ດ່ານ 1:</strong> ຂອບເຂດງານຂອງ partner ແລະ ການຈັດປະເພດທາງກົດໝາຍ ເປັນລາຍລັກອັກສອນ (D01–D03). ບໍ່ຜ່ານດ່ານ, ບໍ່ສ້າງລະບົບ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 5</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-f1">
+      <div class="task-body">
+        <label for="t-f1" class="task-title"><span class="tid">F1</span>ລົມກັບ BCEL ຄັ້ງທຳອິດ</label>
+        <p class="task-detail">ຖາມກ່ຽວກັບຂອບເຂດຜະລິດຕະພັນ, ຄ່າທຳນຽມ, ຂໍ້ມູນການຈ່າຍ ແລະ ເງິນເຂົ້າບັນຊີ, ຄ່າບໍລິການຕໍ່ຮ້ານທີ່ໃຊ້ງານ, ແລະ event ຕໍ່ການຈ່າຍແຕ່ລະຄັ້ງສຳລັບ QR ຄົງທີ່.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ທຸລະກິດ</span><span class="src">Deck ຂັ້ນຕໍ່ໄປ 2 · D05 · D06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-f2">
+      <div class="task-body">
+        <label for="t-f2" class="task-title"><span class="tid">F2</span>ຂໍການຈັດປະເພດທາງກົດໝາຍເປັນລາຍລັກອັກສອນ</label>
+        <p class="task-detail">ບົດບາດທີ່ startup ໄດ້ຮັບອະນຸຍາດ ແລະ ການອະນຸມັດທີ່ຕ້ອງມີ ເປັນລາຍລັກອັກສອນ. ໃບອະນຸຍາດຂອງທະນາຄານບໍ່ຄອບຄຸມ startup.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ທຸລະກິດ</span><span class="src">D01 · Deck ຂັ້ນຕໍ່ໄປ 3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-f3">
+      <div class="task-body">
+        <label for="t-f3" class="task-title"><span class="tid">F3</span>ແກ້ຂໍ້ພຶ່ງພາ partner D02–D10</label>
+        <p class="task-detail">ຂອບເຂດໃບອະນຸຍາດຂອງ partner, ຕາຕະລາງແອັບ ແລະ QR ທີ່ຮອງຮັບ, ການລົງທະບຽນຮ້ານ ແລະ ການໃຊ້ຂໍ້ມູນທະນາຄານຄືນ (ລວມທັງລະດັບສຳລັບຮ້ານນ້ອຍທີ່ບໍ່ໄດ້ຈົດທະບຽນ), ໃບສະເໜີລາຄາຄ່າທຳນຽມຄົບຖ້ວນ, ການເຫັນຂໍ້ມູນເງິນເຂົ້າ, ເວລາເງິນເຂົ້າ ແລະ ວັນພັກ, ການຄືນເງິນ ແລະ ຂໍ້ຂັດແຍ່ງ, ໜ້າທີ່ດ້ານ hosting ແລະ ເຫດການຜິດປົກກະຕິ. ການຈ່າຍລ່ວງໜ້າ (D08) ຕ້ອງບໍ່ຢູ່ໃນ pitch.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ທຸລະກິດ</span><span class="src">01 §8 · G-UX-06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-f4">
+      <div class="task-body">
+        <label for="t-f4" class="task-title"><span class="tid">F4</span>ເລືອກເທັກໂນໂລຊີ</label>
+        <p class="task-detail">ລໍຖ້າຈົນກວ່າຈະຮູ້ຄວາມຕ້ອງການ SDK/API ຂອງ partner, ທັກສະຂອງທີມ, ກົດລະບຽບ hosting ແລະ ຂໍ້ຈຳກັດຂອງອຸປະກອນ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">01 §3</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-f5">
+      <div class="task-body">
+        <label for="t-f5" class="task-title"><span class="tid">F5</span>ທົດສອບການໃຊ້ງານຕົ້ນແບບກັບແມ່ຄ້າ</label>
+        <p class="task-detail">ທົດສອບເປັນພາສາລາວ. ເປົ້າໝາຍ: ແມ່ຄ້າຢ່າງໜ້ອຍ 90% ຕັດສິນໃຈມອບເຄື່ອງຖືກຕ້ອງໃນຄັ້ງທຳອິດ ໃນທັງ 6 ສະຖານະການ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">G-UX-01 · Deck ຂັ້ນຕໍ່ໄປ 4</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-g" aria-labelledby="pg-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">G</p>
+    <h2 id="pg-h">ສ້າງລະບົບໃນ sandbox</h2>
+    <p class="phase-when">ເດືອນ 3–6</p>
+    <p class="gate"><strong>ດ່ານ 2:</strong> sandbox ຜ່ານການທົດສອບລາຍການຊ້ຳ, timeout, offline ແລະ ຄ່າທຳນຽມບໍ່ກົງ, ແລະ ໄດ້ຮັບອະນຸມັດໃຫ້ທົດລອງ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 8</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g1">
+      <div class="task-body">
+        <label for="t-g1" class="task-title"><span class="tid">G1</span>ສ້າງແກນລະບົບການຈ່າຍ</label>
+        <p class="task-detail">Order ທີ່ສົ່ງຊ້ຳແລ້ວບໍ່ເກີດລາຍການຊ້ຳ (idempotent), ໃບສະເໜີຄ່າທຳນຽມທີ່ມີ version, payment intent 1 ລາຍການທີ່ບັນທຶກກ່ອນສະແດງ QR, event inbox ທີ່ກວດຢືນຢັນແຫຼ່ງທີ່ມາ, state reducer ພ້ອມ audit journal, transactional outbox ແລະ reconciliation worker. ເກັບຈຳນວນເງິນເປັນຕົວເລກຖ້ວນ (integer) ໃນໜ່ວຍກີບ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">01 §5.2, §7 · C04 · C09 · C10</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-g2">
+      <div class="task-body">
+        <label for="t-g2" class="task-title"><span class="tid">G2</span>ສ້າງແອັບຮ້ານຄ້າ</label>
+        <p class="task-detail">ແປ້ນພິມລາວທີ່ມີປຸ່ມ 000 ແລະ ອ່ານລາຄາອອກສຽງ, ໜ້າຂາຍທີ່ມີໄຟສັນຍານມອບເຄື່ອງ, 3 ລາຍການຮັບເງິນລ່າສຸດ, ສະຫຼຸບປະຈຳວັນ, ໂໝດພະນັກງານຂາຍ ແລະ ໂໝດເຈົ້າຂອງ, ການຄືນເງິນແບບດິຈິຕອນໂດຍເຈົ້າຂອງເທົ່ານັ້ນ, ແລະ ສະຖານະ offline ທີ່ບອກຕາມຄວາມຈິງ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">F01–F09 · G-UX-03, 05, 07, 08</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-g3">
+      <div class="task-body">
+        <label for="t-g3" class="task-title"><span class="tid">G3</span>ບັນທຶກສຽງພາສາລາວ</label>
+        <p class="task-detail">ສ່ວນສຽງຕົວເລກໂດຍຄົນລາວ, ສຽງ chime ປະມານ 8 ແບບໃຫ້ຮ້ານເລືອກ, ແລະ ລະຫັດ 2 ຕົວເລກທີ່ກົງກັບໜ້າຈໍສີຂຽວ. ບໍ່ປະກາດ event ເກົ່າຄືກັບເປັນລາຍການໃໝ່.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">G-UX-04 · C08</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g4">
+      <div class="task-body">
+        <label for="t-g4" class="task-title"><span class="tid">G4</span>ເຮັດໃຫ້ໃຊ້ໄດ້ໝັ້ນຄົງໃນ Android ລາຄາຖືກ</label>
+        <p class="task-detail">ຄູ່ມືປິດ battery optimization ຕາມຍີ່ຫໍ້ໂທລະສັບ, ສັນຍານ "ກຳລັງຟັງ" ທີ່ເຫັນໄດ້ເທິງໜ້າຈໍ, ການດຶງຂໍ້ມູນຕໍ່ເນື່ອງເມື່ອເປີດໜ້າຂາຍ ແລະ ການກວດລະດັບສຽງກ່ອນເລີ່ມຂາຍແຕ່ລະມື້.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">G-UX-05 · G-EC-10, 11</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g5">
+      <div class="task-body">
+        <label for="t-g5" class="task-title"><span class="tid">G5</span>ເພີ່ມຈຸດເຊື່ອມສຳລັບການຕິດຕາມ AML</label>
+        <p class="task-detail">ໝາຍລາຍການທີ່ມີຍອດຜິດປົກກະຕິ, ຄວາມຖີ່ສູງ, ການຈ່າຍຕອນກາງຄືນ, ປະເພດຮ້ານບໍ່ກົງ ແລະ ຜູ້ຈ່າຍຊ້ຳ, ແລະ ສົ່ງອອກຂໍ້ມູນໃຫ້ຂະບວນການລາຍງານຂອງທະນາຄານ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">G-REG-03</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g6">
+      <div class="task-body">
+        <label for="t-g6" class="task-title"><span class="tid">G6</span>ຕິດຕັ້ງມາດຕະການຄວາມປອດໄພ</label>
+        <p class="task-detail">ແຍກຂໍ້ມູນແຕ່ລະຮ້ານ, ຂອບເຂດສິດຕາມບົດບາດ, ການຢືນຢັນເພີ່ມເມື່ອປ່ຽນບັນຊີ, ການເຂົ້າລະຫັດ, ການປ່ຽນ secret ເປັນໄລຍະ, ໃບຮັບເງິນທີ່ຈຳກັດສິດ ແລະ ຍົກເລີກໄດ້, ການສຳຮອງ ແລະ ກູ້ຄືນຂໍ້ມູນ, ແລະ ຄູ່ມືຮັບມືເຫດການ ແລະ ຂໍ້ມູນຮົ່ວໄຫຼ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">01 §11.1 · G-REG-07</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g7">
+      <div class="task-body">
+        <label for="t-g7" class="task-title"><span class="tid">G7</span>ຜ່ານການກວດການເຊື່ອມຕໍ່ລະບົບ</label>
+        <p class="task-detail">ແອັບທີ່ຮອງຮັບ ກັບ QR ທີ່ອະນຸມັດ, ແຍກການຢືນຢັນການຈ່າຍອອກຈາກເງິນເຂົ້າບັນຊີ, callback ຊ້ຳ ແລະ ສະລັບລຳດັບ, timeout ທີ່ມີຜົນສຳເລັດມາຊ້າ, ການເຊື່ອມຕໍ່ຄືນຫຼັງ offline, ໃບສະເໜີຄ່າທຳນຽມ ທຽບກັບຍອດຫັກຕົວຈິງ, ເງິນເຂົ້າບາງສ່ວນ ແລະ ການຄືນເງິນ, ການພະຍາຍາມເຂົ້າເຖິງໂດຍບໍ່ມີສິດ, ແລະ ການກູ້ຄືນຫຼັງລະບົບຂັດຂ້ອງ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">01 §11.2</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ວິສະວະກຳ">
+      <input type="checkbox" id="t-g8">
+      <div class="task-body">
+        <label for="t-g8" class="task-title"><span class="tid">G8</span>ຮອງຮັບກໍລະນີພິເສດໃນຕະຫຼາດ</label>
+        <p class="task-detail">ການສັບປ່ຽນປ້າຍ QR, ສຽງປອມ, ຈ່າຍຂາດ ແລະ ຈ່າຍເກີນ, ຈ່າຍຫຼາຍທາງ, ຈ່າຍຜິດຮ້ານ, ເກີນວົງເງິນກາງການຂາຍ, ເງິນເຂົ້າຊ້າຍ້ອນວັນພັກ, ໂມງໂທລະສັບຜິດ, ແລະ ກໍລະນີ G-EC ອື່ນໆທີ່ຮັບໃນ B1.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ວິສະວະກຳ</span><span class="src">G-EC-01…22</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="phase" id="phase-h" aria-labelledby="ph-h">
+  <div class="phase-head">
+    <p class="phase-letter" aria-hidden="true">H</p>
+    <h2 id="ph-h">ທົດລອງແບບຄວບຄຸມ</h2>
+    <p class="phase-when">ເດືອນ 6–12</p>
+    <p class="gate"><strong>ດ່ານ 3:</strong> ວັດການກັບມາໃຊ້ໃນ 30 ມື້, ຕົ້ນທຶນການດູແລ ແລະ ເວລາເງິນເຂົ້າ, ແລ້ວຕັດສິນໃຈວ່າຈະຂະຫຍາຍ ຫຼື ຢຸດ.</p>
+    <p class="phase-count">ສຳເລັດ 0 ຈາກ 4</p>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-pri="later" data-when="later" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-h1">
+      <div class="task-body">
+        <label for="t-h1" class="task-title"><span class="tid">H1</span>ກະກຽມຕະຫຼາດ</label>
+        <p class="task-detail">ປ້າຍ QR ກັນການແກະ 60 ອັນ ທີ່ມີຂໍ້ຄວາມ "ສະແກນດ້ວຍແອັບທະນາຄານຂອງທ່ານ" ເປັນພາສາອັງກິດ, ໄທ, ຫວຽດນາມ ແລະ ຈີນ, ລະບຸສະເພາະແອັບທີ່ຜ່ານການຮັບຮອງ. ຕັ້ງໂຕະຊ່ວຍເຫຼືອ ແລະ ເລີກໃຊ້ QR ສ່ວນຕົວ ແລະ QR ຕ່າງປະເທດ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ທຸລະກິດ</span><span class="src">G-UX-09 · G-REG-04 · G-EC-01</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ທຸລະກິດ">
+      <input type="checkbox" id="t-h2">
+      <div class="task-body">
+        <label for="t-h2" class="task-title"><span class="tid">H2</span>ລົງທະບຽນແມ່ຄ້າ 30–50 ຮ້ານ</label>
+        <p class="task-detail">ມີພະນັກງານຊ່ວຍຢູ່ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ. ແມ່ຄ້າພິມລະຫັດຕ່າງໆໃນໂທລະສັບຂອງຕົນເອງ, ແລະ ເປີດຮັບຈ່າຍໄດ້ຫຼັງ partner ກວດອະນຸມັດເທົ່ານັ້ນ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ທຸລະກິດ</span><span class="src">F03 · G-UX-06</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ຜະລິດຕະພັນ">
+      <input type="checkbox" id="t-h3">
+      <div class="task-body">
+        <label for="t-h3" class="task-title"><span class="tid">H3</span>ທົດລອງກຸ່ມທີ່ໃຊ້ soundbox</label>
+        <p class="task-detail">ອຸປະກອນ 10 ເຄື່ອງ ທີ່ຈັບຄູ່ ແລະ ຍົກເລີກໄດ້, ປຽບທຽບກັບຮ້ານທີ່ໃຊ້ແຕ່ໂທລະສັບ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ຜະລິດຕະພັນ</span><span class="src">F10 · G-UX-04</span></p>
+      </div>
+    </li>
+    <li class="task" data-pri="later" data-when="later" data-area="ຜູ້ນຳທີມ">
+      <input type="checkbox" id="t-h4">
+      <div class="task-body">
+        <label for="t-h4" class="task-title"><span class="tid">H4</span>ວັດຜົນ ແລະ ຕັດສິນໃຈ</label>
+        <p class="task-detail">ຕິດຕາມຕົວຊີ້ວັດຈາກ A6, ຕົ້ນທຶນການດູແລຕົວຈິງ ແລະ ເວລາເງິນເຂົ້າຕົວຈິງ, ແລ້ວຕັດສິນໃຈວ່າຈະຂະຫຍາຍ ຫຼື ຢຸດ.</p>
+        <p class="task-meta"><span class="pill pill-later">ຫຼັງການແຂ່ງຂັນ</span><span class="area">ຜູ້ນຳທີມ</span><span class="src">Deck ດ່ານ 3</span></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="never" aria-labelledby="never-h">
+  <div>
+    <h2 id="never-h">ຫ້າມເຮັດ</h2>
+    <p class="phase-note">ຂໍ້ຈຳກັດທີ່ຕົກລົງກັນແລ້ວ. ໃຊ້ກັບ demo ນຳ.</p>
+  </div>
+  <ul>
+    <li><span>ໃຊ້ການແຈ້ງເຕືອນ push ຂອງແອັບທະນາຄານເປັນ "ຂໍ້ມູນເງິນເຂົ້າ", ເຖິງແມ່ນຈະເປັນພຽງ demo. <span class="src">G-RJ-01</span></span></li>
+    <li><span>ເກັບຄ່າບໍລິການຈາກນັກທ່ອງທ່ຽວ ຫຼື ບວກກຳໄລອັດຕາແລກປ່ຽນໂດຍ startup. <span class="src">G-RJ-02 · C12</span></span></li>
+    <li><span>ຖືເງິນຂອງລູກຄ້າ, ມີຍອດເງິນຄົງເຫຼືອ, ແລກປ່ຽນເງິນຕາ ຫຼື ເຊື່ອມກັບ LAPNet ໂດຍກົງ. <span class="src">C01 · C03</span></span></li>
+    <li><span>ຂໍ ຫຼື ເກັບ PIN ຫຼື OTP ຂອງທະນາຄານ, ລວມທັງຕອນພະນັກງານຊ່ວຍລົງທະບຽນ. <span class="src">01 §5.1</span></span></li>
+    <li><span>ຖືເອົາຮູບໜ້າຈໍ ຫຼື ສຽງ ເປັນຫຼັກຖານການຈ່າຍ. <span class="src">C07</span></span></li>
+    <li><span>ສັນຍາເງິນເຂົ້າທັນທີ ຫຼື ການຈ່າຍລ່ວງໜ້າ ໂດຍບໍ່ມີຜູ້ສະໜອງທຶນທີ່ໄດ້ຮັບອະນຸຍາດ ແລະ ມີສັນຍາ. <span class="src">C13 · G-REG-05</span></span></li>
+    <li><span>ສະແດງລາຄາອ້າງອີງເປັນບາດ, ໂດລາ ຫຼື ຢວນ ໃນເອກະສານຂອງຮ້ານ ເວັ້ນເສຍແຕ່ທີ່ປຶກສາກົດໝາຍຢືນຢັນວ່າເຮັດໄດ້. <span class="src">G-REG-02</span></span></li>
+  </ul>
+</section>
+
+<footer class="foot">
+  <p>ສ້າງຈາກ <code>01_CODEX_ARCH.md</code> v0.1, <code>02_GEMINI_AUDIT.md</code> v0.1, <code>03_FINAL_SPEC.md</code> v0.1, brief ຂອງທີມ v2.0, ຮ່າງ pitch deck, <code>IBC.pdf</code> ແລະ ລາຍການໂຈດ MSME (ໂຈດທີ 10).</p>
+  <p>ເຄື່ອງໝາຍ ✓ ບັນທຶກໄວ້ໃນ browser ນີ້ເທົ່ານັ້ນ. ເປັນຂໍ້ສະເໜີຂັ້ນ pitch: ບໍ່ໄດ້ໝາຍຄວາມວ່າມີຂໍ້ຕົກລົງກັບ partner, ໃບອະນຸຍາດ, ໃບສະເໜີລາຄາ, ການອະນຸມັດທາງກົດໝາຍ ຫຼື ຜົນການທົດລອງ.</p>
+  <p>v2.0 · 13 ຕຸລາ 2026</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var KEY = 'phalom-task-list-v1';
+  var ticks = {};
+  try { ticks = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { ticks = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(ticks)); } catch (e) {} }
+
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.task input[type="checkbox"]'));
+  var phases = Array.prototype.slice.call(document.querySelectorAll('.phase'));
+  var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter'));
+  var hideDone = document.getElementById('hide-done');
+  var filter = 'all';
+
+  function matches(li) {
+    if (filter === 'pitch') return li.dataset.when === 'pitch';
+    if (filter === 'later') return li.dataset.when === 'later';
+    if (filter === 'block') return li.dataset.pri === 'block';
+    return true;
+  }
+
+  function render() {
+    var done = 0, blockers = 0, blockersOpen = 0;
+    boxes.forEach(function (box) {
+      var li = box.closest('.task');
+      li.classList.toggle('is-done', box.checked);
+      if (box.checked) done++;
+      if (li.dataset.pri === 'block') { blockers++; if (!box.checked) blockersOpen++; }
+      li.hidden = !matches(li) || (hideDone.checked && box.checked);
+    });
+    phases.forEach(function (section) {
+      var items = section.querySelectorAll('.task');
+      var shown = 0, finished = 0;
+      items.forEach(function (li) {
+        if (!li.hidden) shown++;
+        if (li.classList.contains('is-done')) finished++;
+      });
+      section.hidden = shown === 0;
+      section.querySelector('.phase-count').textContent = 'ສຳເລັດ ' + finished + ' ຈາກ ' + items.length;
+    });
+    document.getElementById('progress-text').textContent = 'ສຳເລັດ ' + done + ' ຈາກ ' + boxes.length + ' ວຽກ';
+    document.getElementById('blocker-text').textContent = blockersOpen === 0
+      ? 'ວຽກທີ່ຕ້ອງເຮັດກ່ອນ pitch ສຳເລັດທັງໝົດ ' + blockers + ' ວຽກ'
+      : 'ວຽກທີ່ຕ້ອງເຮັດກ່ອນ pitch ຍັງຄ້າງ ' + blockersOpen + ' ຈາກ ' + blockers;
+    document.getElementById('bar-fill').style.width = (boxes.length ? (done / boxes.length) * 100 : 0) + '%';
+  }
+
+  boxes.forEach(function (box) {
+    box.checked = !!ticks[box.id];
+    box.addEventListener('change', function () {
+      if (box.checked) ticks[box.id] = 1; else delete ticks[box.id];
+      save();
+      render();
+    });
+  });
+
+  filterButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filter = btn.dataset.filter;
+      filterButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      render();
+    });
+  });
+  hideDone.addEventListener('change', render);
+
+  function openTasksText() {
+    var lines = ['Phalom: ວຽກທີ່ຍັງຄ້າງ'];
+    var count = 0;
+    phases.forEach(function (section) {
+      var rows = [];
+      section.querySelectorAll('.task').forEach(function (li) {
+        var box = li.querySelector('input');
+        if (box.checked || !matches(li)) return;
+        var id = li.querySelector('.tid').textContent.trim();
+        var title = li.querySelector('.task-title').textContent.trim().slice(id.length).trim();
+        var pri = li.querySelector('.pill').textContent.trim();
+        rows.push('• ' + id + ' ' + title + ' (' + li.dataset.area + ', ' + pri + ')');
+      });
+      if (rows.length) {
+        var letter = section.querySelector('.phase-letter').textContent.trim();
+        var name = section.querySelector('h2').textContent.trim();
+        lines.push('', letter + '. ' + name);
+        lines = lines.concat(rows);
+        count += rows.length;
+      }
+    });
+    return { text: lines.join('\n'), count: count };
+  }
+
+  var status = document.getElementById('copy-status');
+  var fallback = document.getElementById('copy-fallback');
+  document.getElementById('copy-open').addEventListener('click', function () {
+    var out = openTasksText();
+    function showFallback() {
+      fallback.value = out.text;
+      fallback.hidden = false;
+      fallback.focus();
+      fallback.select();
+      status.textContent = 'ບໍ່ສາມາດສຳເນົາອັດຕະໂນມັດໃນບ່ອນນີ້. ໄດ້ເລືອກ ' + out.count + ' ວຽກທີ່ຍັງຄ້າງໄວ້ດ້ານລຸ່ມແລ້ວ; ສຳເນົາດ້ວຍແປ້ນພິມ ຫຼື ກົດຄ້າງ.';
+    }
+    fallback.hidden = true;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out.text).then(function () {
+        status.textContent = 'ສຳເນົາ ' + out.count + ' ວຽກແລ້ວ.';
+      }, showFallback);
+    } else {
+      showFallback();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
+<!--
+# Version Log
+2026-10-13 03:32:02 +07:00 (Asia/Bangkok) | v1.0 | Claude | Created the project task list (English): 57 tasks in nine phases, 19 pitch blockers, plus the agreed never-do list.
+2026-10-13 (Asia/Bangkok) | v1.1 | Claude | Removed the Discord workspace phase; 52 tasks in eight phases.
+2026-10-13 (Asia/Bangkok) | v2.0 | Claude | Translated the page to Lao and renamed the project to Phalom (file renamed from sabaidee-merchant-task-list.html). Added B9 to carry the new name into the other documents: 53 tasks, 20 pitch blockers. Lao text needs native-speaker review (B8).
+-->
