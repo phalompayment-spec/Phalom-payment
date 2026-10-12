@@ -2,6 +2,14 @@
 
 Project files for the Phalom team’s Innovative Business Challenge proposal. Start with the **Lao team overview** at [`output/html/sabaidee-merchant-brief.html`](output/html/sabaidee-merchant-brief.html). It explains the customer problem, who uses each app, one payment from start to finish, open decisions, and the proposed pitch plan.
 
+## Research (2026-10, ພາສາລາວ)
+
+The team is renaming the project to **Phalom**. New research lives in [`research/`](research/):
+
+- [`research/00_plan.md`](research/00_plan.md): ແຜນ 5 ມື້ ກ່ອນ pitch ວັນທີ 17 ຕຸລາ.
+- [`research/01_desk_research.md`](research/01_desk_research.md): ຜົນຄົ້ນຄວ້າອອນລາຍ ພ້ອມແຫຼ່ງອ້າງອີງ.
+- [`research/02_interview_scripts.md`](research/02_interview_scripts.md): ຄຳຖາມສຳພາດຮ້ານຄ້າ ແລະ ນັກທ່ອງທ່ຽວ.
+
 ## Project documents
 
 - [`01_CODEX_ARCH.md`](01_CODEX_ARCH.md): proposed technical architecture, features, money states, partner requirements, and failure handling.
