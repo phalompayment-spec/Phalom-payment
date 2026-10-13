@@ -1,0 +1,1175 @@
+<title>Phalom Prototype</title>
+<style>
+/*__FONTS__*/
+/* Layout: phone frame beside a presenter demo panel; on phones the app fills the screen and the panel becomes a bottom sheet */
+:root{
+  --st-bg:#e6dece; --st-ink:#3b2a20; --st-muted:#6b5646; --st-panel:#f6f0e4; --st-line:#d6cab4;
+  --st-accent:#2f6a55; --st-on-accent:#f6f0e4; --st-clay:#b5653c; --st-bezel:#2a1e17; --st-chip:#ebe2d1; --st-scrim:rgba(20,14,10,.45);
+  --f-head:'Noto Serif Lao','Noto Sans Lao','Phalom Sym',Georgia,serif;
+  --f-body:'Noto Sans Lao','Phalom Sym',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-num:'Fraunces','Phalom Sym','Noto Sans Lao',Georgia,serif;
+  /* motion tokens: enter decelerates, exit accelerates and is shorter */
+  --ease-out:cubic-bezier(0,0,.2,1); --ease-in:cubic-bezier(.4,0,1,1); --spring:cubic-bezier(.34,1.4,.64,1);
+  --t-press:120ms; --t-enter:280ms; --t-exit:200ms;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --st-bg:#0f1512; --st-ink:#efe7d8; --st-muted:#a3ada1; --st-panel:#19231e; --st-line:#2e3b34;
+    --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; --st-scrim:rgba(0,0,0,.55); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --st-bg:#0f1512; --st-ink:#efe7d8; --st-muted:#a3ada1; --st-panel:#19231e; --st-line:#2e3b34;
+  --st-accent:#7cc0a2; --st-on-accent:#10201a; --st-clay:#e09a6e; --st-bezel:#050806; --st-chip:#222e28; --st-scrim:rgba(0,0,0,.55); color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--st-bg);color:var(--st-ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--st-clay);outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+/* ---------- stage ---------- */
+.stage{--lg-ink:var(--st-accent);--lg-acc:var(--st-clay);min-height:100%;box-sizing:border-box;padding-block:20px 28px;padding-inline:16px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.stage-head{width:100%;max-width:770px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-name{font-family:var(--f-num);font-weight:800;font-size:26px;letter-spacing:-.5px;line-height:1}
+.brand-sub{color:var(--st-muted);font-size:14px}
+.sim-chip{font-size:13px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--st-clay);color:var(--st-ink)}
+.stage-main{display:flex;gap:clamp(16px,3vw,36px);align-items:flex-start;justify-content:center;width:100%}
+.device{width:min(390px,100%);height:820px;flex:none;border:10px solid var(--st-bezel);border-radius:52px;overflow:hidden;background:var(--st-bezel);box-shadow:0 30px 60px -32px rgba(40,25,10,.5)}
+
+/* ---------- demo panel ---------- */
+.panel{width:min(340px,100%);flex:none;box-sizing:border-box;background:var(--st-panel);border:1px solid var(--st-line);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:16px;max-height:840px;overflow:auto}
+.panel h2{font-family:var(--f-head);font-size:19px;margin:0;line-height:1.3}
+.phead{display:flex;align-items:flex-start;gap:8px}
+.pnote{margin:2px 0 0;font-size:13px;color:var(--st-muted)}
+.pgroup{display:flex;flex-direction:column;gap:8px}
+.plabel{font-size:12px;font-weight:600;color:var(--st-muted);letter-spacing:.02em}
+.pbtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pbtns.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pbtn{min-height:44px;border-radius:12px;border:1px solid var(--st-line);background:var(--st-chip);color:var(--st-ink);font-size:13px;line-height:1.3;cursor:pointer;padding:6px 8px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.pbtn[aria-pressed="true"]{background:var(--st-accent);color:var(--st-on-accent);border-color:transparent;font-weight:700}
+.pbtn.wide{width:100%}
+.pd{width:9px;height:9px;border-radius:50%;flex:none}
+.pd.ok{background:#3f8f6f}.pd.wait{background:#c08a1e}.pd.bad{background:#b8513a}
+.ptarget{font-size:12px;color:var(--st-muted)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:10px;align-items:baseline;font-size:13px;padding:6px 8px;border-radius:10px;color:var(--st-muted)}
+.steps li::before{content:counter(s);font-family:var(--f-num);font-weight:600;width:16px;flex:none;text-align:right}
+.steps li.done{color:var(--st-ink)}
+.steps li.done::before{content:"✓";color:var(--st-accent)}
+.steps li.now{background:var(--st-chip);color:var(--st-ink);font-weight:600}
+.closepanel{display:none;margin-left:auto;min-height:44px;border:1px solid var(--st-line);background:var(--st-chip);border-radius:999px;padding:0 16px;cursor:pointer;font-size:13px}
+.scrim{display:none}
+
+/* ---------- app tokens: light is the default; dark comes only from the in-app setting ---------- */
+.app{
+  --a-bg:#f6f0e4; --a-surface:#ebe2d1; --a-card:#fbf7ee; --a-ink:#3b2a20; --a-muted:#6b5646; --a-faint:#76665a; --a-line:#ddd2bf; --a-track:#9a8670;
+  --a-primary:#2f6a55; --a-on-primary:#f6f0e4; --a-clay:#b5653c;
+  --a-ok:#2f6a55; --a-ok-bg:#dceadf; --a-wait:#835509; --a-wait-dot:#c08a1e; --a-wait-bg:#f3e4c3;
+  --a-bad:#a3402a; --a-bad-bg:#f2dbd2; --a-off:#56606a; --a-off-bg:#e2e0da;
+  --a-band-ok:#2f6a55; --a-band-wait:#8a5d12; --a-band-bad:#a3402a; --a-band-off:#56606a; --a-band-ink:#f8f3ea;
+  --a-sim-bg:#3b2a20; --a-sim-ink:#f6f0e4; --a-toast-bg:#3b2a20; --a-toast-ink:#f6f0e4; --a-scrim:rgba(24,16,10,.55);
+  --lg-ink:var(--a-primary); --lg-acc:var(--a-clay);
+  height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--a-bg);color:var(--a-ink);font-family:var(--f-body);color-scheme:light;container-type:inline-size
+}
+.app[data-mode="dark"]{
+  --a-bg:#16201b; --a-surface:#212d27; --a-card:#1b2621; --a-ink:#f1e9da; --a-muted:#a9b2a6; --a-faint:#7f8a82; --a-line:#2e3b34; --a-track:#6b7a70;
+  --a-primary:#7cc0a2; --a-on-primary:#10201a; --a-clay:#e09a6e;
+  --a-ok:#7cc0a2; --a-ok-bg:#1e3a2f; --a-wait:#e8bd66; --a-wait-dot:#e3b45a; --a-wait-bg:#3a321d;
+  --a-bad:#ef9580; --a-bad-bg:#3d2620; --a-off:#c0c7cd; --a-off-bg:#2a312e;
+  --a-band-ok:#2a5544; --a-band-wait:#6b5420; --a-band-bad:#7a3324; --a-band-off:#3c4550; --a-band-ink:#f1e9da;
+  --a-sim-bg:#000000; --a-sim-ink:#e8bd66; --a-toast-bg:#f1e9da; --a-toast-ink:#16201b; --a-scrim:rgba(0,0,0,.62);
+  color-scheme:dark
+}
+.app button:focus-visible,.app summary:focus-visible{outline-color:var(--a-clay)}
+.view{flex:1;min-height:0;display:flex;flex-direction:column}
+.simbar{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;background:var(--a-sim-bg);color:var(--a-sim-ink);flex:none}
+.simbar .sp{flex:1}
+.simbar .netoff{padding:1px 8px;border-radius:999px;background:var(--a-band-off);color:var(--a-band-ink)}
+.demo-btn{display:none;min-height:44px;margin-block:-8px;border:0;background:transparent;padding:0 2px;cursor:pointer}
+.demo-btn span{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 10px;font-size:12px}
+.scr{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:14px clamp(14px,4.6cqi,20px) 18px;gap:12px;
+  transition:opacity var(--t-enter) var(--ease-out),transform var(--t-enter) var(--ease-out)}
+.scr.enter{opacity:0;transform:translateY(10px)}
+.scr.flush{padding:0;gap:0}
+.scr h1{font-family:var(--f-head);font-size:22px;font-weight:700;margin:0;line-height:1.3}
+.grow{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.grow b{font-weight:600;font-size:15px}
+.grow small,.muted{color:var(--a-muted);font-size:12.5px}
+.fine{margin:0;font-size:12px;color:var(--a-muted);display:flex;gap:6px;align-items:center;line-height:1.45}
+.fine.center{justify-content:center;text-align:center}
+.fine svg{flex:none}
+.tag{font-size:11px;padding:0 7px;border-radius:999px;border:1px solid var(--a-line);color:var(--a-muted);white-space:nowrap}
+
+/* ---------- shared press feedback: transform + opacity only, 120ms ---------- */
+.key,.btn,.row,.routechip,.tab,.iconbtn,.fbtn,.seg button,button.srow,.pbtn,.mini,.link,.demo-btn,.closepanel,.switch,.faq summary,.totchip{
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform var(--t-press) cubic-bezier(.2,.8,.2,1),opacity var(--t-press) var(--ease-out)}
+.key:active,.btn:active:not(:disabled),.row:active,.routechip:active,.tab:active,.iconbtn:active,.fbtn:active,.seg button:active,button.srow:active,.pbtn:active,.mini:active,.link:active,.demo-btn:active,.closepanel:active,.switch:active,.faq summary:active,.totchip:active{
+  transform:scale(var(--press,.95));opacity:.82}
+.row,.routechip,button.srow,.btn,.totchip,.faq summary{--press:.98}
+.key{--press:.92}
+@media (hover:hover){
+  .pbtn:hover{border-color:var(--st-accent)}
+  .iconbtn:hover,.key:hover{background:var(--a-line)}
+  .row:hover:not(.sel),.routechip:hover,.totchip:hover{border-color:var(--a-line)}
+  button.srow:hover .grow{color:var(--a-primary)}
+  .fbtn:hover:not([aria-pressed="true"]){background:var(--a-line)}
+  .btn.ghost:hover{background:var(--a-surface)}
+  .mini:hover span{background:var(--a-surface)}
+}
+
+/* header */
+.hdr{display:flex;align-items:center;gap:10px}
+.shop{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.shop b{font-family:var(--f-head);font-size:17px;font-weight:700}
+.shop small{font-size:12px;color:var(--a-muted);display:flex;align-items:center;gap:5px}
+.shop .dot{width:8px;height:8px}
+.totchip{min-height:44px;border:1.5px solid transparent;border-radius:14px;background:var(--a-surface);padding:4px 12px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;cursor:pointer;line-height:1.2;color:var(--a-ink)}
+.totchip small{font-size:11.5px;color:var(--a-muted)}
+.totchip b{font-weight:800;font-size:16px}
+.topbar{display:flex;align-items:center;gap:6px;min-height:44px}
+.topbar h1{flex:1;font-size:18px;text-align:center}
+.topbar .spacer{width:44px;flex:none}
+.iconbtn{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--a-ink)}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 11px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--a-ok-bg);color:var(--a-ok)}
+.pill.wait{background:var(--a-wait-bg);color:var(--a-wait)}
+.pill.bad{background:var(--a-bad-bg);color:var(--a-bad)}
+.pill.off{background:var(--a-off-bg);color:var(--a-off)}
+.pill.inv{background:var(--a-band-ink);color:#3b2a20}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.dot.ok{background:var(--a-ok)}.dot.wait{background:var(--a-wait-dot)}.dot.bad{background:var(--a-bad)}.dot.off{background:var(--a-off)}
+
+/* sell */
+.routechip{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:18px;background:var(--a-surface);border:1.5px solid transparent;text-align:left;cursor:pointer;width:100%;color:var(--a-ink)}
+.routechip .chev,.srow .chev{color:var(--a-faint);display:flex}
+.rbadge{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-weight:800;font-size:12px;letter-spacing:.04em;background:var(--a-bg);color:var(--a-primary);border:1.5px solid currentColor}
+.rbadge.wait{color:var(--a-wait)}.rbadge.off{color:var(--a-off)}
+.amtbox{display:flex;flex-direction:column;gap:2px;padding:2px 2px 0}
+.lbl-row{display:flex;justify-content:space-between;align-items:center;min-height:22px}
+.lbl{font-size:13px;color:var(--a-muted)}
+.link{min-height:44px;min-width:44px;margin:-11px -8px -11px 0;border:0;background:none;color:var(--a-primary);font-size:13px;font-weight:700;cursor:pointer;padding:0 8px}
+.amt{font-family:var(--f-num);font-weight:800;font-size:clamp(40px,13.5cqi,54px);line-height:1.08;letter-spacing:-1px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.amt .cur{font-size:.46em;color:var(--a-clay);letter-spacing:0}
+.amt.mid{font-size:clamp(32px,10cqi,40px)}
+.words{font-size:14px;color:var(--a-ink);min-height:21px}
+.words.empty{color:var(--a-muted)}
+.warn{font-size:13px;font-weight:600;color:var(--a-bad)}
+.netline{font-size:13px;color:var(--a-primary);display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+.wave{display:block;width:100%;height:14px;color:var(--a-primary);flex:none}
+.keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:auto}
+.key{height:52px;border:0;border-radius:26px;background:var(--a-surface);color:var(--a-ink);font-family:var(--f-num);font-size:23px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn{min-height:54px;border:0;border-radius:27px;background:var(--a-primary);color:var(--a-on-primary);font-family:var(--f-head);font-size:17px;font-weight:700;cursor:pointer;width:100%;flex:none;padding:0 16px}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--a-primary);border:1.5px solid var(--a-primary)}
+
+/* check */
+.sub{margin:-4px 0 0;font-size:14px;color:var(--a-muted)}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 14px;border-radius:20px;background:var(--a-surface);border:2px solid transparent;width:100%;text-align:left;cursor:pointer;color:var(--a-ink)}
+.row.sel{border-color:var(--a-primary)}
+.row .time{font-size:13px;color:var(--a-muted);width:40px;flex:none}
+.row .amtcell{font-weight:600;font-size:15px}
+.row .strike{text-decoration:line-through;color:var(--a-muted)}
+.verdict{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:20px}
+.verdict.ok{background:var(--a-ok-bg);color:var(--a-ok)}
+.verdict.wait{background:var(--a-wait-bg);color:var(--a-wait)}
+.verdict.off{background:var(--a-off-bg);color:var(--a-off)}
+.verdict svg{flex:none}
+.verdict b{font-family:var(--f-head);font-size:18px;display:block;line-height:1.3}
+.verdict p{margin:2px 0 0;font-size:14px;color:var(--a-ink)}
+.verdict .phrase{font-size:15px;font-weight:600;margin-top:6px}
+
+/* sign */
+.signcard{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:22px 18px;border-radius:28px;background:var(--a-card);border:1.5px solid var(--a-line)}
+.signcard h2{font-family:var(--f-num);font-weight:800;font-size:clamp(26px,9cqi,34px);line-height:1.1;margin:4px 0 0;letter-spacing:-.5px}
+.signcard .lo{font-family:var(--f-head);font-size:19px;margin:0}
+.signlist{list-style:none;margin:6px 0;padding:0;width:100%;display:flex;flex-direction:column;gap:8px;text-align:left}
+.signlist li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:16px;background:var(--a-surface);font-size:15px}
+.signlist li .mk{flex:none;display:flex}
+.signlist li .tx{flex:1;min-width:0}
+.signlist li small{color:var(--a-muted)}
+.signlist .ok{color:var(--a-ok)}.signlist .wait{color:var(--a-wait)}.signlist .off{color:var(--a-off)}
+.signfoot{font-size:13px;color:var(--a-muted);margin:0}
+.signshop{margin-top:auto;font-size:14px;line-height:1.5}
+
+/* qr */
+.qr-amt{display:flex;flex-direction:column;align-items:center}
+.qr-amt small{color:var(--a-muted);font-size:13px}
+.qrcard{align-self:center;padding:14px 14px 10px;border-radius:26px;background:#ffffff;border:1px solid var(--a-line);display:flex;flex-direction:column;align-items:center;gap:6px}
+.qrsvg{width:clamp(180px,60cqi,224px);height:auto;aspect-ratio:1;display:block}
+.qr-name{font-family:system-ui,sans-serif;font-size:11.5px;letter-spacing:.06em;color:#2a1e17}
+.accepts{display:flex;flex-direction:column;align-items:center;gap:6px}
+.accepts small{color:var(--a-muted);font-size:12.5px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.chip{font-size:12.5px;padding:3px 11px;border-radius:999px;background:var(--a-surface)}
+.waitline{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:var(--a-wait)}
+.waitline.off{color:var(--a-off)}
+.pulse{width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+
+/* result (pending, failed, unknown) */
+.band{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:30px 20px 8px;color:var(--a-band-ink);background:var(--bc)}
+.band.ok,.bandwave.ok{--bc:var(--a-band-ok)}
+.band.wait,.bandwave.wait{--bc:var(--a-band-wait)}
+.band.bad,.bandwave.bad{--bc:var(--a-band-bad)}
+.band.off,.bandwave.off{--bc:var(--a-band-off)}
+.bandwave{display:block;width:100%;height:20px;color:var(--bc);flex:none}
+.bicon{width:78px;height:78px;border-radius:50%;background:var(--a-band-ink);color:var(--bc);display:flex;align-items:center;justify-content:center;
+  transition:transform 420ms var(--spring) 60ms,opacity 200ms var(--ease-out) 60ms}
+.enter .bicon{transform:scale(.5);opacity:0}
+.band h2{font-family:var(--f-head);font-size:27px;margin:2px 0 0;line-height:1.3}
+.band .amt{color:var(--a-band-ink)}
+.band .amt .cur{color:var(--a-band-ink);opacity:.8}
+.rbody{display:flex;flex-direction:column;gap:12px;padding:6px 18px 18px;flex:1}
+.advice{margin:0;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.5}
+.advice.wait{background:var(--a-wait-bg);color:var(--a-wait)}
+.advice.bad{background:var(--a-bad-bg);color:var(--a-bad)}
+.advice.off{background:var(--a-off-bg);color:var(--a-off)}
+.kvs{display:flex;flex-direction:column}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--a-line);font-size:14px}
+.kv span:first-child{color:var(--a-muted)}
+.kv .num{font-weight:600}
+.actions{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+
+/* history */
+.htop{display:flex;justify-content:space-between;align-items:baseline}
+.htop span{font-size:13px;color:var(--a-muted)}
+.sum{display:flex;flex-direction:column;gap:2px}
+.sum small{font-size:13px;color:var(--a-muted)}
+.sumrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--a-muted)}
+.sumrow b{color:var(--a-ink);font-weight:600}
+.settle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.settle div{padding:10px 12px;border-radius:16px;display:flex;flex-direction:column;line-height:1.3}
+.settle small{font-size:12px}
+.settle b{font-size:17px;font-weight:700}
+.settle .ok{background:var(--a-ok-bg);color:var(--a-ok)}
+.settle .wait{background:var(--a-wait-bg);color:var(--a-wait)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{min-height:44px;border:0;border-radius:999px;padding:0 14px;font-size:13px;background:var(--a-surface);color:var(--a-ink);cursor:pointer}
+.fbtn[aria-pressed="true"]{background:var(--a-primary);color:var(--a-on-primary);font-weight:700}
+
+/* settings */
+.shopcard{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:20px;background:var(--a-surface)}
+.shopcard .grow b{font-family:var(--f-head);font-size:16px}
+.group{display:flex;flex-direction:column;gap:8px}
+.glabel{font-size:12.5px;font-weight:600;color:var(--a-muted)}
+.hint{font-size:12px;color:var(--a-muted)}
+.seg{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:4px;padding:4px;border-radius:999px;background:var(--a-surface);isolation:isolate}
+.seg-thumb{position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc((100% - 8px - (var(--n) - 1) * 4px) / var(--n));border-radius:999px;background:var(--a-primary);
+  transform:translateX(calc(var(--i) * (100% + 4px)));transition:transform 220ms var(--spring)}
+.seg button{position:relative;z-index:1;min-height:44px;border:0;border-radius:999px;background:transparent;color:var(--a-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 6px}
+.seg button::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--a-primary);opacity:0;transition:opacity 150ms var(--ease-out);display:none}
+.seg button[aria-pressed="true"]{color:var(--a-on-primary);font-weight:700}
+.list{display:flex;flex-direction:column}
+.srow{display:flex;align-items:center;gap:10px;min-height:48px;padding:4px 2px;border-bottom:1px solid var(--a-line);font-size:15px;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;color:var(--a-ink);box-sizing:border-box}
+button.srow{cursor:pointer}
+.srow .lead{color:var(--a-primary);display:flex}
+.srow .grow{font-size:15px}
+.switch{position:relative;width:52px;height:44px;flex:none;border:0;background:transparent;padding:0;cursor:pointer}
+.switch::before{content:"";position:absolute;left:2px;right:2px;top:8px;height:28px;border-radius:999px;background:var(--a-track)}
+.switch[aria-checked="true"]::before{background:var(--a-primary)}
+.switch::after{content:"";position:absolute;top:11px;left:5px;width:22px;height:22px;border-radius:50%;background:var(--a-bg);box-shadow:0 1px 2px rgba(0,0,0,.25);
+  transform:translateX(0);transition:transform 150ms var(--spring)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+.card{padding:14px;border-radius:18px;background:var(--a-surface);display:flex;flex-direction:column;gap:6px}
+.card b{font-family:var(--f-head);font-size:16px}
+.card p{margin:0;font-size:14px;line-height:1.55}
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;font-weight:600}
+.flow span{padding:3px 10px;border-radius:999px;background:var(--a-bg)}
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--a-line);font-size:14px}
+.checklist li svg{color:var(--a-ok);flex:none;margin-top:2px}
+.faq{display:flex;flex-direction:column;gap:8px}
+.faq details{border-radius:16px;background:var(--a-surface)}
+.faq summary{min-height:44px;display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px;list-style:none;border-radius:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary svg{flex:none;margin-left:auto;color:var(--a-muted);transition:transform 200ms var(--ease-out)}
+.faq details[open] summary svg{transform:rotate(90deg)}
+.faq p{margin:0;padding:0 14px 12px;font-size:14px}
+
+/* market */
+.mk-top{display:flex;align-items:center;gap:6px}
+.mk-top small{font-size:12.5px;color:var(--a-clay);font-weight:600}
+.mk-top h1{font-size:19px}
+.bar{height:10px;border-radius:999px;background:var(--a-surface);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--a-primary);border-radius:999px}
+.stats2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stats2 div{padding:12px;border-radius:16px;background:var(--a-surface);display:flex;flex-direction:column}
+.stats2 small{font-size:12.5px;color:var(--a-muted)}
+.stats2 b{font-size:22px;font-weight:800}
+.share{display:flex;flex-direction:column;gap:7px}
+.share div{display:grid;grid-template-columns:76px minmax(0,1fr) 40px;gap:8px;align-items:center;font-size:13px}
+.share .bar{height:8px}
+.share .pct{text-align:right;font-weight:600}
+.helprow{display:flex;align-items:center;gap:10px;padding:8px 6px 8px 12px;border-radius:16px;background:var(--a-surface)}
+.mini{min-height:44px;margin-block:-4px;border:0;background:transparent;padding:0;cursor:pointer;color:var(--a-primary);flex:none}
+.mini span{display:inline-block;border:1.5px solid currentColor;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;white-space:nowrap}
+
+/* tab bar */
+.tabbar{display:flex;border-top:1px solid var(--a-line);background:var(--a-bg);flex:none}
+.tab{flex:1;min-height:60px;border:0;background:none;color:var(--a-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;cursor:pointer}
+.tab[aria-current="page"]{color:var(--a-primary);font-weight:700}
+
+/* toast: persistent node, enter 280ms decelerate, exit 200ms accelerate */
+.toast{position:absolute;left:14px;right:14px;bottom:74px;z-index:20;padding:12px 14px;border-radius:16px;background:var(--a-toast-bg);color:var(--a-toast-ink);font-size:14px;line-height:1.45;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px -12px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity var(--t-exit) var(--ease-in),transform var(--t-exit) var(--ease-in)}
+.toast.show{opacity:1;transform:none;transition:opacity var(--t-enter) var(--ease-out),transform 300ms var(--spring)}
+.toast svg{flex:none}
+
+/* modal layer: scrim fades, sheet rises; enter slower than exit */
+.modal{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:12px;background:var(--a-scrim);
+  opacity:0;pointer-events:none;transition:opacity var(--t-exit) var(--ease-in)}
+.modal.show{opacity:1;pointer-events:auto;transition:opacity var(--t-enter) var(--ease-out)}
+.sheet{transform:translateY(36px);transition:transform var(--t-exit) var(--ease-in),opacity var(--t-exit) var(--ease-in)}
+.modal.show .sheet{transform:none;transition:transform 300ms var(--spring),opacity var(--t-enter) var(--ease-out)}
+.modal.show .sheet.enter{opacity:0}
+.modal .card{background:var(--a-bg)}
+.modal .card .pill{align-self:flex-start}
+.fakeshot{align-self:center;width:210px;border-radius:20px;padding:16px;background:#ffffff;color:#1f2a37;text-align:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 18px 40px -16px rgba(0,0,0,.6);
+  transform:translateY(24px) rotate(-3deg);transition:transform var(--t-exit) var(--ease-in)}
+.modal.show .fakeshot{transform:rotate(-3deg);transition:transform 320ms var(--spring)}
+.fakeshot .fk-ic{width:46px;height:46px;border-radius:50%;margin:0 auto 6px;background:#16a34a;color:#ffffff;display:flex;align-items:center;justify-content:center}
+.fakeshot b{display:block;font-size:15px}
+.fakeshot .fk-amt{font-size:22px;font-weight:800;margin-top:2px}
+.fakeshot small{color:#4b5563;font-size:11px}
+.fk-label{align-self:center;font-size:12px;color:#f6f0e4;margin-top:4px;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.55)}
+
+/* payment slip: a bank-style receipt the vendor can trust and show */
+.slip{max-height:100%;overflow-y:auto;box-sizing:border-box;border-radius:26px;background:var(--a-card);color:var(--a-ink);display:flex;flex-direction:column;box-shadow:0 24px 50px -20px rgba(0,0,0,.55)}
+.slip-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:16px 18px 6px}
+.okmark{width:56px;height:56px;border-radius:50%;background:var(--a-ok);color:var(--a-on-primary);display:flex;align-items:center;justify-content:center;
+  transform:scale(.4);opacity:0;transition:transform 150ms var(--ease-in),opacity 150ms var(--ease-in)}
+.modal.show .okmark{transform:none;opacity:1;transition:transform 520ms var(--spring) 90ms,opacity 200ms var(--ease-out) 90ms}
+.slip-head h2{font-family:var(--f-head);font-size:20px;margin:4px 0 2px;line-height:1.3}
+.slip-head .amt{font-size:clamp(32px,10.5cqi,42px)}
+.slip-words{font-size:13px;color:var(--a-muted)}
+.codebox{margin:6px 16px 0;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:16px;background:var(--a-ok-bg)}
+.codebox .cnum{font-family:var(--f-num);font-weight:800;font-size:28px;line-height:1;color:var(--a-ok);letter-spacing:2px}
+.codebox span{font-size:12px;line-height:1.45}
+.codebox small{display:block;font-weight:700;color:var(--a-ok);font-size:12.5px}
+.tear{position:relative;height:0;margin:10px 0 2px;border-top:2px dashed var(--a-line)}
+.slip-kv{margin:0;padding:0 18px;display:flex;flex-direction:column}
+.slip-kv div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--a-line);font-size:13px}
+.slip-kv div:last-child{border-bottom:0}
+.slip-kv dt{color:var(--a-muted);flex:none}
+.slip-kv dd{margin:0;text-align:right;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.slip-kv dd small{display:block;font-weight:400;color:var(--a-muted);font-size:12px}
+.slip-kv .net dd{color:var(--a-ok);font-size:15px}
+.slip-foot{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 18px 2px;font-size:12px;color:var(--a-muted);text-align:center}
+.slip-actions{display:flex;flex-direction:column;gap:8px;padding:8px 14px 14px}
+.slip .btn{min-height:50px}
+
+/* phones: app fills the screen; demo panel becomes a bottom sheet */
+@media (max-width: 899px){
+  .stage{padding-block:0;padding-inline:0;gap:0;height:100%}
+  .stage-head{display:none}
+  .stage-main{flex:1;min-height:0;height:100%}
+  .device{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
+  .demo-btn{display:inline-block}
+  .simbar{min-height:44px;box-sizing:border-box;padding-block:0}
+  .closepanel{display:inline-flex;align-items:center}
+  .panel{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:82%;z-index:60;border-radius:22px 22px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    transform:translateY(100%);opacity:0;pointer-events:none;
+    transition:transform var(--t-exit) var(--ease-in),opacity var(--t-exit) var(--ease-in)}
+  .panel.open{transform:none;opacity:1;pointer-events:auto;transition:transform 300ms cubic-bezier(.2,.9,.3,1),opacity var(--t-enter) var(--ease-out)}
+  .scrim{display:block;position:fixed;inset:0;z-index:55;background:var(--st-scrim);opacity:0;pointer-events:none;transition:opacity var(--t-exit) var(--ease-in)}
+  .scrim.open{opacity:1;pointer-events:auto;transition:opacity var(--t-enter) var(--ease-out)}
+}
+
+/* motion preference: keep the sliding thumb only when motion is welcome */
+@media (prefers-reduced-motion: no-preference){
+  .seg button::before{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  /* no spatial movement: everything crossfades with opacity */
+  .seg-thumb{display:none}
+  .seg button::before{display:block}
+  .seg button[aria-pressed="true"]::before{opacity:1}
+  .scr.enter,.sheet,.modal.show .sheet,.toast,.toast.show,.fakeshot,.modal.show .fakeshot,.okmark,.modal.show .okmark,.enter .bicon,.panel,.panel.open{transform:none}
+  .fakeshot,.modal.show .fakeshot{transform:rotate(-3deg)}
+  .key:active,.btn:active:not(:disabled),.row:active,.routechip:active,.tab:active,.iconbtn:active,.fbtn:active,.seg button:active,button.srow:active,.pbtn:active,.mini:active,.link:active,.demo-btn:active,.closepanel:active,.switch:active,.faq summary:active,.totchip:active{transform:none}
+  .switch::after,.faq summary svg{transition:none}
+  .pulse{animation:none}
+}
+</style>
+
+<div class="stage">
+  <header class="stage-head">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 120 120" aria-hidden="true"><rect x="39" y="23" width="42" height="42" rx="6" fill="none" stroke="var(--lg-ink)" stroke-width="14"></rect><rect x="32" y="40" width="14" height="66" rx="5" fill="var(--lg-ink)"></rect><rect x="53" y="37" width="14" height="14" rx="2.5" fill="var(--lg-ink)"></rect><rect x="58" y="80" width="12" height="12" rx="2.5" fill="var(--lg-ink)"></rect><rect x="76" y="80" width="12" height="12" rx="2.5" fill="var(--lg-acc)"></rect><rect x="58" y="94" width="12" height="12" rx="2.5" fill="var(--lg-ink)"></rect></svg>
+      <div>
+        <div class="brand-name">phalom</div>
+        <div class="brand-sub">ຕົ້ນແບບແອັບຮັບເງິນນັກທ່ອງທ່ຽວ ສຳລັບແມ່ຄ້າ</div>
+      </div>
+    </div>
+    <span class="sim-chip">ຈຳລອງ · ບໍ່ເຊື່ອມທະນາຄານ · ບໍ່ມີເງິນຈິງ</span>
+  </header>
+  <main class="stage-main">
+    <div class="device">
+      <div class="app" id="app" data-mode="light">
+        <div class="view" id="view"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="modal" id="modal" inert></div>
+      </div>
+    </div>
+    <aside class="panel" id="panel" aria-label="ແຜງສາທິດ"></aside>
+  </main>
+</div>
+<div class="scrim" id="scrim" data-act="demo-close"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- data ---------- */
+const SHOP = { name: 'ຮ້ານ ແມ່ຄຳ', en: 'Mae Kham shop', stall: 'B-12', market: 'ຕະຫຼາດມືດ ຫຼວງພະບາງ', marketEn: 'Luang Prabang Night Market', qrName: 'PHALOM * MAE KHAM · B-12', acct: '•••• 4821' };
+const FEE_RATE = 0.005;          // example rate only
+const WARN_AT = 5000000;         // unusually high price for a street stall
+const MAX_DIGITS = 9;
+const ROUTES = [
+  { id: 'la', code: 'LA', name: 'ລາວ', app: 'ແອັບທະນາຄານລາວ', en: 'Lao bank apps (LAO QR)', appEn: 'Lao bank app', st: 'on', lang: 'lo', phrase: 'ສະແກນຈ່າຍດ້ວຍແອັບທະນາຄານລາວໄດ້' },
+  { id: 'th', code: 'TH', name: 'ໄທ', app: 'ແອັບທະນາຄານໄທ', en: 'Thai bank apps', appEn: 'Thai bank app', native: 'แอปธนาคารไทย', st: 'on', lang: 'th', phrase: 'สแกนจ่ายด้วยแอปธนาคารไทยได้' },
+  { id: 'vn', code: 'VN', name: 'ຫວຽດນາມ', app: 'ແອັບທະນາຄານຫວຽດນາມ', en: 'Vietnamese bank apps', appEn: 'Vietnamese bank app', native: 'Ngân hàng Việt Nam', st: 'on', lang: 'vi', phrase: 'Quét mã để thanh toán bằng ứng dụng ngân hàng Việt Nam' },
+  { id: 'kh', code: 'KH', name: 'ກຳປູເຈຍ', app: 'ແອັບທະນາຄານກຳປູເຈຍ', en: 'Cambodian bank apps', appEn: 'Cambodian bank app', st: 'on', lang: 'en', phrase: 'Scan to pay with your Cambodian banking app' },
+  { id: 'cn', code: 'CN', name: 'ຈີນ (UnionPay)', app: 'ແອັບ UnionPay', en: 'UnionPay (China)', appEn: 'UnionPay app', native: '银联', st: 'pending', lang: 'zh', phrase: '银联扫码支付 · 即将开通' },
+  { id: 'xx', code: '··', name: 'ປະເທດອື່ນ / ບັດ', app: 'ແອັບ ຫຼື ບັດອື່ນ', en: 'Cards and other apps', appEn: 'Other app', st: 'off', lang: 'en', phrase: 'Not available yet. Please pay in cash (Lao Kip).' },
+];
+const ST = {
+  ok:   { cls: 'ok',   title: 'ສຳເລັດ',       label: 'ສຳເລັດ',      act: 'ມອບເຄື່ອງໄດ້',       icon: 'check' },
+  pend: { cls: 'wait', title: 'ລໍຖ້າ',        label: 'ລໍຖ້າ',       act: 'ຢ່າເພີ່ງມອບເຄື່ອງ',  icon: 'hourglass',
+          advice: 'ທະນາຄານຍັງບໍ່ຢືນຢັນ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍໃໝ່. ແອັບຈະແຈ້ງທັນທີເມື່ອມີຜົນ.' },
+  unk:  { cls: 'off',  title: 'ຍັງບໍ່ຮູ້ຜົນ',  label: 'ຍັງບໍ່ຮູ້ຜົນ', act: 'ຢ່າເພີ່ງມອບເຄື່ອງ',  icon: 'wifioff',
+          advice: 'ໂທລະສັບຂາດເນັດ. ລາຍການນີ້ຈະອັບເດດເອງເມື່ອເນັດກັບມາ. ຢ່າໃຫ້ລູກຄ້າຈ່າຍໃໝ່.' },
+  fail: { cls: 'bad',  title: 'ບໍ່ສຳເລັດ',     label: 'ບໍ່ສຳເລັດ',    act: 'ບໍ່ໄດ້ຮັບເງິນ',       icon: 'x',
+          advice: 'ຮ້ານບໍ່ໄດ້ຮັບເງິນລາຍການນີ້. ໃຫ້ລູກຄ້າລອງຈ່າຍໃໝ່ ຫຼື ຈ່າຍເງິນສົດ.' },
+};
+const KEYS = ['1','2','3','4','5','6','7','8','9','000','0','del'];
+const MONTHS = ['ມ.ກ.','ກ.ພ.','ມ.ນ.','ມ.ສ.','ພ.ພ.','ມິ.ຖ.','ກ.ລ.','ສ.ຫ.','ກ.ຍ.','ຕ.ລ.','ພ.ຈ.','ທ.ວ.'];
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TABS = ['sell', 'history', 'settings'];
+
+function sampleTxns() {
+  return [
+    { ref: 'PH-1045', t: '19:35', amt: 25000,  route: 'kh', st: 'ok',   code: '19', bankRef: 'BK2610121935018', settled: false, sample: true },
+    { ref: 'PH-1044', t: '19:21', amt: 120000, route: 'th', st: 'ok',   code: '72', bankRef: 'BK2610121921407', settled: true,  sample: true },
+    { ref: 'PH-1043', t: '19:08', amt: 60000,  route: 'vn', st: 'fail', sample: true },
+    { ref: 'PH-1042', t: '18:55', amt: 35000,  route: 'la', st: 'ok',   code: '58', bankRef: 'BK2610121855932', settled: true,  sample: true },
+    { ref: 'PH-1041', t: '18:40', amt: 80000,  route: 'th', st: 'ok',   code: '31', bankRef: 'BK2610121840265', settled: true,  sample: true },
+  ];
+}
+
+/* ---------- prefs (per-viewer convenience only) ---------- */
+const LS_KEY = 'phalom-proto-prefs';
+const P = (() => {
+  const d = { mode: 'light', sound: true, chime: 0 };
+  try { const v = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (v && typeof v === 'object') Object.assign(d, v); } catch (e) {}
+  return d;
+})();
+function savePrefs() { try { localStorage.setItem(LS_KEY, JSON.stringify(P)); } catch (e) {} }
+
+/* ---------- state ---------- */
+let S;
+function freshState() {
+  return { screen: 'sell', amount: 0, route: null, checkSel: null, txns: sampleTxns(), seq: 1046,
+           current: null, fromHistory: false, net: 'on', filter: 'all', sub: null, signFrom: 'check',
+           modal: null, slipRef: null, slipEn: false, demoOpen: false, done: new Set() };
+}
+S = freshState();
+
+/* ---------- helpers ---------- */
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => Number(n).toLocaleString('en-US');
+const feeOf = (a) => Math.round(a * FEE_RATE);
+const routeOf = (id) => ROUTES.find((r) => r.id === id);
+const txnOf = (ref) => S.txns.find((t) => t.ref === ref);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const todayLao = () => { const d = new Date(); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); };
+const todayEn = () => { const d = new Date(); return d.getDate() + ' ' + MONTHS_EN[d.getMonth()] + ' ' + d.getFullYear(); };
+const routeCls = (r) => (r.st === 'on' ? 'ok' : r.st === 'pending' ? 'wait' : 'off');
+const routeText = (r) => (r.st === 'on' ? 'ຈ່າຍໄດ້' : r.st === 'pending' ? 'ລໍທະນາຄານເປີດ' : 'ຍັງບໍ່ໄດ້');
+const okTxns = () => S.txns.filter((t) => t.st === 'ok');
+const todayGross = () => okTxns().reduce((s, t) => s + t.amt, 0);
+function modeNow() {
+  if (P.mode === 'auto') { const h = new Date().getHours(); return (h >= 18 || h < 6) ? 'dark' : 'light'; }
+  return P.mode === 'dark' ? 'dark' : 'light';
+}
+const narrow = () => window.matchMedia('(max-width: 899px)').matches;
+
+/* Lao number words, so the vendor can hear or read back the price (guards against an extra zero) */
+const LD = ['', 'ໜຶ່ງ', 'ສອງ', 'ສາມ', 'ສີ່', 'ຫ້າ', 'ຫົກ', 'ເຈັດ', 'ແປດ', 'ເກົ້າ'];
+const LP = ['', 'ສິບ', 'ຮ້ອຍ', 'ພັນ', 'ໝື່ນ', 'ແສນ'];
+function laoBelowMillion(n) {
+  const s = String(n); let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const d = +s[i], p = s.length - 1 - i;
+    if (!d) continue;
+    if (p === 1) out += d === 1 ? 'ສິບ' : d === 2 ? 'ຊາວ' : LD[d] + 'ສິບ';
+    else if (p === 0) out += (d === 1 && s.length > 1) ? 'ເອັດ' : LD[d];
+    else out += LD[d] + LP[p];
+  }
+  return out;
+}
+function laoWords(n) {
+  if (!n) return 'ສູນ';
+  const m = Math.floor(n / 1e6), r = n % 1e6;
+  return (m ? laoWords(m) + 'ລ້ານ' : '') + (r ? laoBelowMillion(r) : '');
+}
+
+/* ---------- icons ---------- */
+const IC = {
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  hourglass: '<path d="M7 3.5h10M7 20.5h10M8 3.5v2.5c0 3 4 4 4 6s-4 3-4 6v2.5M16 3.5v2.5c0 3-4 4-4 6s4 3 4 6v2.5"/>',
+  wifioff: '<path d="M3.5 3.5l17 17M8.6 16.2a5 5 0 0 1 6.8 0M5.2 12.6a9.8 9.8 0 0 1 4.3-2.4M14.6 10.3a9.8 9.8 0 0 1 4.2 2.3M2 9a14.5 14.5 0 0 1 4-2.6M12 19.5h.01"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  del: '<path d="M21 6H9l-6 6 6 6h12zM17 9.5l-5 5M12 9.5l5 5"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.7M12 17h.01"/>',
+  bank: '<path d="M3 10h18L12 4zM5.5 10v7.5M9.5 10v7.5M14.5 10v7.5M18.5 10v7.5M3 20h18"/>',
+  sell: '<rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8M8 12h8"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  sliders: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+  plus: '<path d="M12 4v16M4 12h16"/>',
+  sound: '<path d="M4 9.5v5h4l5 4v-13l-5 4zM16.5 9a4 4 0 0 1 0 6"/>',
+  phone: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+};
+const icon = (n, s = 20, w = 2) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n] || ''}</svg>`;
+const LOGO_PATHS = (ink, acc) =>
+  `<rect x="39" y="23" width="42" height="42" rx="6" fill="none" stroke="${ink}" stroke-width="14"/><rect x="32" y="40" width="14" height="66" rx="5" fill="${ink}"/><rect x="53" y="37" width="14" height="14" rx="2.5" fill="${ink}"/><rect x="58" y="80" width="12" height="12" rx="2.5" fill="${ink}"/><rect x="76" y="80" width="12" height="12" rx="2.5" fill="${acc}"/><rect x="58" y="94" width="12" height="12" rx="2.5" fill="${ink}"/>`;
+const logo = (s) => `<svg width="${s}" height="${s}" viewBox="0 0 120 120" aria-hidden="true">${LOGO_PATHS('var(--lg-ink)', 'var(--lg-acc)')}</svg>`;
+const waveLine = () => `<svg class="wave" viewBox="0 0 328 18" preserveAspectRatio="none" aria-hidden="true"><path d="M0 9 C 20 1, 41 1, 61 9 S 102 17, 123 9 S 164 1, 184 9 S 225 17, 246 9 S 287 1, 328 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+const waveBand = (cls) => `<svg class="bandwave ${cls}" viewBox="0 0 352 22" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H352 V8 C 330 18, 308 18, 286 10 S 242 2, 220 10 S 176 18, 154 10 S 110 2, 88 10 S 44 18, 0 8 Z" fill="currentColor"/></svg>`;
+const pill = (cls, text) => `<span class="pill ${cls}">${text}</span>`;
+
+/* QR-like pattern (illustration only, not a scannable payment code) */
+function qrPath(seed) {
+  let h = 2166136261;
+  for (const c of seed) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  let x = (h >>> 0) || 1;
+  const rnd = () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
+  const N = 25, g = [], res = [];
+  for (let r = 0; r < N; r++) { g.push(new Array(N).fill(0)); res.push(new Array(N).fill(false)); }
+  const finder = (r0, c0) => {
+    for (let r = -1; r < 8; r++) for (let c = -1; c < 8; c++) {
+      const rr = r0 + r, cc = c0 + c;
+      if (rr < 0 || cc < 0 || rr >= N || cc >= N) continue;
+      res[rr][cc] = true;
+      if (r >= 0 && r <= 6 && c >= 0 && c <= 6) g[rr][cc] = (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4)) ? 1 : 0;
+    }
+  };
+  finder(0, 0); finder(0, N - 7); finder(N - 7, 0);
+  for (let i = 8; i < N - 8; i++) { g[6][i] = g[i][6] = i % 2 === 0 ? 1 : 0; res[6][i] = res[i][6] = true; }
+  for (let r = -2; r <= 2; r++) for (let c = -2; c <= 2; c++) { g[18 + r][18 + c] = (Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0)) ? 1 : 0; res[18 + r][18 + c] = true; }
+  for (let r = 9; r < 16; r++) for (let c = 9; c < 16; c++) { res[r][c] = true; g[r][c] = 0; }
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (!res[r][c]) g[r][c] = rnd() < 0.5 ? 1 : 0;
+  let d = '';
+  for (let r = 0; r < N; r++) { let c = 0; while (c < N) { if (g[r][c]) { const s = c; while (c < N && g[r][c]) c++; d += `M${s} ${r}h${c - s}v1h-${c - s}z`; } else c++; } }
+  return d;
+}
+const qrSvg = (t) => `<svg class="qrsvg" viewBox="-1 -1 27 27" role="img" aria-label="QR ສຳລັບ ${fmt(t.amt)} ກີບ (ຮູບຈຳລອງ)"><path d="${qrPath(t.ref + t.amt)}" fill="#2a1e17" shape-rendering="crispEdges"/><rect x="9.3" y="9.3" width="6.4" height="6.4" rx="1.3" fill="#ffffff"/><svg x="9.6" y="9.6" width="5.8" height="5.8" viewBox="0 0 120 120">${LOGO_PATHS('#2f6a55', '#b5653c')}</svg></svg>`;
+
+/* ---------- sound ---------- */
+let AC = null;
+function ac() {
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); return AC; } catch (e) { return null; }
+}
+function tone(f, t0, dur, type = 'sine', vol = 0.22) {
+  const a = ac(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + t0;
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+}
+const CHIMES = [
+  { name: 'ກະດິ່ງ', play: () => { tone(1046, 0, 0.9); tone(1568, 0.13, 1.1); } },
+  { name: 'ຄ້ອງ',   play: () => { tone(196, 0, 1.8, 'sine', 0.4); tone(294, 0.02, 1.5, 'sine', 0.22); tone(392, 0.04, 1.2, 'sine', 0.1); } },
+  { name: 'ສາມໂນດ', play: () => { tone(659, 0, 0.35); tone(880, 0.16, 0.35); tone(1175, 0.32, 0.7); } },
+];
+function speakLao(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    const v = speechSynthesis.getVoices().find((x) => /^lo/i.test(x.lang));
+    if (!v) return;
+    const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function announce(t) {
+  if (!P.sound) return;
+  CHIMES[P.chime] && CHIMES[P.chime].play();
+  setTimeout(() => speakLao('ໄດ້ຮັບເງິນ ' + laoWords(t.amt) + 'ກີບ ລະຫັດ ' + t.code.split('').map((d) => LD[+d] || 'ສູນ').join(' ')), 900);
+}
+function fakeBeep() { if (!P.sound) return; tone(620, 0, 0.22, 'square', 0.06); tone(620, 0.3, 0.22, 'square', 0.06); }
+
+/* ---------- views ---------- */
+function vSimbar() {
+  return `<div class="simbar">${icon('phone', 14)}<span>ຈຳລອງ · ບໍ່ມີເງິນຈິງ</span><span class="sp"></span>${S.net === 'off' ? '<span class="netoff">ຂາດເນັດ</span>' : ''}<button class="demo-btn" data-act="demo-open" aria-expanded="${S.demoOpen}"><span>ແຜງສາທິດ</span></button></div>`;
+}
+function vTabbar() {
+  const t = (id, ic, label) => `<button class="tab" data-act="tab" data-to="${id}" ${S.screen === id ? 'aria-current="page"' : ''}>${icon(ic, 22, 1.9)}${label}</button>`;
+  return `<nav class="tabbar" aria-label="ເມນູຫຼັກ">${t('sell', 'sell', 'ຂາຍ')}${t('history', 'clock', 'ປະຫວັດ')}${t('settings', 'sliders', 'ຕັ້ງຄ່າ')}</nav>`;
+}
+function topbar(title, act) {
+  return `<div class="topbar"><button class="iconbtn" data-act="${act}" aria-label="ກັບຄືນ">${icon('back', 22)}</button><h1>${title}</h1><span class="spacer"></span></div>`;
+}
+const scr = (key, cls, body) => `<div class="scr ${cls || ''}" data-key="${key}">${body}</div>`;
+
+function vSell() {
+  const a = S.amount, f = feeOf(a), r = S.route && routeOf(S.route);
+  const chip = r
+    ? `<span class="rbadge ${routeCls(r)}">${r.code}</span><span class="grow"><b>${r.app}</b><small>ກວດແລ້ວ · ຈ່າຍໄດ້</small></span>`
+    : `<span class="rbadge">${icon('help', 18)}</span><span class="grow"><b>ລູກຄ້າໃຊ້ແອັບໃດ?</b><small>ກວດກ່ອນຂາຍ ວ່າຈ່າຍໄດ້ບໍ່</small></span>`;
+  const gross = todayGross();
+  return scr('sell', '', `
+    <div class="hdr">${logo(28)}
+      <div class="shop"><b>${SHOP.name}</b><small>${S.net === 'off' ? '<span class="dot off"></span>ຂາດເນັດ' : '<span class="dot ok"></span>ພ້ອມຮັບ'} · ${SHOP.stall}</small></div>
+      <button class="totchip" data-act="tab" data-to="history" aria-label="ຮັບແລ້ວມື້ນີ້ ${fmt(gross)} ກີບ. ເບິ່ງປະຫວັດ"><small>ຮັບມື້ນີ້</small><b class="num">${fmt(gross)} ₭</b></button>
+    </div>
+    <button class="routechip" data-act="go-check">${chip}<span class="chev">${icon('chev', 18)}</span></button>
+    <div class="amtbox">
+      <div class="lbl-row"><span class="lbl">ໃສ່ລາຄາ (ກີບ)</span>${a ? '<button class="link" data-act="clear">ລ້າງ</button>' : ''}</div>
+      <div class="amt" aria-live="polite">${fmt(a)}<span class="cur"> ₭</span></div>
+      <div class="words ${a ? '' : 'empty'}">${a ? laoWords(a) + 'ກີບ' : 'ພິມລາຄາດ້ວຍແປ້ນລຸ່ມນີ້'}</div>
+      ${a >= WARN_AT ? '<div class="warn">ລາຄາສູງຜິດປົກກະຕິ · ກວດເລກສູນອີກຄັ້ງ</div>' : ''}
+      <div class="netline"><span>ຮັບສຸດທິ <b class="num">${fmt(a - f)} ₭</b></span><span class="muted">· ຄ່າທຳນຽມ ${fmt(f)} ₭</span><span class="tag">ຕົວຢ່າງ 0.5%</span></div>
+    </div>
+    ${waveLine()}
+    <div class="keys">${KEYS.map((k) => `<button class="key" data-act="key" data-k="${k}" aria-label="${k === 'del' ? 'ລຶບ' : k}">${k === 'del' ? icon('del', 22, 1.8) : k}</button>`).join('')}</div>
+    <button class="btn" data-act="show-qr" ${a ? '' : 'disabled'}>ສະແດງ QR</button>
+    <p class="fine center">${icon('bank', 15)}ເງິນເຂົ້າບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ · Phalom ບໍ່ຖືເງິນ</p>`);
+}
+
+function vCheck() {
+  const sel = S.checkSel && routeOf(S.checkSel);
+  let verdict = '';
+  if (sel) {
+    const cls = routeCls(sel);
+    const head = sel.st === 'on' ? 'ຈ່າຍໄດ້' : sel.st === 'pending' ? 'ຍັງຈ່າຍບໍ່ໄດ້ · ລໍທະນາຄານເປີດ' : 'ຍັງບໍ່ຮອງຮັບ';
+    const body = sel.st === 'on' ? `ໃຫ້ລູກຄ້າສະແກນດ້ວຍ${sel.app}` : 'ແນະນຳ: ຮັບເງິນສົດ ຫຼື ໃຫ້ລູກຄ້າໃຊ້ແອັບອື່ນທີ່ຈ່າຍໄດ້';
+    verdict = `<div class="verdict ${cls}">${icon(sel.st === 'on' ? 'check' : sel.st === 'pending' ? 'hourglass' : 'x', 26, 2.4)}<div><b>${head}</b><p>${body}</p><p class="phrase" lang="${sel.lang}">${esc(sel.phrase)}</p></div></div>
+      ${sel.st === 'on' ? '<button class="btn" data-act="use-route">ໃຊ້ເສັ້ນທາງນີ້ · ໃສ່ລາຄາ</button>' : ''}`;
+  }
+  return scr('check', '', `
+    ${topbar('ລູກຄ້າໃຊ້ແອັບໃດ?', 'back-sell')}
+    <p class="sub">ເລືອກປະເທດຂອງແອັບທະນາຄານທີ່ລູກຄ້າໃຊ້</p>
+    <div class="rows">${ROUTES.map((r) => `<button class="row ${S.checkSel === r.id ? 'sel' : ''}" data-act="pick-route" data-id="${r.id}" aria-pressed="${S.checkSel === r.id}"><span class="rbadge ${routeCls(r)}">${r.code}</span><span class="grow"><b>${r.name}</b><small>${r.app}</small></span>${pill(routeCls(r), routeText(r))}</button>`).join('')}</div>
+    ${verdict}
+    <button class="btn ghost" data-act="go-sign">ສະແດງປ້າຍໃຫ້ລູກຄ້າເບິ່ງ</button>
+    <p class="fine">${icon('info', 15)}ລາຍການເສັ້ນທາງເປັນຕົວຢ່າງ · ທະນາຄານ partner ເປັນຜູ້ເປີດແຕ່ລະເສັ້ນທາງ</p>`);
+}
+
+function vSign() {
+  const market = S.signFrom === 'market';
+  const mark = (r) => r.st === 'on' ? `<span class="mk ok">${icon('check', 20, 2.6)}</span>` : r.st === 'pending' ? `<span class="mk wait">${icon('hourglass', 20)}</span>` : `<span class="mk off">${icon('x', 20, 2.4)}</span>`;
+  const note = (r) => r.st === 'on' ? '' : r.st === 'pending' ? '<small lang="en">soon</small>' : '<small lang="en">not yet</small>';
+  return scr('sign-' + S.signFrom, '', `
+    ${topbar(market ? 'ປ້າຍທາງເຂົ້າຕະຫຼາດ' : 'ປ້າຍສຳລັບລູກຄ້າ', market ? 'view-market' : 'go-check')}
+    <div class="signcard">
+      ${logo(52)}
+      <h2 lang="en">${market ? 'This market takes QR' : 'Pay here by QR'}</h2>
+      <p class="lo">${market ? 'ຕະຫຼາດນີ້ຮັບຈ່າຍດ້ວຍ QR' : 'ຈ່າຍດ້ວຍ QR ໄດ້ທີ່ນີ້'}</p>
+      <ul class="signlist">${ROUTES.map((r) => `<li>${mark(r)}<span class="tx" lang="en">${r.en}${r.native ? ` <small lang="${r.lang}">${r.native}</small>` : ''}</span>${note(r)}</li>`).join('')}</ul>
+      <p class="signfoot" lang="en">Prices in Lao Kip (LAK). No extra fee for you.</p>
+      <div class="signshop">${market ? `<b>${SHOP.market}</b><br>ໂຕະຊ່ວຍເຫຼືອຢູ່ທາງເຂົ້າ · 17:00–22:00` : `<b>${SHOP.name}</b> · ${SHOP.stall}<br>${SHOP.market}`}</div>
+    </div>`);
+}
+
+function vQR() {
+  const t = S.current;
+  const off = S.net === 'off';
+  return scr('qr-' + t.ref, '', `
+    ${topbar('ສະແກນເພື່ອຈ່າຍ', 'cancel-qr')}
+    <div class="qr-amt"><small>${SHOP.name} · ${t.ref}</small><div class="amt mid">${fmt(t.amt)}<span class="cur"> ₭</span></div></div>
+    <div class="qrcard">${qrSvg(t)}<div class="qr-name">${SHOP.qrName}</div></div>
+    <div class="accepts"><small>ຈ່າຍໄດ້ດ້ວຍ</small><div class="chips">${ROUTES.filter((r) => r.st === 'on').map((r) => `<span class="chip">${r.app}</span>`).join('')}</div></div>
+    <div class="waitline ${off ? 'off' : ''}"><span class="pulse"></span>${off ? 'ຂາດເນັດ · ຈະຮູ້ຜົນເມື່ອເນັດກັບມາ' : 'ລໍຖ້າລູກຄ້າຈ່າຍ…'}</div>
+    <p class="fine center">ຖ້າຍັງບໍ່ເຫັນຜົນ ຢ່າໃຫ້ລູກຄ້າຈ່າຍຊ້ຳ</p>
+    <button class="btn ghost" data-act="cancel-qr">ຍົກເລີກ</button>`);
+}
+
+function vResult() {
+  const t = S.current, m = ST[t.st], r = routeOf(t.route), f = feeOf(t.amt);
+  let actions;
+  if (S.fromHistory) actions = `<button class="btn ghost" data-act="tab" data-to="history">ກັບໄປປະຫວັດ</button>`;
+  else if (t.st === 'fail') actions = `<button class="btn" data-act="retry">ສ້າງ QR ໃໝ່ · ${fmt(t.amt)} ₭</button><button class="btn ghost" data-act="new-sale">ກັບໜ້າຂາຍ</button>`;
+  else actions = `<button class="btn ghost" data-act="new-sale">ໄປໜ້າຂາຍ · ລາຍການນີ້ຈະຢູ່ໃນປະຫວັດ</button>`;
+  return scr('result-' + t.ref + '-' + t.st, 'flush', `
+    <div class="band ${m.cls}">
+      <div class="bicon">${icon(m.icon, 40, 2.6)}</div>
+      <h2>${m.title}</h2>
+      ${pill('inv', m.act)}
+      <div class="amt mid">${fmt(t.amt)}<span class="cur"> ₭</span></div>
+    </div>
+    ${waveBand(m.cls)}
+    <div class="rbody">
+      <p class="advice ${m.cls}">${m.advice || ''}</p>
+      <div class="kvs">
+        <div class="kv"><span>ຈ່າຍຈາກ</span><span>${r ? r.app : '—'}</span></div>
+        <div class="kv"><span>ເວລາ</span><span class="num">${t.t}</span></div>
+        <div class="kv"><span>ຍອດຂາຍ</span><span class="num">${fmt(t.amt)} ₭</span></div>
+        <div class="kv"><span>ຄ່າທຳນຽມ (ຕົວຢ່າງ)</span><span class="num">${fmt(f)} ₭</span></div>
+        <div class="kv"><span>ຮັບສຸດທິ</span><span class="num">${t.st === 'fail' ? '0' : fmt(t.amt - f)} ₭</span></div>
+        <div class="kv"><span>ເລກອ້າງອີງ</span><span class="num">${t.ref}${t.sample ? ' · ຕົວຢ່າງ' : ''}</span></div>
+      </div>
+      <p class="fine">${icon('bank', 15)}ສະຖານະປ່ຽນເມື່ອທະນາຄານຢືນຢັນເທົ່ານັ້ນ</p>
+      <div class="actions">${actions}</div>
+    </div>`);
+}
+
+function vHistory() {
+  const ok = okTxns();
+  const gross = todayGross(), fees = ok.reduce((s, t) => s + feeOf(t.amt), 0);
+  const net = (t) => t.amt - feeOf(t.amt);
+  const settled = ok.filter((t) => t.settled).reduce((s, t) => s + net(t), 0);
+  const moving = ok.filter((t) => !t.settled).reduce((s, t) => s + net(t), 0);
+  const waiting = S.txns.filter((t) => t.st === 'pend' || t.st === 'unk').length;
+  const keep = (t) => S.filter === 'all' || (S.filter === 'pend' ? (t.st === 'pend' || t.st === 'unk') : t.st === S.filter);
+  const list = S.txns.filter(keep);
+  const F = [['all', 'ທັງໝົດ'], ['ok', 'ສຳເລັດ'], ['pend', 'ລໍຖ້າ'], ['fail', 'ບໍ່ສຳເລັດ']];
+  return scr('history', '', `
+    <div class="htop"><h1>ມື້ນີ້</h1><span>${todayLao()}</span></div>
+    <div class="sum">
+      <small>ຮັບແລ້ວມື້ນີ້ (ສຳເລັດ)</small>
+      <div class="amt mid">${fmt(gross)}<span class="cur"> ₭</span></div>
+      <div class="sumrow"><span><b class="num">${ok.length}</b> ລາຍການ</span><span>ຄ່າທຳນຽມ <b class="num">${fmt(fees)} ₭</b></span><span>ສຸດທິ <b class="num">${fmt(gross - fees)} ₭</b></span></div>
+    </div>
+    <div class="settle"><div class="ok"><small>ເຂົ້າບັນຊີທະນາຄານແລ້ວ</small><b class="num">${fmt(settled)} ₭</b></div><div class="wait"><small>ກຳລັງເຂົ້າບັນຊີ</small><b class="num">${fmt(moving)} ₭</b></div></div>
+    <p class="fine">${icon('bank', 15)}Phalom ບໍ່ແມ່ນກະເປົາເງິນ. ເງິນຢູ່ໃນບັນຊີ ${SHOP.acct} ຂອງຮ້ານ; ຍອດເງິນໃນບັນຊີເບິ່ງໄດ້ໃນແອັບທະນາຄານ.</p>
+    ${waiting ? pill('wait', `ລໍຖ້າຜົນ ${waiting} ລາຍການ · ຢ່າເພີ່ງມອບເຄື່ອງ`) : ''}
+    <div class="filters" role="group" aria-label="ກັ່ນຕອງ">${F.map(([k, l]) => `<button class="fbtn" data-act="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join('')}</div>
+    <div class="rows">${list.length ? list.map((t) => {
+      const m = ST[t.st], r = routeOf(t.route);
+      return `<button class="row" data-act="open-txn" data-ref="${t.ref}"><span class="time num">${t.t}</span><span class="dot ${m.cls}"></span><span class="grow"><b>${m.label}</b><small>${r ? r.app : ''}${t.sample ? ' · ຕົວຢ່າງ' : ''}</small></span><span class="num amtcell ${t.st === 'fail' ? 'strike' : ''}">${fmt(t.amt)}</span></button>`;
+    }).join('') : '<p class="fine center">ບໍ່ມີລາຍການໃນກຸ່ມນີ້</p>'}</div>
+    <p class="fine">${icon('info', 15)}ລາຍການທີ່ມີຄຳວ່າ "ຕົວຢ່າງ" ແມ່ນຂໍ້ມູນສາທິດ</p>`);
+}
+
+function seg(label, items, current, act, attr) {
+  const i = Math.max(0, items.findIndex((x) => x.v === current));
+  return `<div class="seg" role="group" aria-label="${label}" style="--n:${items.length};--i:${i}"><span class="seg-thumb" aria-hidden="true"></span>${items.map((x) => `<button data-act="${act}" ${attr}="${x.v}" aria-pressed="${x.v === current}">${x.icon ? icon(x.icon, 16) : ''}${x.label}</button>`).join('')}</div>`;
+}
+function vSettings() {
+  const link = (id, ic, label, right = '') => `<button class="srow" data-act="sub" data-id="${id}"><span class="lead">${icon(ic, 20)}</span><span class="grow">${label}</span>${right}<span class="chev">${icon('chev', 18)}</span></button>`;
+  return scr('settings', '', `
+    <h1>ຕັ້ງຄ່າ</h1>
+    <div class="shopcard">${logo(36)}<div class="grow"><b>${SHOP.name}</b><small>${SHOP.stall} · ${SHOP.market}</small><small>ບັນຊີຮັບເງິນ ${SHOP.acct} · ທະນາຄານຢືນຢັນແລ້ວ</small></div></div>
+    <div class="group">
+      <span class="glabel">ຮູບແບບສີ</span>
+      ${seg('ຮູບແບບສີ', [{ v: 'light', icon: 'sun', label: 'ແຈ້ງ' }, { v: 'dark', icon: 'moon', label: 'ມືດ' }, { v: 'auto', label: 'ອັດຕະໂນມັດ' }], P.mode, 'mode', 'data-m')}
+      <span class="hint">ອັດຕະໂນມັດ: ປ່ຽນເປັນມືດ ຫຼັງ 18:00 ສຳລັບຕະຫຼາດກາງຄືນ</span>
+    </div>
+    <div class="group">
+      <span class="glabel">ການແຈ້ງເມື່ອໄດ້ຮັບເງິນ</span>
+      <div class="srow"><span class="lead">${icon('sound', 20)}</span><span class="grow">ສຽງແຈ້ງ</span><button class="switch" role="switch" aria-checked="${P.sound}" aria-label="ສຽງແຈ້ງ" data-act="toggle-sound"></button></div>
+      <span class="hint">ສຽງກະດິ່ງຂອງຮ້ານ (ກົດເພື່ອຟັງ)</span>
+      ${seg('ສຽງກະດິ່ງຂອງຮ້ານ', CHIMES.map((c, i) => ({ v: String(i), label: c.name })), String(P.chime), 'chime', 'data-i')}
+    </div>
+    <div class="list">
+      ${link('language', 'globe', 'ພາສາ', '<span class="muted">ລາວ</span>')}
+      ${link('security', 'shield', 'ຄວາມປອດໄພບັນຊີ')}
+      ${link('protection', 'info', 'ຄ່າທຳນຽມ ແລະ ສິດຂອງຮ້ານ')}
+      ${link('support', 'chat', 'ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ')}
+      ${link('more', 'plus', 'ບໍລິການເສີມ', '<span class="tag">ໄລຍະຕໍ່ໄປ</span>')}
+      <div class="srow"><span class="grow">ເວີຊັນ</span><span class="muted num">0.2 · ຈຳລອງ</span></div>
+    </div>`);
+}
+
+function vSub() {
+  const id = S.sub;
+  let title = '', body = '';
+  if (id === 'language') {
+    title = 'ພາສາ';
+    const langs = [['ລາວ', true], ['English', false], ['ไทย', false], ['Tiếng Việt', false], ['中文', false]];
+    body = `<div class="list">${langs.map(([l, on]) => `<div class="srow"><span class="grow">${l}</span>${on ? `<span class="lead">${icon('check', 20, 2.4)}</span>` : '<span class="tag">ໄລຍະຕໍ່ໄປ</span>'}</div>`).join('')}</div>
+      <p class="fine">${icon('info', 15)}Prototype ນີ້ສະແດງພາສາລາວ; ໃບຮັບເງິນສຳລັບລູກຄ້າເປັນພາສາອັງກິດ</p>`;
+  } else if (id === 'security') {
+    title = 'ຄວາມປອດໄພບັນຊີ';
+    const items = ['ລັອກແອັບດ້ວຍ PIN · ເປີດແລ້ວ', 'ຢືນຢັນ OTP ກ່ອນຄືນເງິນ ຫຼື ປ່ຽນບັນຊີຮັບເງິນ · ເປີດແລ້ວ', 'ເຄື່ອງທີ່ເຂົ້າລະບົບ: 1 ເຄື່ອງ (ເຄື່ອງນີ້)', 'ແອັບເປັນເວີຊັນລ່າສຸດ · 0.2'];
+    body = `<ul class="checklist">${items.map((x) => `<li>${icon('check', 18, 2.4)}<span>${x}</span></li>`).join('')}</ul>
+      <div class="card"><b>ຂໍ້ຄວນຮູ້</b><p>ລາຍການກວດນີ້ຊ່ວຍຫຼຸດຄວາມສ່ຽງ ແຕ່ບໍ່ແມ່ນການຮັບປະກັນ 100%.</p></div>`;
+  } else if (id === 'protection') {
+    title = 'ຄ່າທຳນຽມ ແລະ ສິດຂອງຮ້ານ';
+    body = `<div class="card"><b>ເງິນຢູ່ໃນທະນາຄານ ບໍ່ຢູ່ໃນແອັບ</b><div class="flow"><span>ລູກຄ້າ</span>→<span>ທະນາຄານ partner</span>→<span>ບັນຊີກີບຂອງຮ້ານ</span></div><p>Phalom ສົ່ງພຽງຂໍ້ມູນສະຖານະການຈ່າຍ. Phalom ບໍ່ຖືເງິນ ແລະ ບໍ່ມີຍອດເງິນໃນແອັບ.</p></div>
+      <div class="kvs">
+        <div class="kv"><span>ຄ່າທຳນຽມຮ້ານ (ທຸກເສັ້ນທາງ)</span><span class="num">0.5% · ຕົວຢ່າງ</span></div>
+        <div class="kv"><span>ຄ່າບໍລິການຈາກລູກຄ້າ</span><span>ບໍ່ມີ</span></div>
+        <div class="kv"><span>ບວກອັດຕາແລກປ່ຽນ</span><span>ບໍ່ບວກ</span></div>
+        <div class="kv"><span>ສະກຸນເງິນໃນແອັບ ແລະ ໃບຮັບເງິນ</span><span>ກີບ (₭) ເທົ່ານັ້ນ</span></div>
+      </div>
+      <div class="card"><b>ລະວັງການສໍ້ໂກງ</b><p>Phalom ບໍ່ເຄີຍຂໍ PIN ຫຼື OTP ຂອງທ່ານ ທາງໂທລະສັບ ຫຼື ແຊັດ.</p></div>`;
+  } else if (id === 'support') {
+    title = 'ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ';
+    body = `<div class="card"><b>ໂຕະຊ່ວຍເຫຼືອໃນຕະຫຼາດ</b><p>ທາງເຂົ້າ${SHOP.market} · ທຸກມື້ 17:00–22:00</p></div>
+      <div class="list">
+        <button class="srow" data-act="toast" data-msg="ສາທິດ: ແຊັດຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່"><span class="lead">${icon('chat', 20)}</span><span class="grow">ແຊັດກັບພະນັກງານ</span><span class="chev">${icon('chev', 18)}</span></button>
+        <div class="srow"><span class="lead">${icon('phone', 20)}</span><span class="grow">ໂທ</span><span class="num muted">020 0000 0000 · ຕົວຢ່າງ</span></div>
+      </div>
+      <div class="faq">
+        <details><summary>ລູກຄ້າບອກວ່າຈ່າຍແລ້ວ ແຕ່ແອັບຍັງລໍຖ້າ?${icon('chev', 18)}</summary><p>ຢ່າເພີ່ງມອບເຄື່ອງ ແລະ ຢ່າໃຫ້ຈ່າຍໃໝ່. ລໍໃຫ້ແອັບຂຶ້ນໃບຮັບເງິນ "ໄດ້ຮັບເງິນແລ້ວ" ພ້ອມລະຫັດ 2 ຕົວ, ຫຼື ມາໂຕະຊ່ວຍເຫຼືອພ້ອມເລກອ້າງອີງ.</p></details>
+        <details><summary>ເງິນເຂົ້າບັນຊີເມື່ອໃດ?${icon('chev', 18)}</summary><p>ຕາມເວລາຂອງເສັ້ນທາງທີ່ທະນາຄານ partner ຮອງຮັບ. ໜ້າປະຫວັດບອກວ່າເງິນໃດເຂົ້າບັນຊີແລ້ວ ແລະ ເງິນໃດກຳລັງເຂົ້າ.</p></details>
+        <details><summary>ເປັນຫຍັງບໍ່ມີຍອດເງິນໃນແອັບ?${icon('chev', 18)}</summary><p>Phalom ບໍ່ແມ່ນກະເປົາເງິນ ແລະ ບໍ່ຖືເງິນ. ເງິນເຂົ້າບັນຊີທະນາຄານຂອງຮ້ານໂດຍກົງ, ສະນັ້ນແອັບສະແດງຍອດຮັບມື້ນີ້ ແລະ ສະຖານະເງິນເຂົ້າບັນຊີ.</p></details>
+      </div>`;
+  } else {
+    title = 'ບໍລິການເສີມ';
+    const items = [
+      ['ຄະແນນ ແລະ ລາງວັນ', 'ສະສົມຄະແນນເມື່ອຮັບເງິນຜ່ານ QR. ຄະແນນບໍ່ແມ່ນເງິນ: ແລກເປັນເງິນສົດ ຫຼື ໂອນບໍ່ໄດ້.'],
+      ['ຈ່າຍບິນ', 'ໄຟຟ້າ, ນ້ຳ, ໂທລະສັບ, ຄ່າເຊົ່າບ່ອນຂາຍ. ທະນາຄານ partner ຕັດເງິນຈາກບັນຊີຮ້ານ ແລະ ຈ່າຍເອງ; ແອັບບໍ່ຖືເງິນ.'],
+      ['ລາຍງານ ແລະ ຄາດການ', 'ຍອດຂາຍລາຍອາທິດ ແລະ ຄາດການລະດູທ່ອງທ່ຽວ. ເປັນການຄາດຄະເນ ບໍ່ແມ່ນການຮັບປະກັນ.'],
+    ];
+    body = items.map(([h, p]) => `<div class="card"><b>${h} <span class="tag">ໄລຍະຕໍ່ໄປ</span></b><p>${p}</p></div>`).join('');
+  }
+  return scr('sub-' + id, '', `${topbar(title, 'back-settings')}${body}`);
+}
+
+function vMarket() {
+  const share = [['ໄທ', 54], ['ລາວ', 22], ['ຫວຽດນາມ', 14], ['ກຳປູເຈຍ', 7], ['ອື່ນໆ', 3]];
+  const help = [
+    ['B-07', 'ຮ້ານ ນາງແກ້ວ', 'ຂາດເນັດ 20 ນາທີ', 'off'],
+    ['C-21', 'ຮ້ານ ທ້າວບຸນ', 'ມີ 2 ລາຍການລໍຖ້າ', 'wait'],
+    ['A-03', 'ຮ້ານ ແມ່ສີ', 'ລໍທະນາຄານກວດເອກະສານ', 'wait'],
+  ];
+  return scr('market', '', `
+    <div class="mk-top"><button class="iconbtn" data-act="view-shop" aria-label="ກັບໄປແອັບຮ້ານ">${icon('back', 22)}</button><div class="grow"><small>ມຸມມອງຜູ້ດູແລຕະຫຼາດ</small><h1>${SHOP.market}</h1></div></div>
+    <div class="group">
+      <span class="glabel">ຮ້ານທີ່ເປີດຮັບ QR ແລ້ວ</span>
+      <div class="amt mid">42<span class="cur"> / 250 ຮ້ານ</span></div>
+      <div class="bar" role="img" aria-label="42 ໃນ 250 ຮ້ານ"><span style="width:16.8%"></span></div>
+    </div>
+    <div class="stats2"><div><small>ລາຍການມື້ນີ້</small><b class="num">1,186</b></div><div><small>ຍອດຮັບມື້ນີ້</small><b class="num">58.4M ₭</b></div></div>
+    <div class="group">
+      <span class="glabel">ລູກຄ້າຈ່າຍຈາກ (ບໍ່ລະບຸຕົວຕົນ)</span>
+      <div class="share">${share.map(([n, p]) => `<div><span>${n}</span><span class="bar"><span style="width:${p}%"></span></span><span class="num pct">${p}%</span></div>`).join('')}</div>
+    </div>
+    <div class="group">
+      <span class="glabel">ຮ້ານທີ່ຕ້ອງການຊ່ວຍ (${help.length})</span>
+      ${help.map(([st, n, why, cls]) => `<div class="helprow"><span class="dot ${cls}"></span><span class="grow"><b>${st} · ${n}</b><small>${why}</small></span><button class="mini" data-act="toast" data-msg="ສາທິດ: ແຈ້ງພະນັກງານໂຕະຊ່ວຍເຫຼືອໄປ ${st} ແລ້ວ"><span>ສົ່ງພະນັກງານ</span></button></div>`).join('')}
+    </div>
+    <button class="btn ghost" data-act="go-sign-market">ປ້າຍທາງເຂົ້າຕະຫຼາດ</button>
+    <p class="fine">${icon('info', 15)}ຂໍ້ມູນຕົວຢ່າງທັງໝົດ</p>`);
+}
+
+/* ---------- modal contents ---------- */
+function vFake() {
+  const t = S.current && ['wait', 'pend', 'unk'].includes(S.current.st) ? S.current : null;
+  const amt = t ? t.amt : (S.amount || 40000);
+  const stText = t ? ST[t.st === 'wait' ? 'pend' : t.st].label : 'ບໍ່ມີລາຍການ';
+  return `<div class="fakeshot" aria-hidden="true"><div class="fk-ic">${icon('check', 26, 3)}</div><b>Payment successful</b><div class="fk-amt">${fmt(amt)} LAK</div><small>${todayEn()} · ${nowHM()}</small></div>
+    <span class="fk-label">ໂທລະສັບລູກຄ້າ (screenshot)</span>
+    <div class="sheet card" data-key="fake" role="dialog" aria-modal="true" aria-labelledby="fake-title">
+      ${pill('wait', 'ໃນ Phalom: ' + stText + ' · ບໍ່ມີລະຫັດ')}
+      <b id="fake-title">ກວດສະຖານະໃນ Phalom ເທົ່ານັ້ນ</b>
+      <p>screenshot ແລະ ສຽງຈາກໂທລະສັບລູກຄ້າ ບໍ່ປ່ຽນສະຖານະໃນ Phalom. ມອບເຄື່ອງເມື່ອ Phalom ຂຶ້ນໃບຮັບເງິນ "ໄດ້ຮັບເງິນແລ້ວ" ພ້ອມລະຫັດ 2 ຕົວເທົ່ານັ້ນ.</p>
+      <button class="btn" data-act="close-modal">ເຂົ້າໃຈແລ້ວ</button>
+    </div>`;
+}
+function vSlip() {
+  const t = txnOf(S.slipRef);
+  if (!t) return '';
+  const r = routeOf(t.route), f = feeOf(t.amt), en = S.slipEn;
+  const row = (k, v, cls = '') => `<div class="${cls}"><dt>${k}</dt><dd>${v}</dd></div>`;
+  const rows = en
+    ? row('Paid with', r ? r.appEn : '—') +
+      row('Merchant', `${SHOP.en} · ${SHOP.stall}<small>${SHOP.marketEn}</small>`) +
+      row('Date', `<span class="num">${todayEn()} · ${t.t}</span>`) +
+      row('Reference', `<span class="num">${t.ref}</span>`) +
+      row('Bank reference', `<span class="num">${t.bankRef}</span>`)
+    : row('ຈ່າຍຈາກ', r ? r.app : '—') +
+      row('ເຂົ້າບັນຊີ', `${SHOP.name} · ${SHOP.stall}<small>ບັນຊີ ${SHOP.acct}</small>`) +
+      row('ວັນທີ ແລະ ເວລາ', `<span class="num">${todayLao()} · ${t.t}</span>`) +
+      row('ເລກອ້າງອີງ', `<span class="num">${t.ref}</span>`) +
+      row('ເລກອ້າງອີງທະນາຄານ', `<span class="num">${t.bankRef}</span>`) +
+      row('ຍອດຂາຍ', `<span class="num">${fmt(t.amt)} ₭</span>`) +
+      row('ຄ່າທຳນຽມ (ຕົວຢ່າງ)', `<span class="num">− ${fmt(f)} ₭</span>`) +
+      row('ຮັບສຸດທິ', `<span class="num">${fmt(t.amt - f)} ₭</span>`, 'net');
+  const primary = S.fromHistory ? `<button class="btn" data-act="close-modal">ປິດ</button>` : `<button class="btn" data-act="new-sale">ຂາຍຕໍ່</button>`;
+  return `<div class="sheet slip" data-key="slip-${t.ref}-${en ? 'en' : 'lo'}" role="dialog" aria-modal="true" aria-labelledby="slip-title" ${en ? 'lang="en"' : ''}>
+    <div class="slip-head">
+      <div class="okmark">${icon('check', 32, 3)}</div>
+      <h2 id="slip-title">${en ? 'Payment received' : 'ໄດ້ຮັບເງິນແລ້ວ'}</h2>
+      ${pill('ok', en ? 'Paid · thank you' : 'ມອບເຄື່ອງໄດ້')}
+      <div class="amt">${fmt(t.amt)}<span class="cur"> ₭</span></div>
+      <div class="slip-words">${en ? 'Lao Kip (LAK)' : laoWords(t.amt) + 'ກີບ'}</div>
+    </div>
+    ${en ? '' : `<div class="codebox"><b class="cnum">${t.code}</b><span><small>ລະຫັດຢືນຢັນ</small>ລະຫັດນີ້ຂຶ້ນສະເພາະໃນເຄື່ອງຂອງຮ້ານ. screenshot ຫຼື ສຽງຈາກໂທລະສັບລູກຄ້າບໍ່ມີລະຫັດນີ້.</span></div>`}
+    <div class="tear" aria-hidden="true"></div>
+    <dl class="slip-kv">${rows}</dl>
+    <div class="slip-foot">${icon('bank', 14)}${en ? 'Confirmed by the partner bank · Simulation' : 'ທະນາຄານຢືນຢັນແລ້ວ · ເງິນເຂົ້າບັນຊີຕາມເວລາຂອງທະນາຄານ'}</div>
+    <div class="slip-actions">
+      ${primary}
+      <button class="btn ghost" data-act="slip-lang">${en ? 'ກັບເປັນພາສາລາວ' : 'ສະແດງໃບຮັບເງິນໃຫ້ລູກຄ້າ · English'}</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- demo panel ---------- */
+function demoTarget() {
+  if (S.current && ['wait', 'pend', 'unk'].includes(S.current.st)) return S.current;
+  return S.txns.find((t) => t.st === 'pend' || t.st === 'unk') || null;
+}
+const STEPS = [
+  ['check', 'ກວດແອັບຂອງລູກຄ້າ'],
+  ['price', 'ໃສ່ລາຄາ ແລະ ເບິ່ງເງິນສຸດທິ'],
+  ['qr', 'ສະແດງ QR'],
+  ['fake', 'ລູກຄ້າສະແດງ screenshot ປອມ'],
+  ['result', 'ທະນາຄານ: ລໍຖ້າ → ສຳເລັດ (ໃບຮັບເງິນ)'],
+  ['history', 'ຍອດຮັບມື້ນີ້ ແລະ ປະຫວັດ'],
+];
+function currentStep() {
+  if (S.modal === 'fake') return 'fake';
+  if (S.modal === 'slip' && !S.fromHistory) return 'result';
+  if (S.screen === 'check' || S.screen === 'sign') return 'check';
+  if (S.screen === 'sell' && S.amount) return 'price';
+  if (S.screen === 'qr') return 'qr';
+  if (S.screen === 'result') return 'result';
+  if (S.screen === 'history') return 'history';
+  return null;
+}
+function vPanel() {
+  const t = demoTarget();
+  const now = currentStep();
+  if (now) S.done.add(now);
+  return `
+    <div class="phead"><div><h2>ແຜງສາທິດ</h2><p class="pnote">ສຳລັບຜູ້ນຳສະເໜີ · ຈຳລອງຜົນຈາກທະນາຄານ</p></div><button class="closepanel" data-act="demo-close">ປິດ</button></div>
+    <div class="pgroup">
+      <span class="plabel">ຜົນຈາກທະນາຄານ</span>
+      <div class="pbtns">
+        <button class="pbtn" data-act="bank" data-st="pend"><span class="pd wait"></span>ລໍຖ້າ</button>
+        <button class="pbtn" data-act="bank" data-st="ok"><span class="pd ok"></span>ສຳເລັດ</button>
+        <button class="pbtn" data-act="bank" data-st="fail"><span class="pd bad"></span>ບໍ່ສຳເລັດ</button>
+      </div>
+      <span class="ptarget">${t ? `ໃຊ້ກັບ ${t.ref} · ${fmt(t.amt)} ₭` : 'ສະແດງ QR ກ່ອນ ຈຶ່ງສົ່ງຜົນໄດ້'}</span>
+    </div>
+    <div class="pgroup">
+      <span class="plabel">ເນັດຂອງໂທລະສັບຮ້ານ</span>
+      <div class="pbtns two">
+        <button class="pbtn" data-act="net" data-v="on" aria-pressed="${S.net === 'on'}">ອອນລາຍ</button>
+        <button class="pbtn" data-act="net" data-v="off" aria-pressed="${S.net === 'off'}">ຂາດເນັດ</button>
+      </div>
+    </div>
+    <div class="pgroup">
+      <span class="plabel">ທົດສອບການປອມ</span>
+      <button class="pbtn wide" data-act="fake">ລູກຄ້າສະແດງ screenshot ແລະ ສຽງປອມ</button>
+    </div>
+    <div class="pgroup">
+      <span class="plabel">ມຸມມອງ</span>
+      <div class="pbtns">
+        <button class="pbtn" data-act="view-shop" aria-pressed="${!['market', 'sign'].includes(S.screen)}">ແມ່ຄ້າ</button>
+        <button class="pbtn" data-act="view-market" aria-pressed="${S.screen === 'market' || (S.screen === 'sign' && S.signFrom === 'market')}">ຜູ້ດູແລຕະຫຼາດ</button>
+        <button class="pbtn" data-act="view-sign" aria-pressed="${S.screen === 'sign' && S.signFrom !== 'market'}">ປ້າຍລູກຄ້າ</button>
+      </div>
+    </div>
+    <div class="pgroup">
+      <span class="plabel">ລຳດັບສາທິດ 1 ນາທີ</span>
+      <ol class="steps">${STEPS.map(([k, l]) => `<li class="${k === now ? 'now' : S.done.has(k) ? 'done' : ''}">${l}</li>`).join('')}</ol>
+    </div>
+    <button class="pbtn wide" data-act="reset">ເລີ່ມໃໝ່ (ລ້າງຂໍ້ມູນສາທິດ)</button>`;
+}
+
+/* ---------- render: patch the DOM in place so nodes, focus, scroll and transitions survive ---------- */
+let booted = false;
+const entering = [];
+function markEnter(el) {
+  if (!booted || el.nodeType !== 1 || !el.hasAttribute('data-key')) return;
+  el.classList.add('enter');
+  entering.push(el);
+}
+function syncAttrs(from, to) {
+  for (const a of Array.from(from.attributes)) {
+    if (to.hasAttribute(a.name)) continue;
+    if (from.tagName === 'DETAILS' && a.name === 'open') continue;
+    from.removeAttribute(a.name);
+  }
+  for (const a of Array.from(to.attributes)) if (from.getAttribute(a.name) !== a.value) from.setAttribute(a.name, a.value);
+}
+function morph(from, to) {
+  const fk = Array.from(from.childNodes), tk = Array.from(to.childNodes);
+  for (let i = 0; i < tk.length; i++) {
+    const x = fk[i], y = tk[i];
+    if (!x) { from.appendChild(y); markEnter(y); continue; }
+    const sameEl = x.nodeType === 1 && y.nodeType === 1 && x.nodeName === y.nodeName && x.getAttribute('data-key') === y.getAttribute('data-key');
+    if (x.nodeType !== y.nodeType || (x.nodeType === 1 && !sameEl) || (x.nodeType !== 1 && x.nodeName !== y.nodeName)) { from.replaceChild(y, x); markEnter(y); continue; }
+    if (x.nodeType !== 1) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; continue; }
+    syncAttrs(x, y);
+    morph(x, y);
+  }
+  for (let i = fk.length - 1; i >= tk.length; i--) fk[i].remove();
+}
+function patch(target, html) {
+  const t = document.createElement('div');
+  t.innerHTML = html;
+  morph(target, t);
+}
+function flushEnter() {
+  if (!entering.length) return;
+  const list = entering.splice(0);
+  void document.body.offsetWidth; // commit the start state, then let CSS transitions run
+  requestAnimationFrame(() => list.forEach((el) => el.classList.remove('enter')));
+}
+
+const views = { sell: vSell, check: vCheck, sign: vSign, qr: vQR, result: vResult, history: vHistory, settings: vSettings, sub: vSub, market: vMarket };
+function render() {
+  const app = $('#app');
+  app.dataset.mode = modeNow();
+  patch($('#view'), vSimbar() + (views[S.screen] || vSell)() + (TABS.includes(S.screen) ? vTabbar() : ''));
+
+  const modal = $('#modal');
+  const open = !!S.modal;
+  if (open) patch(modal, S.modal === 'fake' ? vFake() : vSlip());
+  if (open !== modal.classList.contains('show')) {
+    modal.classList.toggle('show', open);
+    modal.inert = !open;
+    $('#view').inert = open;
+    if (open) setTimeout(() => { const b = modal.querySelector('.btn'); if (b) b.focus({ preventScroll: true }); }, 60);
+  }
+
+  patch($('#panel'), vPanel());
+  const sheetMode = narrow();
+  $('#panel').classList.toggle('open', sheetMode && S.demoOpen);
+  $('#scrim').classList.toggle('open', sheetMode && S.demoOpen);
+  $('#panel').inert = sheetMode && !S.demoOpen;
+  booted = true;
+  flushEnter();
+}
+
+/* toast: persistent node; content stays while it fades out */
+let toastTimer = 0;
+function toast(msg, ic) {
+  const el = $('#toast');
+  el.innerHTML = `${icon(ic || 'info', 20)}<span>${msg}</span>`;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ---------- actions ---------- */
+function newTxn(amt) {
+  return { ref: 'PH-' + S.seq++, t: nowHM(), amt, route: S.route || 'th', st: 'wait', settled: false, sample: false };
+}
+function settle(t, st) {
+  if (S.net === 'off' && t.st !== 'unk') { t.hidden = st; t.st = 'unk'; }
+  else if (S.net === 'off') { t.hidden = st; toast('ໂທລະສັບຍັງຂາດເນັດ · ຍັງບໍ່ຮູ້ຜົນ', 'wifioff'); return false; }
+  else { t.st = st; }
+  if (t.st === 'ok') {
+    t.code = String(10 + Math.floor(Math.random() * 90));
+    t.bankRef = 'BK' + String(Date.now()).slice(-13);
+    announce(t);
+  }
+  if (!S.txns.includes(t)) S.txns.unshift(t);
+  return true;
+}
+function showSlip(t, fromHistory) { S.slipRef = t.ref; S.slipEn = false; S.fromHistory = !!fromHistory; S.modal = 'slip'; }
+const A = {
+  'tab': (el) => { S.screen = el.dataset.to; S.sub = null; S.fromHistory = false; if (S.screen === 'sell' && S.current && S.current.st !== 'wait') S.current = null; },
+  'key': (el) => {
+    const k = el.dataset.k, s = S.amount ? String(S.amount) : '';
+    if (k === 'del') S.amount = s.length > 1 ? +s.slice(0, -1) : 0;
+    else { const n = s + k; if (n.replace(/^0+/, '').length <= MAX_DIGITS) S.amount = +n || 0; }
+  },
+  'clear': () => { S.amount = 0; },
+  'go-check': () => { S.screen = 'check'; S.checkSel = S.route; },
+  'back-sell': () => { S.screen = 'sell'; },
+  'pick-route': (el) => { S.checkSel = el.dataset.id; },
+  'use-route': () => { S.route = S.checkSel; S.screen = 'sell'; },
+  'go-sign': () => { S.signFrom = 'check'; S.screen = 'sign'; },
+  'go-sign-market': () => { S.signFrom = 'market'; S.screen = 'sign'; },
+  'show-qr': () => { if (!S.amount) return; S.current = newTxn(S.amount); S.fromHistory = false; S.screen = 'qr'; },
+  'cancel-qr': () => { S.current = null; S.screen = 'sell'; toast('ຍົກເລີກ QR ແລ້ວ · ບໍ່ມີການຮັບເງິນ', 'x'); },
+  'new-sale': () => { S.modal = null; S.current = null; S.amount = 0; S.route = null; S.screen = 'sell'; },
+  'retry': () => { const amt = S.current.amt; S.current = newTxn(amt); S.screen = 'qr'; },
+  'filter': (el) => { S.filter = el.dataset.f; },
+  'open-txn': (el) => {
+    const t = txnOf(el.dataset.ref);
+    if (t.st === 'ok') { showSlip(t, true); return; }
+    S.current = t; S.fromHistory = true; S.screen = 'result';
+  },
+  'slip-lang': () => { S.slipEn = !S.slipEn; },
+  'close-modal': () => { S.modal = null; },
+  'mode': (el) => { P.mode = el.dataset.m; savePrefs(); },
+  'toggle-sound': () => { P.sound = !P.sound; savePrefs(); },
+  'chime': (el) => { P.chime = +el.dataset.i; savePrefs(); CHIMES[P.chime].play(); },
+  'sub': (el) => { S.sub = el.dataset.id; S.screen = 'sub'; },
+  'back-settings': () => { S.sub = null; S.screen = 'settings'; },
+  'toast': (el) => { toast(el.dataset.msg, 'info'); },
+  'view-shop': () => { S.screen = S.current && S.current.st === 'wait' ? 'qr' : 'sell'; },
+  'view-market': () => { S.screen = 'market'; },
+  'view-sign': () => { S.signFrom = 'check'; S.screen = 'sign'; },
+  'demo-open': () => { S.demoOpen = true; },
+  'demo-close': () => { S.demoOpen = false; },
+  'fake': () => { S.modal = 'fake'; S.demoOpen = false; fakeBeep(); },
+  'net': (el) => {
+    S.net = el.dataset.v;
+    if (S.net !== 'on') return;
+    const back = S.txns.filter((t) => t.st === 'unk');
+    back.forEach((t) => { settle(t, t.hidden || 'ok'); delete t.hidden; });
+    if (!back.length) return;
+    const cur = back.find((t) => t === S.current);
+    if (cur && cur.st === 'ok' && S.screen === 'result') showSlip(cur, false);
+    else toast(`ເນັດກັບມາ · ${back.map((t) => t.ref + ' ' + ST[t.st].label).join(', ')}`, 'check');
+  },
+  'bank': (el) => {
+    const t = demoTarget();
+    if (!t) { toast('ບໍ່ມີລາຍການທີ່ລໍຜົນ · ກົດ "ສະແດງ QR" ກ່ອນ', 'info'); return; }
+    if (!settle(t, el.dataset.st)) return;
+    S.demoOpen = false;
+    const onIt = S.current === t && ['qr', 'result'].includes(S.screen);
+    if (onIt && t.st === 'ok') showSlip(t, false);
+    else if (onIt) { S.screen = 'result'; S.fromHistory = false; }
+    else toast(`${t.ref} · ${ST[t.st].label} · ${ST[t.st].act}`, ST[t.st].icon);
+  },
+  'reset': () => { S = freshState(); toast('ເລີ່ມໃໝ່ແລ້ວ · ຂໍ້ມູນສາທິດຖືກຕັ້ງຄືນ', 'check'); },
+};
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = A[el.dataset.act];
+  if (!fn) return;
+  ac();
+  if (el.closest('#panel')) S.demoOpen = false; // on phones, close the sheet so the presenter sees the result
+  fn(el);
+  render();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (S.modal === 'slip' && !S.fromHistory) A['new-sale']();
+    else if (S.modal) S.modal = null;
+    else if (S.demoOpen) S.demoOpen = false;
+    else return;
+    render(); return;
+  }
+  if (S.screen !== 'sell' || S.modal || e.metaKey || e.ctrlKey || e.altKey) return;
+  let k = null;
+  if (/^[0-9]$/.test(e.key)) k = e.key;
+  else if (e.key === 'Backspace') k = 'del';
+  else if (e.key === 'Enter' && S.amount && !(e.target.closest && e.target.closest('button'))) { e.preventDefault(); A['show-qr'](); render(); return; }
+  if (k) { e.preventDefault(); A.key({ dataset: { k } }); render(); }
+});
+document.addEventListener('touchstart', () => {}, { passive: true }); // enables :active press states on iOS
+setInterval(() => { if (P.mode === 'auto') render(); }, 60000);
+
+/* fit the phone and panel to short laptop or projector screens */
+function fit() {
+  const main = $('.stage-main');
+  const head = $('.stage-head');
+  const avail = window.innerHeight - (head ? head.offsetHeight : 0) - 64;
+  main.style.zoom = narrow() ? '' : String(Math.max(0.62, Math.min(1, avail / 840)));
+  render();
+}
+window.addEventListener('resize', fit);
+fit();
+})();
+</script>
